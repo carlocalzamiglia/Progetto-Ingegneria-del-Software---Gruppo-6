@@ -3,7 +3,7 @@ package it.polimi.ingsw.Client.Game;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class DiceBucket {
+class DiceBucket {
     public ArrayList<Dice> diceArray;
 
     public DiceBucket (){
