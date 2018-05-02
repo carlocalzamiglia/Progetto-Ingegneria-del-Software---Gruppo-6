@@ -1,4 +1,4 @@
 package it.polimi.ingsw.Client.Client;
 
-public class socketClient {
+public class SocketClient {
 }

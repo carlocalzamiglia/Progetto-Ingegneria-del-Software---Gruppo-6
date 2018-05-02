@@ -1,4 +1,4 @@
 package it.polimi.ingsw.Client.Server;
 
-public class serverRMIClientHandler {
+public class ServerRMIClientHandler {
 }

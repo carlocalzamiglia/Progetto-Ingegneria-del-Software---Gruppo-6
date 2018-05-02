@@ -1,4 +1,4 @@
 package it.polimi.ingsw.Client.Game;
 
-public class game {
+public class Game {
 }
