@@ -6,12 +6,12 @@ public class Dice {
     private Colour colour;
 
     public static final String[] faces = {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6"
+            "\u2680",
+            "\u2681",
+            "\u2682",
+            "\u2683",
+            "\u2684",
+            "\u2685"
     };
 
     public Dice(Colour colour){
