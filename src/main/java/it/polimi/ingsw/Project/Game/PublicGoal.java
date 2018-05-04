@@ -6,7 +6,7 @@ public class PublicGoal {
     private String points;
     private int serialNumber;
 
-    public PublicGoal setPublicGoal(int serialNumber){
+    public PublicGoal (int serialNumber){
         switch (serialNumber) {
             case 1:
                 this.name = "Colori diversi - Riga";
@@ -72,7 +72,7 @@ public class PublicGoal {
                 break;
 
         }
-        return this;
+
     }
 
 

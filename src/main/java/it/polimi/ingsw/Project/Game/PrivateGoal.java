@@ -7,7 +7,7 @@ public class PrivateGoal {
     private String description;
     private int serialNumber;
 
-    public PrivateGoal setPrivateGoal(int serialNumber) {
+    public PrivateGoal (int serialNumber) {
         switch (serialNumber) {
             case 1:
                 this.name = "Sfumature Rosse";
@@ -38,7 +38,7 @@ public class PrivateGoal {
                 break;
 
         }
-        return this;
+
     }
     public void setDescription(String description) {
         this.description = description;

@@ -6,15 +6,12 @@ public class Scheme {
     private int difficulty;
     private Boolean used;
 
-    public Scheme(){
-        boxes=new Box[4][5];
-    }
-
     public String getName() {
         return name;
     }
 
-    public Scheme setScheme(int i){
+    public Scheme (int i){
+        boxes=new Box[4][5];
         switch (i) {
             case 1:
                 boxes[0][0] = new Box("4");
@@ -595,7 +592,6 @@ public class Scheme {
             default:
                 break;
         }
-        return this;
 
     }
 

@@ -7,8 +7,7 @@ import it.polimi.ingsw.Project.Game.Scheme;
 public class TestInsertDiceOnScheme {
     @org.junit.jupiter.api.Test
     public void test() {
-        Scheme scheme=new Scheme();
-        scheme.setScheme(1);
+        Scheme scheme=new Scheme(1);
         Dice d=new Dice(Colour.ANSI_BLUE);
         d.roll();
         Box box = new Box();

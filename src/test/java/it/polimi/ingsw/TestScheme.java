@@ -12,8 +12,7 @@ public class TestScheme {
 
         Scheme scheme[]=new Scheme[24];
         for(int i=1;i<=24;i++){
-            scheme[i-1]=new Scheme();
-            scheme[i-1].setScheme(i);
+            scheme[i-1]=new Scheme(i);
             scheme[i-1].dump();
             System.out.println();
         }
