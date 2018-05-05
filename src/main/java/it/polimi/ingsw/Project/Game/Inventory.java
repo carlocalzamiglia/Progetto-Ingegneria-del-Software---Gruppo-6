@@ -79,5 +79,24 @@ public class Inventory {
         return diceBucket;
     }
 
+    public Bridge getBridge(int serialNumber){
+        return bridges[serialNumber-1];
+    }
+    public Markers getMarker(int serialNumber){
+        return markers[serialNumber-1];
+    }
+    public PrivateGoal getPrivateGoal(int serialNumber){
+        return privateGoals[serialNumber-1];
+    }
+    public PublicGoal getPublicGoal(int serialNumber){
+        return publicGoals[serialNumber-1];
+    }
+    public Scheme getScheme(int serialNumber){
+        return schemes[serialNumber-1];
+    }
+    public ToolCards getToolCard(int serialNumber){
+        return toolCards[serialNumber-1];
+    }
+
 }
 

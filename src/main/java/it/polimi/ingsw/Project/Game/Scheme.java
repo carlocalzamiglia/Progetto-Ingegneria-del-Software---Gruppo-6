@@ -603,7 +603,10 @@ public class Scheme {
             }
             s=s.concat("\n");
         }
-        s=s.concat(name+" "+difficulty);
+        s=s.concat(name+" ");
+        for(int i=0;i<difficulty;i++){
+            s=s+"•";
+        }
         return s;
     }
     public void dump(){

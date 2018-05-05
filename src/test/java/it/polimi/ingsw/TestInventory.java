@@ -39,5 +39,7 @@ public class TestInventory {
         for(int i=0;i<24;i++){
             schemes[i].dump();
         }
+        Inventory inventory2 =new Inventory();
+        inventory2.getToolCard(2).dump();
     }
 }
