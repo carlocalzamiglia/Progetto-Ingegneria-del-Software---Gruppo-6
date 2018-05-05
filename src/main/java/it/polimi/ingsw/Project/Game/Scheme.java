@@ -595,6 +595,18 @@ public class Scheme {
 
     }
 
+    public int getDifficulty(){
+        return this.difficulty;
+    }
+
+    public Box[][] getBoxes() {
+        return boxes;
+    }
+
+    public void setBoxes(Box boxes,int row,int column) {
+        this.boxes[row][column].setAddedDice(boxes.getAddedDice());
+    }
+
     public String toString() {
         String s=new String();
         for (int i = 0; i < 4; i++){
@@ -611,13 +623,5 @@ public class Scheme {
     }
     public void dump(){
         System.out.println(this);
-    }
-
-    public Box[][] getBoxes() {
-        return boxes;
-    }
-
-    public void setBoxes(Box boxes,int row,int column) {
-        this.boxes[row][column].setAddedDice(boxes.getAddedDice());
     }
 }

@@ -42,12 +42,16 @@ public class GreenCarpet {
     //public Dice getDiceFromRoundPath(int i, int round, Dice dice)  da implementare una volta prese in considerazione tutte le tool cards)
 
     public Dice getDiceFromStock(int i){
-        Dice dice= stock.get(i);
-        stock.remove(i);
+        Dice dice= stock.get(i-1);
+        stock.remove(i-1);
         return dice;
     }
     public void setDiceInStock(Dice dice){
         this.stock.add(dice);
+    }
+
+    public int getnPlayers() {
+        return nPlayers;
     }
 
     @Override
@@ -66,9 +70,13 @@ public class GreenCarpet {
             }
             s = s+"\n";
         }
-        s = s+stock.toString();
+        for (int i=0;i<stock.size();i++)
+            s=s+(i+1)+")"+stock.get(i).toString()+" ";
+        s=s+"\n";
+        ;
         s = s+"\n";
         for (int i = 0; i < 3; i++){
+            s = s + "\n";
             s = s + publicGoals[i];
             s = s + "\n";
         }
