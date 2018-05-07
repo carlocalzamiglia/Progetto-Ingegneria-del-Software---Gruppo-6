@@ -10,9 +10,7 @@ public class TestInsertDiceOnScheme {
         Scheme scheme=new Scheme(1);
         Dice d=new Dice(Colour.ANSI_BLUE);
         d.roll();
-        Box box = new Box();
-        box.setAddedDice(d);
-        scheme.setBoxes(box,1,0);
+        scheme.setBoxes(d,1,0);
         scheme.dump();
     }
 

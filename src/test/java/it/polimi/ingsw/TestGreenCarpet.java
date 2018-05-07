@@ -21,9 +21,7 @@ public class TestGreenCarpet {
         greenCarpet.setRoundPath(1,greenCarpet.getStock());
         greenCarpet.dump();
         scheme.dump();
-        Box box=new Box();
-        box.setAddedDice(greenCarpet.getDiceFromStock(2));
-        scheme.setBoxes(box,0,3);
+        scheme.setBoxes(greenCarpet.getDiceFromStock(2),0,3);
         greenCarpet.setRoundPath(2,greenCarpet.getStock());
         greenCarpet.dump();
         scheme.dump();

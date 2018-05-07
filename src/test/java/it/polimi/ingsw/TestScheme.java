@@ -18,9 +18,7 @@ public class TestScheme {
         }
         Dice d=new Dice(Colour.ANSI_BLUE);
         d.roll();
-        Box box = new Box();
-        box.setAddedDice(d);
-        scheme[0].setBoxes(box,1,0);
+        scheme[0].setBoxes(d,1,0);
         scheme[0].dump();
 
 

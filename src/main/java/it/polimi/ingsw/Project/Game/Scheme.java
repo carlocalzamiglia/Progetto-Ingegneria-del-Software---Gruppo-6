@@ -603,8 +603,8 @@ public class Scheme {
         return boxes;
     }
 
-    public void setBoxes(Box boxes,int row,int column) {
-        this.boxes[row][column].setAddedDice(boxes.getAddedDice());
+    public void setBoxes(Dice dice,int row,int column) {
+        this.boxes[row][column].setAddedDice(dice);
     }
 
     public String toString() {

@@ -31,11 +31,8 @@ public class TestGreenCarpetAndPlayer {
         greenCarpet.dump();
         player1.dump();
         player2.dump();
-        Box box=new  Box();
-        box.setAddedDice(greenCarpet.getDiceFromStock(1));
-        player1.getScheme().setBoxes(box,0,1);
-        box.setAddedDice(greenCarpet.getDiceFromStock(1));
-        player2.getScheme().setBoxes(box,1,1);
+        player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,1);
+        player2.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),1,1);
         greenCarpet.dump();
         player1.dump();
         player2.dump();
