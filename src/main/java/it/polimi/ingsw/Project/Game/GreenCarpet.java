@@ -22,6 +22,11 @@ public class GreenCarpet {
         publicGoals[1]=p2;
         publicGoals[2]=p3;
     }
+
+    public PublicGoal getPublicGoal(int i) {
+        return publicGoals[i];
+    }
+
     public void setToolCards(ToolCards[] toolCards){
         this.toolCards=toolCards;
     }

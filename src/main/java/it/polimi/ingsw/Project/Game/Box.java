@@ -31,7 +31,10 @@ public class Box {
     }
 
     public Dice getAddedDice() {
-        return addedDice;
+        if(addedDice!=null)
+            return addedDice;
+        else
+            return null;
     }
 
     public void setAddedDice(Dice addedDice) {

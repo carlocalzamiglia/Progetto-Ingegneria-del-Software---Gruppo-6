@@ -589,6 +589,30 @@ public class Scheme {
                 this.name="Sun's Glory";
                 this.difficulty=6;
                 break;
+            case 0:
+                boxes[0][0] = new Box();
+                boxes[0][1] = new Box();
+                boxes[0][2] = new Box();
+                boxes[0][3] = new Box();
+                boxes[0][4] = new Box();
+                boxes[1][0] = new Box();
+                boxes[1][1] = new Box();
+                boxes[1][2] = new Box();
+                boxes[1][3] = new Box();
+                boxes[1][4] = new Box();
+                boxes[2][0] = new Box();
+                boxes[2][1] = new Box();
+                boxes[2][2] = new Box();
+                boxes[2][3] = new Box();
+                boxes[2][4] = new Box();
+                boxes[3][0] = new Box();
+                boxes[3][1] = new Box();
+                boxes[3][2] = new Box();
+                boxes[3][3] = new Box();
+                boxes[3][4] = new Box();
+                this.name="Empty";
+                this.difficulty=0;
+                break;
             default:
                 break;
         }
@@ -601,6 +625,10 @@ public class Scheme {
 
     public Box[][] getBoxes() {
         return boxes;
+    }
+
+    public Box getBox(int i, int j) {
+        return boxes[i][j];
     }
 
     public void setBoxes(Dice dice,int row,int column) {

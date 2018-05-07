@@ -10,6 +10,8 @@ public class TestScheme {
 
     public void test() {
 
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+
         Scheme scheme[]=new Scheme[24];
         for(int i=1;i<=24;i++){
             scheme[i-1]=new Scheme(i);
@@ -20,6 +22,8 @@ public class TestScheme {
         d.roll();
         scheme[0].setBoxes(d,1,0);
         scheme[0].dump();
+
+
 
 
 

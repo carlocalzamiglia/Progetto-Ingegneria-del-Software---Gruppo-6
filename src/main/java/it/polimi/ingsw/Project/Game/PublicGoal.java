@@ -75,6 +75,12 @@ public class PublicGoal {
 
     }
 
+    public int getSerialNumber() {
+        return serialNumber;
+    }
+
+
+
 
     public String toString() {
         String s=new String();
