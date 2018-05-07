@@ -103,3 +103,7 @@ buildNumber.properties
 
 # End of https://www.gitignore.io/api/maven,sonar,intellij
 .idea/inspectionProfiles/profiles_settings.xml
+src/main/.DS_Store
+src/main/java/it/polimi/.DS_Store
+src/main/java/it/.DS_Store
+src/main/java/.DS_Store
