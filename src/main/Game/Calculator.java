@@ -109,7 +109,7 @@ public class Calculator {
             switch (serialNumber) {
                 case 1:                 //Colori diversi - Riga
 
-                    for (int j = 0; j < 4; j++) {            //righe
+                    for (int j = 0; j < 4; j++) {           //righe
                         flag = 0;
                         for (int k = 0; k < 5 && flag == 0; k++) {       //colonne
                             if (player.getScheme().getBox(j, k).getAddedDice() == null)
@@ -198,8 +198,12 @@ public class Calculator {
                     int nTwo = 0;
 
                     for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680"))
+                        flag=0;
+                        for (int k = 0; k < 5 ; k++) {
+                            flag=0;
+                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
+                                flag = 1;
+                            else  if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680"))
                                 nOne++;
                             else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681"))
                                 nTwo++;
@@ -216,8 +220,11 @@ public class Calculator {
                     int nFour = 0;
 
                     for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682"))
+                        for (int k = 0; k < 5  && flag==0; k++) {
+                            flag=0;
+                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
+                                flag = 1;
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682"))
                                 nThree++;
                             else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683"))
                                 nFour++;
@@ -234,8 +241,11 @@ public class Calculator {
                     int nSix = 0;
 
                     for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684"))
+                        for (int k = 0; k < 5 && flag==0; k++) {
+                            flag=0;
+                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
+                                flag = 1;
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684"))
                                 nFive++;
                             else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685"))
                                 nSix++;
@@ -258,7 +268,10 @@ public class Calculator {
 
                     for (int j = 0; j < 4; j++) {
                         for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680")) {
+                            flag=0;
+                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
+                                flag = 1;
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680")) {
                                 noOne++;
                                 values[0] = noOne;
                             } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681")) {
@@ -319,7 +332,10 @@ public class Calculator {
 
                     for (int j = 0; j < 4; j++) {
                         for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_PURPLE)) {
+                            flag=0;
+                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
+                                flag = 1;
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_PURPLE)) {
                                 nPurples++;
                                 nColors[0] = nPurples;
                             } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_BLUE)) {
