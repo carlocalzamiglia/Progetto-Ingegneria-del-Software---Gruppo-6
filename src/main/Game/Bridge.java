@@ -1,4 +1,4 @@
-package it.polimi.ingsw.Project.Game;
+package Game;
 
 public class Bridge {
     private Colour colour;

@@ -1,8 +1,4 @@
-package it.polimi.ingsw;
-import it.polimi.ingsw.Project.Game.Colour;
-import it.polimi.ingsw.Project.Game.Dice;
-import it.polimi.ingsw.Project.Game.Box;
-import it.polimi.ingsw.Project.Game.Scheme;
+import Game.*;
 
 public class TestScheme {
     @org.junit.jupiter.api.Test

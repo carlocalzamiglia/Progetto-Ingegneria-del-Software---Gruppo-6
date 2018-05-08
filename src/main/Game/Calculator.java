@@ -1,4 +1,4 @@
-package it.polimi.ingsw.Project.Game;
+package Game;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

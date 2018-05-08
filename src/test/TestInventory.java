@@ -1,6 +1,4 @@
-package it.polimi.ingsw;
-
-import it.polimi.ingsw.Project.Game.*;
+import Game.*;
 
 public class TestInventory {
     @org.junit.jupiter.api.Test

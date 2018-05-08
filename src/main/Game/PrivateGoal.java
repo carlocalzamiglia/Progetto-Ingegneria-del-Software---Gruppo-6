@@ -1,4 +1,4 @@
-package it.polimi.ingsw.Project.Game;
+package Game;
 
 import com.sun.xml.internal.ws.api.ha.StickyFeature;
 

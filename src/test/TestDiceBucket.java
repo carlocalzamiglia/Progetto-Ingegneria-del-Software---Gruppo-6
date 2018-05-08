@@ -1,10 +1,7 @@
-package it.polimi.ingsw;
 
 
-import it.polimi.ingsw.Project.Game.Bridge;
-import it.polimi.ingsw.Project.Game.Dice;
-import it.polimi.ingsw.Project.Game.DiceBucket;
-import it.polimi.ingsw.Project.Game.Scheme;
+
+import Game.*;
 
 import java.util.Scanner;
 

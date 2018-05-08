@@ -1,6 +1,4 @@
-package it.polimi.ingsw;
-
-import it.polimi.ingsw.Project.Game.ToolCards;
+import Game.*;
 
 public class TestToolCard {
     @org.junit.jupiter.api.Test

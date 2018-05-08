@@ -1,4 +1,6 @@
-package it.polimi.ingsw.Project.Game;
+package Project.Game;
+
+import Game.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

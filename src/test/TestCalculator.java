@@ -1,6 +1,6 @@
-package it.polimi.ingsw;
 
-import it.polimi.ingsw.Project.Game.*;
+
+import Game.*;
 import sun.util.resources.uk.CalendarData_uk;
 
 import java.util.ArrayList;
