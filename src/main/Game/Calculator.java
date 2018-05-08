@@ -198,21 +198,17 @@ public class Calculator {
                     int nTwo = 0;
 
                     for (int j = 0; j < 4; j++) {
-                        flag=0;
                         for (int k = 0; k < 5 ; k++) {
-                            flag=0;
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            else  if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680"))
+                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680") && player.getScheme().getBox(j, k).getAddedDice() != null)
                                 nOne++;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681"))
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681") && player.getScheme().getBox(j, k).getAddedDice() != null)
                                 nTwo++;
                         }
                     }
                     if (nOne >= nTwo)
-                        sumPublic = sumPublic + nTwo * 2;
+                        sumPublic = sumPublic + (nTwo * 2);
                     else
-                        sumPublic = sumPublic + nOne * 2;
+                        sumPublic = sumPublic + (nOne * 2);
                     break;
                 case 6:
 
@@ -220,20 +216,17 @@ public class Calculator {
                     int nFour = 0;
 
                     for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5  && flag==0; k++) {
-                            flag=0;
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682"))
+                        for (int k = 0; k < 5; k++) {
+                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682") && player.getScheme().getBox(j, k).getAddedDice() != null)
                                 nThree++;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683"))
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683") && player.getScheme().getBox(j, k).getAddedDice() != null)
                                 nFour++;
                         }
                     }
                     if (nThree >= nFour)
-                        sumPublic = sumPublic + nFour * 2;
+                        sumPublic = sumPublic + (nFour * 2);
                     else
-                        sumPublic = sumPublic + nThree * 2;
+                        sumPublic = sumPublic + (nThree * 2);
                     break;
                 case 7:
 
@@ -241,20 +234,17 @@ public class Calculator {
                     int nSix = 0;
 
                     for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5 && flag==0; k++) {
-                            flag=0;
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684"))
+                        for (int k = 0; k < 5; k++) {
+                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684") &&player.getScheme().getBox(j, k).getAddedDice() != null)
                                 nFive++;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685"))
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685") && player.getScheme().getBox(j, k).getAddedDice() != null)
                                 nSix++;
                         }
                     }
                     if (nFive >= nSix)
-                        sumPublic = sumPublic + nSix * 2;
+                        sumPublic = sumPublic + (nSix * 2);
                     else
-                        sumPublic = sumPublic + nFive * 2;
+                        sumPublic = sumPublic + (nFive * 2);
                     break;
                 case 8:
                     int noOne = 0;
