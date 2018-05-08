@@ -8,7 +8,7 @@ public class TestScheme {
     @org.junit.jupiter.api.Test
 
 
-    public void test() {
+    public void tScheme() {
 
         Dice dice = new Dice(Colour.ANSI_BLUE);
 
@@ -24,9 +24,14 @@ public class TestScheme {
         scheme[0].dump();
 
 
-
-
-
+    }
+    @org.junit.jupiter.api.Test
+    public void tDiceOnScheme() {
+        Scheme scheme=new Scheme(1);
+        Dice d=new Dice(Colour.ANSI_BLUE);
+        d.roll();
+        scheme.setBoxes(d,1,0);
+        scheme.dump();
     }
 }
 

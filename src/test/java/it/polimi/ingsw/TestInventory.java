@@ -4,7 +4,7 @@ import it.polimi.ingsw.Project.Game.*;
 
 public class TestInventory {
     @org.junit.jupiter.api.Test
-    public void test() {
+    public void tInventory() {
         Bridge bridges[];
         PrivateGoal privateGoals[];
         PublicGoal publicGoals[];

@@ -4,7 +4,7 @@ import it.polimi.ingsw.Project.Game.*;
 
 public class TestGreenCarpet {
     @org.junit.jupiter.api.Test
-    public void test() {
+    public void tGreenCarpet(){
         Inventory inventory=new Inventory();
         Scheme scheme=new Scheme(2);
         GreenCarpet greenCarpet=new GreenCarpet(4);

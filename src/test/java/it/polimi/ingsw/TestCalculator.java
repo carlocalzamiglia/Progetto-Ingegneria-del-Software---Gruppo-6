@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class TestCalculator {
 
     @org.junit.jupiter.api.Test
-    public void test() {
+    public void tCalculator() {
 
         Calculator calculator;
         ArrayList<Player> players = new ArrayList<Player>();

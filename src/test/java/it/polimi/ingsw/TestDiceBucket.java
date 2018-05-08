@@ -1,12 +1,16 @@
 package it.polimi.ingsw;
 
 
+import it.polimi.ingsw.Project.Game.Bridge;
 import it.polimi.ingsw.Project.Game.Dice;
 import it.polimi.ingsw.Project.Game.DiceBucket;
+import it.polimi.ingsw.Project.Game.Scheme;
+
+import java.util.Scanner;
 
 public class TestDiceBucket {
     @org.junit.jupiter.api.Test
-    public void test(){
+    public void tDiceBucket(){
 
         DiceBucket bag= new DiceBucket();
         for(int i=0; i<22; i++){
@@ -16,6 +20,24 @@ public class TestDiceBucket {
         }
         System.out.println("ciao");
         bag.dump();
+
+    }
+    @org.junit.jupiter.api.Test
+    public void tDiceBucketAndScheme(){
+        Bridge bridge=new Bridge(1);
+        DiceBucket bag=new DiceBucket();
+        Scheme scheme = new Scheme(1);
+        bridge.setScheme(scheme);
+        Dice diceArray[]=new Dice[6];
+        for(int i=0;i<6;i++){
+            diceArray[i]=bag.educe();
+            diceArray[i].roll();
+            System.out.print(i+1+") "+diceArray[i]+" ");
+        }
+        System.out.println();
+        System.out.println(bridge);
+
+
 
     }
 }
