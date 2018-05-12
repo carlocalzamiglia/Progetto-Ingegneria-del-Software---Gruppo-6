@@ -6,7 +6,7 @@ public class Inventory {
     private Bridge[] bridges;
     private Scheme[] schemes;
     private Markers[] markers;
-    private  ToolCards[] toolCards;
+    private ToolCards[] toolCards;
     private DiceBucket diceBucket;
 
     public Inventory(){

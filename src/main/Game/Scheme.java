@@ -649,6 +649,16 @@ public class Scheme {
         }
         return s;
     }
+    public boolean isEmpty(){
+        boolean status= true;
+        for (int i=0;i<4;i++) {
+            for (int j = 0; j < 5; j++) {
+                if (this.getBox(i, j).getAddedDice() != null)
+                    status= false;
+            }
+        }
+         return status;
+    }
     public void dump(){
         System.out.println(this);
     }

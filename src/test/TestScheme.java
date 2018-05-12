@@ -18,16 +18,19 @@ public class TestScheme {
         d.roll();
         scheme[0].setBoxes(d,1,0);
         scheme[0].dump();
-
-
     }
+
     @org.junit.jupiter.api.Test
     public void tDiceOnScheme() {
         Scheme scheme=new Scheme(1);
+        boolean bool=scheme.isEmpty();
+        System.out.println(bool);
         Dice d=new Dice(Colour.ANSI_BLUE);
         d.roll();
         scheme.setBoxes(d,1,0);
         scheme.dump();
+        bool=scheme.isEmpty();
+        System.out.println(bool);
     }
 }
 
