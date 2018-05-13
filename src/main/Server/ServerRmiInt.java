@@ -8,4 +8,6 @@ public interface ServerRmiInt extends Remote {
     public boolean checkUser(String nickname) throws RemoteException;
     public void login(String nickname) throws RemoteException;
     public void sendMessage(String nickname, String message)throws RemoteException;
+    public void manageDisconnection(String nickname) throws RemoteException;
+    public boolean clientAlive(String nickname) throws RemoteException;
 }

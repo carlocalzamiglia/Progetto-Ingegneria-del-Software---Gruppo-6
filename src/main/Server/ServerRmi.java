@@ -1,8 +1,10 @@
 package Server;
 
 import Client.ClientRmiInt;
+import org.omg.PortableServer.POAPackage.ObjectNotActive;
 
 import java.net.MalformedURLException;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -36,6 +38,7 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
     }
 
 
+
     @Override
     public boolean checkUser(String nickname) throws RemoteException{
         for (User u:users) {
@@ -46,11 +49,14 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
     }
 
     @Override
-    public void login(String nickname) throws RemoteException{
+    public void login(String nickname) throws RemoteException {
         try {
             ClientRmiInt newClient = (ClientRmiInt) Naming.lookup("rmi://localhost/Client_" + nickname);
             users.addElement(new User(nickname,newClient));
-            System.out.println(nickname+", si è connesso con successo al server.");
+            System.out.println(nickname+" si è connesso con successo al server.");
+            sendMessage(nickname, "Ora sei connesso con successo al server, benvenuto!");
+            new HandleDisconnection(nickname, this).start();
+
         } catch (NotBoundException | RemoteException |MalformedURLException e) {
             e.printStackTrace();
         }
@@ -63,4 +69,45 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
                 users.get(i).getUserclient().serverMessage(message);
         }
     }
+
+    public void manageDisconnection(String nickname) throws RemoteException{
+        System.out.println(nickname +" si è appena disconnesso.");
+        for (User i:users) {
+            if(i.getNickname().equals(nickname)) {
+                users.remove(i);
+                break;
+            }
+        }
+    }
+
+    public boolean clientAlive(String nickname) throws RemoteException{
+        boolean flag=false;
+        boolean trovato=false;
+        for (User i:users) {
+            if(i.getNickname().equals(nickname)) {
+                try {
+                    trovato=true;
+                    flag = i.getUserclient().aliveMessage();
+                }catch (ConnectException e){
+                    flag=false;
+                    users.remove(i);
+                    System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
+                    if(users.size()==0)
+                        System.out.println("Nessun utente è connesso al server");
+                    break;
+
+                }
+            }
+
+
+        }
+        if(trovato!=false)
+            return flag;
+        else{
+            System.out.println("Utente non trovato");
+            return trovato;
+        }
+    }
+
+
 }
