@@ -89,14 +89,13 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
                 try {
                     trovato=true;
                     flag = i.getUserclient().aliveMessage();
-                }catch (ConnectException e){
+                }catch (ConnectException | NoSuchObjectException e){
                     flag=false;
                     users.remove(i);
                     System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
                     if(users.size()==0)
                         System.out.println("Nessun utente è connesso al server");
                     break;
-
                 }
             }
 
