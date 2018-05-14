@@ -13,8 +13,6 @@ public class Calculator {
         this.greenCarpet=greenCarpet;
     }
 
-
-
     public int calculate(int i){
         int sum=0;
             sum=sum+checkPrivate(players.get(i));
@@ -26,10 +24,6 @@ public class Calculator {
             return sum;
 
     }
-
-
-
-
 
     private int checkPrivate(Player player){
 
@@ -80,12 +74,9 @@ public class Calculator {
 
     return sumPrivate;
     }
-
-
     private int checkMarkers(Player player){
         return player.getMarkers().size();
     }
-
     private int checkEmpty(Player player){
         int e=0;
 
@@ -96,9 +87,6 @@ public class Calculator {
         return e;
 
     }
-
-
-
     private int checkPublic(Player player, GreenCarpet greenCarpet) {
         int sumPublic = 0;
         int serialNumber = 0;

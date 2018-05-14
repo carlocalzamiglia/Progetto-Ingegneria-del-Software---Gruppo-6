@@ -29,6 +29,8 @@ public class TestScheme {
         d.roll();
         scheme.setBoxes(d,1,0);
         scheme.dump();
+        scheme.setBoxes(null,1,0);
+        scheme.dump();
         bool=scheme.isEmpty();
         System.out.println(bool);
     }

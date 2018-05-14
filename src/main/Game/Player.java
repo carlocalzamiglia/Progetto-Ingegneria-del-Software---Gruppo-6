@@ -50,9 +50,18 @@ public class Player {
     public boolean isOnline() {
         return online;
     }
-    public void useMarkers(int cost) {
-        for(int i=0;i<cost;i++)
-            markers.remove(i);
+    public boolean useMarkers(int cost) {
+        boolean bool=true;
+        if (markers.size()>cost) {
+            bool = true;
+            for (int i = 0; i < cost; i++)
+                markers.remove(i);
+        }
+        else {
+            bool = false;
+            System.out.println("You don't have enough markers");
+        }
+        return bool;
     }
 
     @Override

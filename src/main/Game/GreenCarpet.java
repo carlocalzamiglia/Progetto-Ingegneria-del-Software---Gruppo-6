@@ -15,7 +15,7 @@ public class GreenCarpet {
         stock= new ArrayList<Dice>(i);
         roundPath= new Dice[i][9];
         publicGoals = new PublicGoal[3];
-        toolCards = new ToolCards[12];
+        toolCards = new ToolCards[13];
     }
     public void setPublicGoals(PublicGoal p1, PublicGoal p2, PublicGoal p3){
         publicGoals[0]=p1;
@@ -44,8 +44,14 @@ public class GreenCarpet {
             this.roundPath[i][round-1]=dices.get(i);
         }
     }
-    //public Dice getDiceFromRoundPath(int i, int round, Dice dice)  da implementare una volta prese in considerazione tutte le tool cards)
-
+    public Dice changeDiceFromRoundPath(int i, int round, Dice dice){
+        Dice d=roundPath[i-1][round-1];
+        roundPath[i-1][round-1]=dice;
+        return d;
+    }
+    public Dice getDiceFromRoundPath(int i, int round){
+        return roundPath[i-1][round-1];
+    }
     public Dice getDiceFromStock(int i){
         Dice dice= stock.get(i-1);
         stock.remove(i-1);
@@ -57,6 +63,10 @@ public class GreenCarpet {
 
     public int getnPlayers() {
         return nPlayers;
+    }
+
+    public ToolCards getToolCard(int i) {
+        return toolCards[i-1];
     }
 
     @Override

@@ -21,7 +21,7 @@ public class ToolCards {
             case 2:
                 this.name = "Pennello per Eglomise";
                 this.colour = Colour.ANSI_BLUE;
-                this.description1 = "Muovi un qualsiasi dado nella tua vetrata ignorando le restizioni di colore";
+                this.description1 = "Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di colore";
                 this.description2 = "Devi rispettare tutte le altre restrizioni di piazzamento";
                 this.serialNumber = 2;
                 this.cost = 1;
@@ -117,6 +117,13 @@ public class ToolCards {
                 break;
         }
 
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+    public int getCost(){
+        return cost;
     }
 
     @Override

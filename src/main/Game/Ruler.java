@@ -5,12 +5,10 @@ package Game;
         private Scheme scheme;
         private Dice dice;
 
-        public Ruler(Player player) {
-            this.scheme = player.getScheme();
-        }
 
-        public boolean checkCorrectPlacement(int row, int col,Dice dice) {
+        public boolean checkCorrectPlacement(int row, int col,Dice dice,Scheme scheme) {
             boolean isCorrect = true;
+            this.scheme=scheme;
             this.dice=dice;
             if (scheme.isEmpty() == true) {
                 if (row != 0 && row != 3 && col != 0 && col != 4)
@@ -93,6 +91,42 @@ package Game;
                     bool=false;
             return bool;
         }
+        public boolean checkEmptyNeighbors(int row, int col,Scheme scheme) {
+            boolean bool=true;
+            if (col-1>=0)
+                if(scheme.getBox(row,col-1).getAddedDice()!=null) {
+                    bool= false;
+                }
+            if (col+1<=4 && bool)
+                if(scheme.getBox(row,col+1).getAddedDice()!=null){
+                    bool= false;
+                }
+            if(row-1>=0 && bool)
+                if (scheme.getBox(row-1,col).getAddedDice()!=null){
+                    bool= false;
+                }
+            if (row+1<=3 && bool)
+                if (scheme.getBox(row+1,col).getAddedDice()!=null){
+                    bool= false;
+                }
+            if (col-1>=0 && row-1>=0 && bool)
+                if (scheme.getBox(row-1,col-1).getAddedDice()!=null){
+                    bool= false;
+                }
+            if (col-1>=0 && row+1<=3 && bool)
+                if (scheme.getBox(row+1,col-1).getAddedDice()!=null){
+                    bool= false;
+                }
+            if (col+1<=4 && row-1>=0 && bool)
+                if (scheme.getBox(row-1,col+1).getAddedDice()!=null){
+                    bool= false;
+                }
+            if (col+1<=4 && row+1<=3 && bool)
+                if (scheme.getBox(row+1,col+1).getAddedDice()!=null){
+                    bool= false;
+                }
+            return bool;
+        }
 
         public boolean checkWest(int row, int col) {
             boolean bool = true;
@@ -126,8 +160,101 @@ package Game;
                         bool=false;
             return bool;
         }
+        public boolean checkNeighborsFaces(int row,int col,Dice dice,Scheme scheme){
+            boolean bool=true;
+            int flag=0;
+            if (col-1>=0)
+                if(scheme.getBox(row,col-1).getAddedDice()!=null) {
+                    if(scheme.getBox(row, col - 1).getAddedDice().getFace().equals(dice.getFace()))
+                        bool=false;
+                    flag = 1;
+                }
+            if (col+1<=4 && bool)
+                if(scheme.getBox(row,col+1).getAddedDice()!=null){
+                    if(scheme.getBox(row, col + 1).getAddedDice().getFace().equals(dice.getFace()))
+                        bool=false;
+                    flag=1;
+                }
+            if(row-1>=0 && bool)
+                if (scheme.getBox(row-1,col).getAddedDice()!=null){
+                    flag=1;
+                    if(scheme.getBox(row-1, col ).getAddedDice().getFace().equals(dice.getFace()))
+                         bool=false;
+                }
+            if (row+1<=3 && bool)
+                if (scheme.getBox(row+1,col).getAddedDice()!=null){
+                    flag=1;
+                    if(scheme.getBox(row+1, col ).getAddedDice().getFace().equals(dice.getFace()))
+                        bool=false;
+                }
+            if (col-1>=0 && row-1>=0 && bool)
+                if (scheme.getBox(row-1,col-1).getAddedDice()!=null){
+                    flag=1;
+                }
+            if (col-1>=0 && row+1<=3 && bool)
+                if (scheme.getBox(row+1,col-1).getAddedDice()!=null){
+                    flag=1;
+                }
+            if (col+1<=4 && row-1>=0 && bool)
+                if (scheme.getBox(row-1,col+1).getAddedDice()!=null){
+                    flag=1;
+                }
+            if (col+1<=4 && row+1<=3 && bool)
+                if (scheme.getBox(row+1,col+1).getAddedDice()!=null){
+                    flag=1;
+                }
+            if(flag==0 && bool)
+                bool=false;
+            return bool;
 
-
+        }
+        public boolean checkNeighborsColours(int row,int col,Dice dice,Scheme scheme) {
+            boolean bool = true;
+            int flag = 0;
+            if (col - 1 >= 0)
+                if (scheme.getBox(row, col - 1).getAddedDice() != null) {
+                    if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
+                        bool = false;
+                    flag = 1;
+                }
+            if (col + 1 <= 4 && bool)
+                if (scheme.getBox(row, col + 1).getAddedDice() != null) {
+                    if (scheme.getBox(row, col + 1).getAddedDice().getColour().equals(dice.getColour()))
+                        bool = false;
+                    flag = 1;
+                }
+            if (row - 1 >= 0 && bool)
+                if (scheme.getBox(row - 1, col).getAddedDice() != null) {
+                    flag = 1;
+                    if (scheme.getBox(row - 1, col).getAddedDice().getColour().equals(dice.getColour()))
+                        bool = false;
+                }
+            if (row + 1 <= 3 && bool)
+                if (scheme.getBox(row + 1, col).getAddedDice() != null) {
+                    flag = 1;
+                    if (scheme.getBox(row + 1, col).getAddedDice().getColour().equals(dice.getColour()))
+                        bool = false;
+                }
+            if (col - 1 >= 0 && row - 1 >= 0 && bool)
+                if (scheme.getBox(row - 1, col - 1).getAddedDice() != null) {
+                    flag = 1;
+                }
+            if (col - 1 >= 0 && row + 1 <= 3 && bool)
+                if (scheme.getBox(row + 1, col - 1).getAddedDice() != null) {
+                    flag = 1;
+                }
+            if (col + 1 <= 4 && row - 1 >= 0 && bool)
+                if (scheme.getBox(row - 1, col + 1).getAddedDice() != null) {
+                    flag = 1;
+                }
+            if (col + 1 <= 4 && row + 1 <= 3 && bool)
+                if (scheme.getBox(row + 1, col + 1).getAddedDice() != null) {
+                    flag = 1;
+                }
+            if (flag == 0 && bool)
+                bool = false;
+            return bool;
+        }
         private String faceToNo(String face) {
             String s= null ;
 

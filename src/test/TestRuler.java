@@ -13,12 +13,12 @@ public class TestRuler {
         player1.setPrivateGoal(inventory.getPrivateGoal(4));
         player1.setOnline(true);
         player1.dump();
-        Ruler ruler = new Ruler(player1);
+        Ruler ruler = new Ruler();
         boolean bool;
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(0, 2, dice);
+        bool = ruler.checkCorrectPlacement(0, 2, dice,player1.getScheme());
         if (bool) {
             player1.getScheme().setBoxes(dice, 0, 2);
             player1.getScheme().dump();
@@ -26,7 +26,7 @@ public class TestRuler {
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(1, 3, dice);
+        bool = ruler.checkCorrectPlacement(1, 3, dice,player1.getScheme());
         if (bool) {
             player1.getScheme().setBoxes(dice, 1, 3);
             player1.getScheme().dump();
@@ -34,7 +34,7 @@ public class TestRuler {
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(2, 4, dice);
+        bool = ruler.checkCorrectPlacement(2, 4, dice,player1.getScheme());
         if (bool) {
             player1.getScheme().setBoxes(dice, 2, 4);
             player1.getScheme().dump();
@@ -42,7 +42,7 @@ public class TestRuler {
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(1, 4, dice);
+        bool = ruler.checkCorrectPlacement(1, 4, dice,player1.getScheme());
         if (bool) {
             player1.getScheme().setBoxes(dice, 1, 4);
             player1.getScheme().dump();
