@@ -15,7 +15,7 @@ public class GreenCarpet {
         stock= new ArrayList<Dice>(i);
         roundPath= new Dice[i][9];
         publicGoals = new PublicGoal[3];
-        toolCards = new ToolCards[13];
+        toolCards = new ToolCards[3];
     }
     public void setPublicGoals(PublicGoal p1, PublicGoal p2, PublicGoal p3){
         publicGoals[0]=p1;
@@ -27,12 +27,16 @@ public class GreenCarpet {
         return publicGoals[i];
     }
 
-    public void setToolCards(ToolCards[] toolCards){
-        this.toolCards=toolCards;
+    public void setToolCards(ToolCards t1,ToolCards t2,ToolCards t3){
+        this.toolCards[0]=t1;
+        this.toolCards[1]=t2;
+        this.toolCards[2]=t3;
     }
-    public void setStock(Dice[] stock){
-        for(int i=0; i<stock.length;i++){
-            this.stock.add(stock[i]);
+    public void setStock(int numbers,DiceBucket diceBucket){
+        for(int i=0; i<numbers;i++){
+            Dice dice=diceBucket.educe();
+            dice.roll();
+            this.stock.add(dice);
         }
     }
     public ArrayList<Dice> getStock(){
@@ -95,18 +99,15 @@ public class GreenCarpet {
             s = s + publicGoals[i];
             s = s + "\n";
         }
+        for (int i = 0; i < 3; i++) {
+            s = s + toolCards[i];
+            s = s + "\n";
+        }
         return s;
     }
     public void dump(){
         System.out.println(this);
     }
-    public String toolCardsToString(){
-        String s= new String();
-        for (int i = 0; i < 12; i++){
-            s = s+toolCards[i];
-            s = s + "\n";
-        }
-        return s;
-    }
+
 }
 

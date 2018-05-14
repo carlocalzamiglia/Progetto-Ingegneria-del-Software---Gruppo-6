@@ -9,14 +9,9 @@ public class TestGreenCarpet {
         Scheme scheme=new Scheme(2);
         GreenCarpet greenCarpet=new GreenCarpet(4);
         greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCards());
+        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
 
-        for (int i=0;i<6;i++) {
-            Dice dice = inventory.getDiceBucket().educe();
-            dice.roll();
-            greenCarpet.setDiceInStock(dice);
-        }
-
+        greenCarpet.setStock((4*2+1),inventory.getDiceBucket());
         greenCarpet.dump();
         greenCarpet.setRoundPath(1,greenCarpet.getStock());
         greenCarpet.dump();

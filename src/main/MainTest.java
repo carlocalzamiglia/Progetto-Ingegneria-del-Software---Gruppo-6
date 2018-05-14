@@ -16,17 +16,11 @@ public class MainTest {
         player1.dump();
         Ruler ruler = new Ruler();
         GreenCarpet greenCarpet = new GreenCarpet(3);
-        Dice[] diceStock = new Dice[7];
-        Dice dice;
-        for (int i = 0; i < 7; i++) {
-            dice = diceBucket.educe();
-            dice.roll();
-            diceStock[i] = dice;
-        }
-        greenCarpet.setStock(diceStock);
+
+        greenCarpet.setStock(7,diceBucket);
         greenCarpet.setRoundPath(1,greenCarpet.getStock());
         greenCarpet.setPublicGoals(inventory.getPublicGoal(3), inventory.getPublicGoal(5), inventory.getPublicGoal(1));
-        greenCarpet.setToolCards(inventory.getToolCards());
+        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
         greenCarpet.dump();
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,2);
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,3);
@@ -34,7 +28,7 @@ public class MainTest {
         boolean goodEnding = toolCardsExecutor.executeToolCard(12, player1, greenCarpet, ruler, diceBucket);
         greenCarpet.dump();
         System.out.println(goodEnding);
-        player1.getScheme().dump();
+        player1.dump();
 
 
     }
