@@ -1,13 +1,12 @@
 package Server;
 
+import Client.ClientRmi;
 import Client.ClientRmiInt;
 import org.omg.PortableServer.POAPackage.ObjectNotActive;
 
 import java.net.MalformedURLException;
-import java.rmi.ConnectException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.rmi.*;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 
@@ -27,7 +26,7 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
             java.rmi.registry.LocateRegistry.createRegistry(1099);
             ServerRmiInt server=new ServerRmi(users);
             try {
-                Naming.rebind("rmi://localhost/1234",server);
+                Naming.rebind("rmi://127.0.0.1/1234",server);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -36,6 +35,7 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
             e.printStackTrace();
         }
     }
+
 
 
 
@@ -74,6 +74,7 @@ public class ServerRmi extends UnicastRemoteObject implements ServerRmiInt, Runn
         System.out.println(nickname +" si è appena disconnesso.");
         for (User i:users) {
             if(i.getNickname().equals(nickname)) {
+                i.getUserclient().serverMessage("Disconnessione avvenuta con successo");
                 users.remove(i);
                 break;
             }
