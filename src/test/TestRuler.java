@@ -7,7 +7,7 @@ public class TestRuler {
         DiceBucket diceBucket = new DiceBucket();
         Dice dice = new Dice(Colour.ANSI_YELLOW);
         Player player1 = new Player("Cesna");
-        player1.setScheme(inventory.getScheme(1));
+        player1.setScheme(inventory.getScheme(5));
         player1.setMarkers();
         player1.setBridge(inventory.getBridge(2));
         player1.setPrivateGoal(inventory.getPrivateGoal(4));
@@ -18,34 +18,33 @@ public class TestRuler {
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(0, 1, dice);
-        System.out.println(bool);
+        bool = ruler.checkCorrectPlacement(0, 2, dice);
         if (bool) {
-            player1.getScheme().setBoxes(dice, 0, 1);
+            player1.getScheme().setBoxes(dice, 0, 2);
             player1.getScheme().dump();
         }
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(1, 1, dice);
+        bool = ruler.checkCorrectPlacement(1, 3, dice);
         if (bool) {
-            player1.getScheme().setBoxes(dice, 1, 1);
+            player1.getScheme().setBoxes(dice, 1, 3);
             player1.getScheme().dump();
         }
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(1, 0, dice);
+        bool = ruler.checkCorrectPlacement(2, 4, dice);
         if (bool) {
-            player1.getScheme().setBoxes(dice, 1, 0);
+            player1.getScheme().setBoxes(dice, 2, 4);
             player1.getScheme().dump();
         }
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
-        bool = ruler.checkCorrectPlacement(3, 3, dice);
+        bool = ruler.checkCorrectPlacement(1, 4, dice);
         if (bool) {
-            player1.getScheme().setBoxes(dice, 3, 3);
+            player1.getScheme().setBoxes(dice, 1, 4);
             player1.getScheme().dump();
         }
     }

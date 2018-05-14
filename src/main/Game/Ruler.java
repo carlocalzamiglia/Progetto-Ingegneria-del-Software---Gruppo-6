@@ -1,14 +1,11 @@
 package Game;
 
-import java.util.Scanner;
 
     public class Ruler {
         private Scheme scheme;
         private Dice dice;
-        private Player player;
 
         public Ruler(Player player) {
-            this.player = player;
             this.scheme = player.getScheme();
         }
 
@@ -53,7 +50,6 @@ import java.util.Scanner;
             return bool;
         }
 
-
         public boolean checkNeighbors(int row, int col) {
             boolean bool=true;
             int flag=0;
@@ -77,25 +73,21 @@ import java.util.Scanner;
                 flag=1;
                 bool=checkSouth(row,col);
                 }
-            if (col-1>=0 && row-1>=0)
+            if (col-1>=0 && row-1>=0 && bool)
                 if (scheme.getBox(row-1,col-1).getAddedDice()!=null){
                 flag=1;
-                bool=checkNorthWest(row,col);
                 }
-            if (col-1>=0 && row+1<=3)
+            if (col-1>=0 && row+1<=3 && bool)
                 if (scheme.getBox(row+1,col-1).getAddedDice()!=null){
                     flag=1;
-                    bool=checkSouthWest(row,col);
                 }
-            if (col+1<=4 && row-1>=0)
+            if (col+1<=4 && row-1>=0 && bool)
                 if (scheme.getBox(row-1,col+1).getAddedDice()!=null){
                     flag=1;
-                    bool=checkNorthEast(row,col);
                 }
-            if (col+1<=4 && row+1<=3)
+            if (col+1<=4 && row+1<=3 && bool)
                 if (scheme.getBox(row+1,col+1).getAddedDice()!=null){
                     flag=1;
-                    bool=checkSouthEast(row,col);
                 }
                 if(flag==0 && bool)
                     bool=false;
@@ -134,39 +126,6 @@ import java.util.Scanner;
                         bool=false;
             return bool;
         }
-        public boolean checkNorthWest(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row-1, col-1 ).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if(scheme.getBox(row-1, col-1 ).getAddedDice().getFace().equals(dice.getFace()))
-                bool=false;
-            return bool;
-        }
-        public boolean checkSouthWest(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row+1, col-1 ).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if(scheme.getBox(row+1, col-1 ).getAddedDice().getFace().equals(dice.getFace()))
-                bool=false;
-            return bool;
-        }
-        public boolean checkNorthEast(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row-1, col+1 ).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if(scheme.getBox(row-1, col+1 ).getAddedDice().getFace().equals(dice.getFace()))
-                bool=false;
-            return bool;
-        }
-        public boolean checkSouthEast(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row+1, col+1 ).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if(scheme.getBox(row+1, col+1 ).getAddedDice().getFace().equals(dice.getFace()))
-                bool=false;
-            return bool;
-        }
-
 
 
         private String faceToNo(String face) {
