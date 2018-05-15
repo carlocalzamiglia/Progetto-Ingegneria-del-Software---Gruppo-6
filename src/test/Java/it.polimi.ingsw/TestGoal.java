@@ -1,7 +1,7 @@
+package it.polimi.ingsw;
 
-
-
-import Game.*;
+import it.polimi.ingsw.Game.PrivateGoal;
+import it.polimi.ingsw.Game.PublicGoal;
 
 public class TestGoal {
     @org.junit.jupiter.api.Test

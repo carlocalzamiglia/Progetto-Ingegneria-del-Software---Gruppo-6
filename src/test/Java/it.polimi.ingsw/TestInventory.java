@@ -1,4 +1,14 @@
-import Game.*;
+package it.polimi.ingsw;
+
+import it.polimi.ingsw.Game.Bridge;
+import it.polimi.ingsw.Game.PrivateGoal;
+import it.polimi.ingsw.Game.PublicGoal;
+import it.polimi.ingsw.Game.Scheme;
+import it.polimi.ingsw.Game.Markers;
+import it.polimi.ingsw.Game.DiceBucket;
+import it.polimi.ingsw.Game.Inventory;
+import it.polimi.ingsw.Game.ToolCards;
+
 
 public class TestInventory {
     @org.junit.jupiter.api.Test

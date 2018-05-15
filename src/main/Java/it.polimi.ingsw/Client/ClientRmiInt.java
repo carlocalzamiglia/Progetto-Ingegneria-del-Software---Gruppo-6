@@ -1,4 +1,4 @@
-package Client;
+package it.polimi.ingsw.Client;
 
 
 import java.rmi.Remote;

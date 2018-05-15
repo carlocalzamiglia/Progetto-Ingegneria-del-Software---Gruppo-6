@@ -1,4 +1,4 @@
-package it.polimi.ingsw.Project.Server;
+package it.polimi.ingsw.Server;
 
 public class ServerRMIConfiguration {
 }

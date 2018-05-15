@@ -1,6 +1,6 @@
-package Server;
+package it.polimi.ingsw.Server;
 
-import Client.ClientRmiInt;
+import it.polimi.ingsw.Client.ClientRmiInt;
 
 public class User {
     private String nickname;

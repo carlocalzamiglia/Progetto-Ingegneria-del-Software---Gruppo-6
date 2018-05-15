@@ -1,4 +1,14 @@
-import Game.*;
+
+package it.polimi.ingsw.Temp;
+
+
+import it.polimi.ingsw.Game.DiceBucket;
+import it.polimi.ingsw.Game.Inventory;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.ToolCardsExecutor;
+import it.polimi.ingsw.Game.Ruler;
+import it.polimi.ingsw.Game.GreenCarpet;
+
 public class MainTest {
     public static void main(String[] args)
 

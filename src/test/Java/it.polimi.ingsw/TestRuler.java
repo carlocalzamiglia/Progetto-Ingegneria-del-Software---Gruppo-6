@@ -1,4 +1,12 @@
-import Game.*;
+package it.polimi.ingsw;
+
+
+import it.polimi.ingsw.Game.Dice;
+import it.polimi.ingsw.Game.DiceBucket;
+import it.polimi.ingsw.Game.Inventory;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.Colour;
+import it.polimi.ingsw.Game.Ruler;
 
 public class TestRuler {
     @org.junit.jupiter.api.Test

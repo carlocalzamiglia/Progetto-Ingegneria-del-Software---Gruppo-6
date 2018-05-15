@@ -1,7 +1,7 @@
-package Client;
+package it.polimi.ingsw.Client;
 
 
-import Server.ServerRmiInt;
+import it.polimi.ingsw.Server.ServerRmiInt;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;

@@ -1,9 +1,10 @@
+package it.polimi.ingsw;
 
 
-
-import Game.*;
-
-import java.util.Scanner;
+import it.polimi.ingsw.Game.Bridge;
+import it.polimi.ingsw.Game.Dice;
+import it.polimi.ingsw.Game.DiceBucket;
+import it.polimi.ingsw.Game.Scheme;
 
 public class TestDiceBucket {
     @org.junit.jupiter.api.Test

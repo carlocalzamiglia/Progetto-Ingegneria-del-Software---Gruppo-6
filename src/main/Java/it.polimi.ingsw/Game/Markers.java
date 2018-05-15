@@ -1,4 +1,4 @@
-package Game;
+package it.polimi.ingsw.Game;
 
 public class Markers {
     private final int value = 1;

@@ -1,4 +1,4 @@
-package Game;
+package it.polimi.ingsw.Game;
 
 import java.util.ArrayList;
 import java.util.Random;

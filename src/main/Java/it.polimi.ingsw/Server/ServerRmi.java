@@ -1,7 +1,7 @@
-package Server;
+package it.polimi.ingsw.Server;
 
-import Client.ClientRmi;
-import Client.ClientRmiInt;
+import it.polimi.ingsw.Client.ClientRmi;
+import it.polimi.ingsw.Client.ClientRmiInt;
 import org.omg.PortableServer.POAPackage.ObjectNotActive;
 
 import java.net.MalformedURLException;

@@ -1,6 +1,9 @@
+package it.polimi.ingsw;
 
 
-import Game.*;
+import it.polimi.ingsw.Game.Inventory;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.GreenCarpet;
 
 public class TestPlayer {
     @org.junit.jupiter.api.Test

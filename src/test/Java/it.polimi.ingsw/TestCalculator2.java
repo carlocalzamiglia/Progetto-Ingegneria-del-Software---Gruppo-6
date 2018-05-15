@@ -1,7 +1,10 @@
-package Project.Game;
+package it.polimi.ingsw;
 
-import Game.*;
-
+import it.polimi.ingsw.Game.Dice;
+import it.polimi.ingsw.Game.GreenCarpet;
+import it.polimi.ingsw.Game.Inventory;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.Calculator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +13,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CalculatorTest2 {
+class TestCalculator2 {
 
     @org.junit.jupiter.api.Test
     public void test() {

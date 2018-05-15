@@ -1,4 +1,4 @@
-package Server;
+package it.polimi.ingsw.Server;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
