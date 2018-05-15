@@ -5,9 +5,10 @@ import it.polimi.ingsw.Game.Bridge;
 import it.polimi.ingsw.Game.Dice;
 import it.polimi.ingsw.Game.DiceBucket;
 import it.polimi.ingsw.Game.Scheme;
+import org.junit.jupiter.api.Test;
 
 public class TestDiceBucket {
-    @org.junit.jupiter.api.Test
+    @Test
     public void tDiceBucket(){
 
         DiceBucket bag= new DiceBucket();
