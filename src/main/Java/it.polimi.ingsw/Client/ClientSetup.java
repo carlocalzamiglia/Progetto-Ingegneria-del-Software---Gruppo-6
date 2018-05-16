@@ -1,29 +1,29 @@
 package it.polimi.ingsw.Client;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
-
 public class ClientSetup {
-    public static void main(String[]args) throws RemoteException {
-        try {
-            Scanner in = new Scanner(System.in);
-            System.out.println("Benvenuto, quale connessione vuoi utilizzare?");
-            System.out.println("Inserisci 1 per la connessione RMI ");
-            System.out.println("Inserisci 2 per la connessione Socket ");
+    public static void main(String[] args) throws RemoteException {
 
-            int choose = in.nextInt();
-            if (choose == 1) {
-                ClientRmi rmiClientRmi = new ClientRmi();
-                rmiClientRmi.startRmiClient();
-            }
-            if(choose == 2){
-                //do something
-            }
+        System.out.println("scegli tipo di connessione:");
+        System.out.println(("1)Socket\n2)Rmi"));
 
-        } catch (NotBoundException e) {
-            e.printStackTrace();
+        Scanner input = new Scanner(System.in);
+
+        String choice = input.nextLine();
+
+        while(!choice.equals("0") && !choice.equals("1") && !choice.equals("2")){
+            System.out.println("selezione sbagliata\npremi 0 per uscire 1 per connessione socket 2 per connesione rmi");
+            input = new Scanner(System.in);
+            choice = input.nextLine();
         }
+
+        if(choice.equals("1")) {
+            new ClientSocket();
+        }
+        else if(choice.equals("2"))
+            new ClientRmi();
+
     }
 }

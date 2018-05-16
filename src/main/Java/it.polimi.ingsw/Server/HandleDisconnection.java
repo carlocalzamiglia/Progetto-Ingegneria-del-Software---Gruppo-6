@@ -16,8 +16,8 @@ public class HandleDisconnection extends Thread{
         while(10>0 && alive){
             try {
                 sleep(10000);
-                alive=server.clientAlive(nickname);
-            } catch (InterruptedException | RemoteException e) {
+                //alive=server.clientAlive(nickname);
+            } catch (InterruptedException /*| RemoteException*/ e) {
                 e.printStackTrace();
             }
 

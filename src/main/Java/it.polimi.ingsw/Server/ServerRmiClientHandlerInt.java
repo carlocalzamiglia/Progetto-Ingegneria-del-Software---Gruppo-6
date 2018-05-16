@@ -1,0 +1,14 @@
+package it.polimi.ingsw.Server;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Vector;
+import it.polimi.ingsw.Client.ClientRmiInt;
+
+public interface ServerRmiClientHandlerInt extends Remote {
+    public void sendMessage (String nickname,String s)throws RemoteException ;
+    public void addRmi(String nickname) throws RemoteException;
+    public void publish(String us)throws RemoteException;
+    public int login(String us,String psw)throws RemoteException;
+    public Vector getConnected() throws RemoteException ;
+}

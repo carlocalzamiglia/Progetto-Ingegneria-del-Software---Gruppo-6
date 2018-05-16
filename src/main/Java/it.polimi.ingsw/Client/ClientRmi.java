@@ -1,107 +1,130 @@
 package it.polimi.ingsw.Client;
 
 
-import it.polimi.ingsw.Server.ServerRmiInt;
+import it.polimi.ingsw.Server.DBUsers;
+import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
 
-import java.net.MalformedURLException;
+import java.io.*;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
 public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
+
+    private ClientRmiInt client;
+    private ServerRmiClientHandlerInt server;
+    BufferedReader inKeyboard = new BufferedReader(new InputStreamReader(System.in));
+    PrintWriter outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
+    DBUsers DB=new DBUsers();
     private String nickname;
-    private String address="localhost";
-    protected ServerRmiInt serverInt;
 
-
-
-
-    Scanner in=new Scanner(System.in);
-
-
-    public ClientRmi() throws RemoteException{
+    public ClientRmi()         throws RemoteException{
         super();
-    }
-
-    class handleExit extends Thread{
-        public void run(){
-            try {
-                serverInt.manageDisconnection(nickname);
-                System.out.println("Eseguo disconnessione.");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+        System.out.println("ClientSetup avviato");
+        try
+        {
+            execute();
         }
-    }
-
-    public void startRmiClient() throws RemoteException, NotBoundException {
-        try{
-            System.out.println("Inserisci l'username per effettuare la connessione!");
-            boolean flag=true;
-            while (flag==true) {                //ciclo for per attendere username corretto.
-                serverInt = (ServerRmiInt) Naming.lookup("rmi://" + address + "/" + "1234");
-
-                Scanner in=new Scanner(System.in);
-                nickname=in.nextLine();
-               synchronized (serverInt) {
-                    if (serverInt.checkUser(nickname) == true) {
-                        Naming.rebind("rmi://" + address + "/Client_" + nickname, this);
-                        serverInt.login(nickname);
-
-                        flag=false;
-
-
-                    } else{
-                        System.out.println("Username già in uso. Inserisci un nuovo username.");
-
-                    }
-                }
-            }
-
-            //-----------gestisce la chiusura del client-------------
-            Runtime.getRuntime().addShutdownHook(new handleExit());
-
-
-
-
-
-
-            //codice da elaborare ed adattare alla partita.
-
-
-            //--------------------------codice di prova--------------------------------------------------
-            String name;
-            String message;
-            System.out.println("A chi vuoi mandare il messaggio?");
-            name=in.nextLine();
-            System.out.println("e che cosa vuoi dirgli?");
-            message=in.nextLine();
-            serverInt.sendMessage(name, message);
-            //--------------------------codice di prova--------------------------------------------------
-
-
-            //gestione chiusura Client.
-
-
-
-        } catch (MalformedURLException e) {
+        catch(Exception e)
+        {
+            System.out.println("Exception: "+e);
             e.printStackTrace();
         }
 
-
-
     }
 
-    public void serverMessage(String message) throws RemoteException {
-        System.out.println(message);
+    private void execute()       throws RemoteException{
+        try
+        {
+            connect();
+            login();
+            play();
+            //chiudi();
+        }
+        catch(Exception e) {
+            System.out.println("Exception: " + e);
+            e.printStackTrace();
+        }
     }
+    private void connect()     throws RemoteException{
+        try
+        {
+            System.out.println("Il client tenta di connettersi");
 
-    public boolean aliveMessage(){
-        return true;
+
+            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://127.0.0.1/myabc");
+
+            System.out.println("ClientSetup connesso");
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exception: "+e);
+            e.printStackTrace();
+        }
     }
+    private void login()        throws RemoteException{
+        try
+        {
+            int logged=3;
 
+            while(logged!=0 && logged !=1)
+            {
 
+                System.out.println("Inserire nickname:");
+                String username=inKeyboard.readLine();
+
+                System.out.println("Inserire password:");
+                String password=inKeyboard.readLine();
+
+                logged=server.login(username,password);
+
+                if(logged==0 || logged==1) {
+                    System.out.println("Login effettuato correttamente");
+
+                    this.nickname=username;
+                    Naming.rebind("rmi://127.0.0.1/Client_"+nickname,this); ;
+                    server.addRmi(username);
+                    server.publish(username);
+
+                }
+                else
+                    System.out.println("Login errato. Riprova");
+            }
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exception: "+e);
+            e.printStackTrace();
+        }
+    }
+    //for now the method play is incomplete
+    private void play()        throws RemoteException{
+
+        //for now we use a while loop always true for send message to the server
+        while(10>1){
+            System.out.println("Cosa vuoi fare?");
+            System.out.println("0)manda messaggio");
+            Scanner in = new Scanner(System.in);
+            String choice = in.nextLine();
+            switch (choice) {
+                case "0":
+                    System.out.println("Scrivi messaggio:");
+                    String message =in.nextLine();
+                    server.sendMessage(nickname,message);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    }
+    //method tell and getName are the same from lab 4. we keep it for a future use
+    public void tell(String st) throws RemoteException{
+        System.out.println(st);
+    }
+    public String getName()     throws RemoteException{
+        return nickname;
+    }
 
 }
