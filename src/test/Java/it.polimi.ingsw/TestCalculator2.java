@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TestCalculator2 {
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void test() {
         int n=1;
         int r=10-n;
