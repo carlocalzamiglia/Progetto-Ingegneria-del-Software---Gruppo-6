@@ -3,6 +3,7 @@ package it.polimi.ingsw.Server;
 
 import java.io.IOException;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 
 
 public class ServerRmi implements Runnable{
@@ -36,4 +37,7 @@ public class ServerRmi implements Runnable{
             System.out.println("Chat Server failed: " + e);
         }
     }
+
+
+
 }

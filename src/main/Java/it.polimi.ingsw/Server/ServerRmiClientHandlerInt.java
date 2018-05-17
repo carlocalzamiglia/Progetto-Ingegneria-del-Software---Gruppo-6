@@ -11,4 +11,7 @@ public interface ServerRmiClientHandlerInt extends Remote {
     public void publish(String us)throws RemoteException;
     public int login(String us,String psw)throws RemoteException;
     public Vector getConnected() throws RemoteException ;
+    public boolean manageDisconnection(String nickname) throws RemoteException;
+    public boolean clientAlive(String nickname) throws RemoteException;
+
 }

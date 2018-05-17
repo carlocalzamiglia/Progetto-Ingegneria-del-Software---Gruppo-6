@@ -2,6 +2,7 @@ package it.polimi.ingsw.Client;
 
 
 import it.polimi.ingsw.Server.DBUsers;
+import it.polimi.ingsw.Server.HandleDisconnection;
 import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
 
 import java.io.*;
@@ -101,6 +102,11 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     //for now the method play is incomplete
     private void play()        throws RemoteException{
 
+
+
+        //--------------------------handle close part-----------
+        Runtime.getRuntime().addShutdownHook(new handleExit());
+
         //for now we use a while loop always true for send message to the server
         while(10>1){
             System.out.println("Cosa vuoi fare?");
@@ -126,5 +132,26 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     public String getName()     throws RemoteException{
         return nickname;
     }
+
+    public boolean aliveMessage(){return true;}
+
+
+    class handleExit extends Thread{
+        boolean disc;
+        public void run(){
+            try {
+                disc=server.manageDisconnection(nickname);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            if(disc==true){
+                System.out.println("Disconnessione eseguita con successo. Arrivederci.");
+            }else
+                System.out.println("Errore nella discossessione. Riprova.");
+        }
+    }
+
+
+
 
 }

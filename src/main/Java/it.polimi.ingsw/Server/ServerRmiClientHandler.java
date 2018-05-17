@@ -4,9 +4,7 @@ package it.polimi.ingsw.Server;
 import it.polimi.ingsw.Client.ClientRmiInt;
 
 import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 
@@ -22,6 +20,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     public void addRmi(String nickname) throws RemoteException{
         try {
             DB.getUser(nickname).setRmiClient((ClientRmiInt)Naming.lookup("rmi://localhost/Client_"+nickname));
+            new HandleDisconnection(nickname, this).start();
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -39,6 +38,34 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     @Override
     public Vector getConnected() throws RemoteException {
         return null;
+    }
+
+    public boolean manageDisconnection(String nickname) throws RemoteException{
+        try {
+            DB.getUser(nickname).setOnline(false);
+            DB.getUser(nickname).setRmiClient(null);
+            System.out.println(nickname+" si è appena disconnesso");
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+
+    }
+
+    public boolean clientAlive(String nickname) throws RemoteException{
+        boolean flag=false;
+        if(DB.getUser(nickname).isOnline()==true){
+            try{
+                flag=DB.getUser(nickname).getClient().aliveMessage();
+            }catch (Exception e){
+                flag=false;
+                DB.getUser(nickname).setOnline(false);
+                System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
+            }
+        }else
+            flag=false;
+
+        return flag;
     }
 }
 
