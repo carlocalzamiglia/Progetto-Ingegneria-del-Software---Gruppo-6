@@ -13,6 +13,10 @@ public class ServerRmi implements Runnable{
         this.DB=DB;
     }
 
+
+
+
+
     public void run() {
         ServerRmi serverRmi = new ServerRmi(DB);
         try {
@@ -23,13 +27,17 @@ public class ServerRmi implements Runnable{
         }
 
     }
+
+
+
+
     public void connect() throws IOException {
         try {
             //System.setSecurityManager(new RMISecurityManager());
             java.rmi.registry.LocateRegistry.createRegistry(1099);
 
             ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB);
-            Naming.rebind("rmi://127.0.0.1/myabc", conn);
+            Naming.rebind("rmi://localhost/myabc", conn);
             System.out.println("Server rmi ready.");
 
 

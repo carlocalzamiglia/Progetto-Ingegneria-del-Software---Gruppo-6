@@ -54,7 +54,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
             System.out.println("Il client tenta di connettersi");
 
 
-            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://127.0.0.1/myabc");
+            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://192.168.1.180/myabc");
 
             System.out.println("ClientSetup connesso");
         }
@@ -84,8 +84,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
                     System.out.println("Login effettuato correttamente");
 
                     this.nickname=username;
-                    Naming.rebind("rmi://127.0.0.1/Client_"+nickname,this); ;
-                    server.addRmi(username);
+                    server.addRmi(this, username);
                     server.publish(username);
 
                 }

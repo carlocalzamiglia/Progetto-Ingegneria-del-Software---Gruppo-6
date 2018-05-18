@@ -1,15 +1,25 @@
 package it.polimi.ingsw.Server;
 
+import javax.print.PrintException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.Stack;
+
+import static java.lang.Thread.sleep;
 
 public class ServerSocketClientHandler implements Runnable {
     private Socket socket;
     private DBUsers DB;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private ObjectOutputStream outs;
+    private ObjectInputStream ins;
 
-    public ServerSocketClientHandler(Socket socket, DBUsers DB) {
+    public ServerSocketClientHandler(Socket socket, DBUsers DB) throws IOException {
         this.socket = socket;
         this.DB=DB;
     }
@@ -33,19 +43,38 @@ public class ServerSocketClientHandler implements Runnable {
             out.println(true);
             out.flush();
             DB.getUser(user).setClientHandler(this);
-            String nome=in.nextLine();
-            System.out.println(nome+" loggato con connessione socket");
-            //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
-            //this is for the server part
-            while(1>0) {
-                String message = in.nextLine();
-                String name = in.nextLine();
-                System.out.println(name+": "+message);
-            }
+            String nickname=in.nextLine();
+            System.out.println(nickname+" loggato con connessione socket");
+            new HandleDisconnection(nickname,this).start();
+            //new ListenFromClient().run();
         }
         catch (IOException e){
             System.err.println(e.getMessage());
         }
     }
+
+
+    class ListenFromClient extends Thread {
+
+        public void run() {
+            while(true) {
+                try {
+                    //in = new ObjectInputStream(socket.getInputStream());
+                    out = new ObjectOutputStream(socket.getOutputStream());
+                    // read the message form the input datastream
+
+                    String msg = (String) in.readObject();
+                }
+                catch(IOException e) {
+                    break;
+                }
+                catch(ClassNotFoundException e2) {
+                }
+            }
+        }
+    }
+
+
+
 }
 

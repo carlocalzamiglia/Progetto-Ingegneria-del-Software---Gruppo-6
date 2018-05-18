@@ -13,6 +13,8 @@ public class ClientSocket {
     private PrintWriter outSocket;
     private BufferedReader inKeyboard;
     private PrintWriter outVideo;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     //quando viene chiamato dal client principale il costruttore fa partire il metodo esegui (speculare a rmi)
     public ClientSocket()
     {
@@ -101,7 +103,7 @@ public class ClientSocket {
             {
                 //legge nickname dal client
                 outVideo.println("Inserire nickname:");
-                String username=inKeyboard.readLine();
+                String nickname=inKeyboard.readLine();
 
                 //legge password dal client
                 outVideo.println("Inserire password:");
@@ -111,7 +113,7 @@ public class ClientSocket {
                 //pulisce l'uscita sul socket
                 outSocket.flush();
                 //manda al socket il nickname
-                outSocket.println(username);
+                outSocket.println(nickname);
                 //pulisce l'uscita sul socket
                 outSocket.flush();
                 //manda al socket il nickname
@@ -124,9 +126,9 @@ public class ClientSocket {
 
                 if(logged) {
                     outVideo.println("Login effettuato correttamente");
-                    outSocket.println(username);
+                    outSocket.println(nickname);
                     outSocket.flush();
-                    this.name=username;
+                    this.name=nickname;
                 }
                 else
                     outVideo.println("Login errato. Riprova");
@@ -166,6 +168,35 @@ public class ClientSocket {
                     break;
                 default:
                     break;
+            }
+        }
+    }
+
+
+    class ListenFromServer extends Thread {
+
+        public void run() {
+            while(true) {
+                try {
+                    in = new ObjectInputStream(socket.getInputStream());
+                    out = new ObjectOutputStream(socket.getOutputStream());
+                    // read the message form the input datastream
+                    //---------------------HERE THE IMPLEMENTATION OF THE PROTOCOL------------------------------
+
+
+                    String msg = (String) in.readObject();
+                    // print the message
+                    if(msg.equals("@ALIVE")) {
+                        out.writeBoolean(true);
+                        System.out.println("check avvenuto");
+                    }
+                    System.out.println(msg);
+                }
+                catch(IOException e) {
+                    break;
+                }
+                catch(ClassNotFoundException e2) {
+                }
             }
         }
     }

@@ -17,15 +17,9 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     public int login(String nickname, String password) throws RemoteException {
         return DB.login(nickname,password) ;
     }
-    public void addRmi(String nickname) throws RemoteException{
-        try {
-            DB.getUser(nickname).setRmiClient((ClientRmiInt)Naming.lookup("rmi://localhost/Client_"+nickname));
+    public void addRmi(ClientRmiInt client, String nickname) throws RemoteException{
+            DB.getUser(nickname).setRmiClient(client);
             new HandleDisconnection(nickname, this).start();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
     }
     @Override
     public void publish(String us) throws RemoteException{
@@ -60,6 +54,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
             }catch (Exception e){
                 flag=false;
                 DB.getUser(nickname).setOnline(false);
+                DB.getUser(nickname).setRmiClient(null);
                 System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
             }
         }else

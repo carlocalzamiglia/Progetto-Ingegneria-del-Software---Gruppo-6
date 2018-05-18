@@ -30,6 +30,7 @@ public class DBUsers {
                     }//altrimenti esegue l'accesso
                     else {
                         System.out.println("Utente nuovo inserito");
+                        u.setOnline(true);
                         return 1;
                     }
                 }
