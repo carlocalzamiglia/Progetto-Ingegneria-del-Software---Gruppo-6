@@ -1,5 +1,6 @@
 package it.polimi.ingsw.Server;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class HandleDisconnection extends Thread{
@@ -7,6 +8,7 @@ public class HandleDisconnection extends Thread{
     ServerRmiClientHandlerInt serverRmi;
     ServerSocketClientHandler serverSocket;
     final String nickname;
+    int i=0;
 
     public HandleDisconnection(String nickname, ServerRmiClientHandlerInt serverRmi) throws RemoteException {
         this.nickname=nickname;
@@ -22,15 +24,22 @@ public class HandleDisconnection extends Thread{
     }
 
     public void run() {
-        while(10>0 && alive){
+        while(alive){
+            i++;
+            System.out.println(nickname+" connesso "+i);
             try {
-                sleep(1000);
+                sleep(10000);
                 if(serverSocket==null) {
                     alive = serverRmi.clientAlive(nickname);
+                    System.out.println("alive: "+alive);
+                }else {
+                    alive = serverSocket.clientAlive(nickname);
+                    System.out.println("alive: " + alive);
                 }
-                    //alive=serverSocket.clientAlive(nickname);
 
-            } catch (InterruptedException | RemoteException e) {
+            } catch (InterruptedException | RemoteException | ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 

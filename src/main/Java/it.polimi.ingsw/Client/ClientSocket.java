@@ -151,23 +151,29 @@ public class ClientSocket {
     private void play() throws IOException {
         //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
         //this is for the client part
+        new ListenFromServer().start();
+        sendMessage("@LOGGED");
         while(10>1){
             outVideo.println("Cosa vuoi fare?");
             outVideo.println("0)manda messaggio");
+            outVideo.println("1)chiudi");
             String choice= inKeyboard.readLine();
 
             switch (choice) {
                 case "0":
                     outVideo.println("Scrivi messaggio:");
                     String message = inKeyboard.readLine();
-                    outSocket.flush();
-                    outSocket.println(message);
-                    outSocket.flush();
-                    outSocket.println(name);
-                    outSocket.flush();
+                    sendMessage("@SEND"+message);
+                    break;
+
+                case "1":
+                    sendMessage("@LOGOUT");
+                    System.out.println("Chiudo il programma.");
+                    System.exit(0);
                     break;
                 default:
                     break;
+
             }
         }
     }
@@ -179,7 +185,6 @@ public class ClientSocket {
             while(true) {
                 try {
                     in = new ObjectInputStream(socket.getInputStream());
-                    out = new ObjectOutputStream(socket.getOutputStream());
                     // read the message form the input datastream
                     //---------------------HERE THE IMPLEMENTATION OF THE PROTOCOL------------------------------
 
@@ -187,8 +192,7 @@ public class ClientSocket {
                     String msg = (String) in.readObject();
                     // print the message
                     if(msg.equals("@ALIVE")) {
-                        out.writeBoolean(true);
-                        System.out.println("check avvenuto");
+                        sendMessage("@ALIVE"); //just to try, useless.
                     }
                     System.out.println(msg);
                 }
@@ -199,6 +203,12 @@ public class ClientSocket {
                 }
             }
         }
+    }
+
+
+    public void sendMessage(String message) throws IOException {
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(message);
     }
 
 }
