@@ -18,23 +18,18 @@ public class HandleDisconnection extends Thread{
 
     public HandleDisconnection(String nickname, ServerSocketClientHandler serverSocket) throws RemoteException {
         this.nickname=nickname;
-        System.out.println(nickname);
         this.serverSocket=serverSocket;
         this.serverRmi=null;
     }
 
     public void run() {
         while(alive){
-            i++;
-            System.out.println(nickname+" connesso "+i);
             try {
                 sleep(10000);
                 if(serverSocket==null) {
                     alive = serverRmi.clientAlive(nickname);
-                    System.out.println("alive: "+alive);
                 }else {
                     alive = serverSocket.clientAlive(nickname);
-                    System.out.println("alive: " + alive);
                 }
 
             } catch (InterruptedException | RemoteException | ClassNotFoundException e) {

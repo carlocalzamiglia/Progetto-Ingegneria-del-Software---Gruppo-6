@@ -17,8 +17,7 @@ public class ServerSocketClientHandler implements Runnable {
     private DBUsers DB;
     private ObjectOutputStream outs;
     private ObjectInputStream ins;
-    private ObjectInputStream inss;
-    private boolean alive=true;
+    private boolean alive = true;
 
     public ServerSocketClientHandler(Socket socket, DBUsers DB) throws IOException {
         this.socket = socket;
@@ -36,47 +35,54 @@ public class ServerSocketClientHandler implements Runnable {
 
             PrintWriter out = new PrintWriter(socket.getOutputStream());
 
-            while (DB.login(user, psw) != 0 && DB.login(user, psw) != 1) {
-                out.println(false);
-                out.flush();
+            int check=DB.login(user, psw);
+            while (check!=0 && check != 1) {
+                if(check==2) {
+                    out.println("2");
+                    out.flush();
+                }else if(check==3){
+                    out.println("3");
+                    out.flush();
+                }
                 user = in.nextLine();
                 psw = in.nextLine();
             }
-            out.println(true);
+            out.println("0");
             out.flush();
             DB.getUser(user).setClientHandler(this);
             String nickname = in.nextLine();
             System.out.println(nickname + " loggato con connessione socket");
             new HandleDisconnection(nickname, this).start();
             new ListenFromClient(nickname).start();
+            newUserMessage(nickname);
+            sendMessageOut("Benvenuto, "+nickname+". Ora puoi giocare!");
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
 
-   class ListenFromClient extends Thread {
+    class ListenFromClient extends Thread {
         String message;
         String nickname;
 
-        public ListenFromClient(String nickname){
-            this.nickname=nickname;
+        public ListenFromClient(String nickname) {
+            this.nickname = nickname;
         }
+
         public void run() {
             while (true) {
                 try {
                     ins = new ObjectInputStream(socket.getInputStream());
                     // read the message form the input datastream
                     message = (String) ins.readObject();
-                    System.out.println(message);
 
                     if (message.equals("@LOGOUT")) {
                         DB.getUser(nickname).setOnline(false);
                         DB.getUser(nickname).setClientHandler(null);
-                        System.out.println("chiudo il client");
-                    }
-                    else if(message.equals("@ALIVE")){
-                        alive=!alive;
+                        System.out.println(nickname+ " si è appena disconnesso.");
+                    } else if (message.equals("@ALIVE")) {
+                        alive = !alive;
                     }
                 } catch (IOException e) {
                     break;
@@ -89,29 +95,45 @@ public class ServerSocketClientHandler implements Runnable {
 
     public boolean clientAlive(String nickname) throws ClassNotFoundException, InterruptedException {
         boolean checkalive;
-        if(DB.getUser(nickname).isOnline()) {
+        if (DB.getUser(nickname).isOnline()) {
             try {
-                outs = new ObjectOutputStream(socket.getOutputStream());
-                checkalive=alive;
-                outs.writeObject("@ALIVE");
+                checkalive = alive;
+                sendMessageOut("@ALIVE");
                 sleep(1000);
-                if(checkalive!=alive) {
+                if (checkalive != alive) {
                     return true;
-                }
-                else {
+                } else {
+                    DB.getUser(nickname).setOnline(false);
+                    DB.getUser(nickname).setClientHandler(null);
+                    System.out.println(nickname + " ha probabilmente perso la connessione.");
                     return false;
                 }
 
             } catch (IOException e) {       //PROBABILMENTE NON E' NECESSARIO.
-                DB.getUser(nickname).setOnline(false);
-                DB.getUser(nickname).setClientHandler(null);
-                System.out.println(nickname + " ha probabilmente perso la connessione.");
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
 
+    }
+
+    private synchronized void newUserMessage(String nickname) throws IOException {
+        for(int i=0; i<DB.size();i++){
+            if(!(DB.getUser(i).getNickname().equals(nickname))) {
+                if (DB.getUser(i).getClientHandler() != null)
+                    DB.getUser(i).getClientHandler().sendMessageOut(nickname+" ha appena effettuato il login ed è pronto a giocare.");
+                else if (DB.getUser(i).getClient() != null)
+                    DB.getUser(i).getClient().tell(nickname+" ha appena effettuato il login ed è pronto a giocare.");
+            }
+        }
+    }
+
+
+
+    public void sendMessageOut(String message) throws IOException {
+        outs = new ObjectOutputStream(socket.getOutputStream());
+        outs.writeObject(message);
     }
 
 }

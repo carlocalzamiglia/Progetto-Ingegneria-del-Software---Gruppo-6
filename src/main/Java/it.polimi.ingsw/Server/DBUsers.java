@@ -18,18 +18,15 @@ public class DBUsers {
             if (u.getNickname().equals(nickname)) {
                 //se il nickname è online vuol dire che esiste gia
                 if (u.isOnline()) {
-                    System.out.println("nickname già in uso");
                     return 3;
                 }
                 //se non è online controlla
                 else {
                     //se la password è diversa il nickname esiste già ma la password è diversa
                     if (!u.getPassword().equals(password)) {
-                        System.out.println("Password di " + nickname + " errata");
                         return 2;
                     }//altrimenti esegue l'accesso
                     else {
-                        System.out.println("Utente nuovo inserito");
                         u.setOnline(true);
                         return 1;
                     }
@@ -40,7 +37,6 @@ public class DBUsers {
         }
         //se non trova utenti con quel nickname crea un nuovo utente e lo aggiunge al db
         users.add(temp);
-        System.out.println("Utente nuovo inserito");
         return 0;
     }
     public boolean isPresent(User user){

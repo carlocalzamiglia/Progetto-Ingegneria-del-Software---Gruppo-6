@@ -18,7 +18,6 @@ public class ClientSocket {
     //quando viene chiamato dal client principale il costruttore fa partire il metodo esegui (speculare a rmi)
     public ClientSocket()
     {
-        System.out.println("ClientSetup avviato");
 
         try
         {
@@ -69,7 +68,6 @@ public class ClientSocket {
     {
         try
         {
-            System.out.println("Il client tenta di connettersi");
 
             socket = new Socket(address, PORT);
             //canali di comunicazione
@@ -78,7 +76,6 @@ public class ClientSocket {
             inKeyboard = new BufferedReader(new InputStreamReader(System.in));
             outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
 
-            System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
         {
@@ -97,9 +94,9 @@ public class ClientSocket {
     {
         try
         {
-            boolean logged=false;
+            String logged ="2";
 
-            while(!logged)
+            while(logged.equals("2") || logged.equals("3"))
             {
                 //legge nickname dal client
                 outVideo.println("Inserire nickname:");
@@ -121,17 +118,18 @@ public class ClientSocket {
                 outSocket.flush();
 
                 //legge il valore se true o false all'ingresso del socket
-                logged=Boolean.valueOf(inSocket.readLine()).booleanValue();
+                //logged=Boolean.valueOf(inSocket.readLine()).booleanValue();
+                logged=inSocket.readLine();
 
-
-                if(logged) {
-                    outVideo.println("Login effettuato correttamente");
+                if(logged.equals("1")||logged.equals("0")) {
                     outSocket.println(nickname);
                     outSocket.flush();
                     this.name=nickname;
                 }
-                else
-                    outVideo.println("Login errato. Riprova");
+                else if(logged.equals("2"))
+                    outVideo.println("Password di " + nickname + " errata");
+                else if(logged.equals("3"))
+                    outVideo.println("L'utente selezionato è già connesso. Deve esserci un errore!");
             }
         }
         catch(Exception e)
@@ -168,7 +166,7 @@ public class ClientSocket {
 
                 case "1":
                     sendMessage("@LOGOUT");
-                    System.out.println("Chiudo il programma.");
+                    System.out.println("Disconnessione eseguita con successo. Arrivederci.");
                     System.exit(0);
                     break;
                 default:
@@ -193,8 +191,9 @@ public class ClientSocket {
                     // print the message
                     if(msg.equals("@ALIVE")) {
                         sendMessage("@ALIVE"); //just to try, useless.
-                    }
-                    System.out.println(msg);
+                        System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
+                    }else
+                        System.out.println(msg);
                 }
                 catch(IOException e) {
                     break;

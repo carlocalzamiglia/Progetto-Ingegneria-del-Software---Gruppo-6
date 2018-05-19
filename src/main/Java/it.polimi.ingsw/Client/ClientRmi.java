@@ -88,8 +88,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
                     server.publish(username);
 
                 }
-                else
-                    System.out.println("Login errato. Riprova");
+                else if(logged==3)
+                    System.out.println("L'utente selezionato è già connesso. Deve esserci un errore!");
+                else if(logged==2)
+                    System.out.println("Password di " + username + " errata");
             }
         }
         catch(Exception e)
@@ -100,16 +102,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     }
     //for now the method play is incomplete
     private void play()        throws RemoteException{
-
-
-
-        //--------------------------handle close part-----------
-        Runtime.getRuntime().addShutdownHook(new handleExit());
+        boolean disc;
 
         //for now we use a while loop always true for send message to the server
         while(10>1){
             System.out.println("Cosa vuoi fare?");
             System.out.println("0)manda messaggio");
+            System.out.println("1)esci");
             Scanner in = new Scanner(System.in);
             String choice = in.nextLine();
             switch (choice) {
@@ -117,6 +116,19 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
                     System.out.println("Scrivi messaggio:");
                     String message =in.nextLine();
                     server.sendMessage(nickname,message);
+                    break;
+                case "1":
+                    try {
+                        disc=server.manageDisconnection(nickname);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        disc=false;
+                    }
+                    if(disc==true){
+                        System.out.println("Disconnessione eseguita con successo. Arrivederci.");
+                        System.exit(0);
+                    }else
+                        System.out.println("Errore nella discossessione. Riprova.");
                     break;
                 default:
                     break;
@@ -132,25 +144,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         return nickname;
     }
 
-    public boolean aliveMessage(){return true;}
-
-
-    class handleExit extends Thread{
-        boolean disc;
-        public void run(){
-            try {
-                disc=server.manageDisconnection(nickname);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            if(disc==true){
-                System.out.println("Disconnessione eseguita con successo. Arrivederci.");
-            }else
-                System.out.println("Errore nella discossessione. Riprova.");
-        }
+    public boolean aliveMessage(){
+        System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
+        return true;
     }
-
-
-
-
 }
