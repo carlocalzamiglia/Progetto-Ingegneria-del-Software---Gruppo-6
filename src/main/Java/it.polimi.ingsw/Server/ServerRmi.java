@@ -4,6 +4,8 @@ package it.polimi.ingsw.Server;
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 
 public class ServerRmi implements Runnable{
@@ -35,9 +37,9 @@ public class ServerRmi implements Runnable{
         try {
             PORT=leggiDaFile();
             java.rmi.registry.LocateRegistry.createRegistry(PORT);
-
+            Registry registry = LocateRegistry.getRegistry(PORT);
             ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB);
-            Naming.rebind("rmi://localhost/ser_con", conn);
+            registry.rebind("rmi://localhost/ser_con", conn);
             System.out.println("Server rmi ready on port:"+PORT);
 
 

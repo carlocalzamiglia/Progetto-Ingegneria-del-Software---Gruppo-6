@@ -8,6 +8,8 @@ import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
@@ -20,6 +22,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     DBUsers DB=new DBUsers();
     private String nickname;
     private String root;
+    private int PORT;
 
     public ClientRmi()         throws RemoteException{
         super();
@@ -53,9 +56,12 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         try
         {
             System.out.println("Il client tenta di connettersi");
-
             root=leggiDaFile();
-            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://"+root+"/ser_con");
+            String[] parts=root.split(":");
+            PORT=Integer.parseInt(parts[1]);
+            root=parts[0];
+            Registry registry = LocateRegistry.getRegistry(root,PORT);
+            server=(ServerRmiClientHandlerInt) registry.lookup("rmi://"+root+"/ser_con");
             System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
@@ -149,7 +155,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         return true;
     }
     private String leggiDaFile() throws IOException {
-        System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
 
         BufferedReader b = new BufferedReader(f);

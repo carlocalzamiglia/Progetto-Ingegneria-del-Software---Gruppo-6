@@ -215,7 +215,6 @@ public class ClientSocket {
 
 
     private String leggiDaFile() throws IOException {
-        System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
 
         BufferedReader b = new BufferedReader(f);
