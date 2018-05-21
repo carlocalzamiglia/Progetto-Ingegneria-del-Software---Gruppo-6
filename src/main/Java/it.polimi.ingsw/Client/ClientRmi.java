@@ -19,6 +19,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     PrintWriter outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
     DBUsers DB=new DBUsers();
     private String nickname;
+    private String root;
 
     public ClientRmi()         throws RemoteException{
         super();
@@ -53,9 +54,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         {
             System.out.println("Il client tenta di connettersi");
 
-
-            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://localhost/ser_con");
-
+            root=leggiDaFile();
+            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://"+root+"/ser_con");
             System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
@@ -147,5 +147,20 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     public boolean aliveMessage(){
         System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
         return true;
+    }
+    private String leggiDaFile() throws IOException {
+        System.out.println(System.getProperty("user.dir"));
+        FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
+
+        BufferedReader b = new BufferedReader(f);
+        String root;
+        try {
+            b.readLine();
+            root = (b.readLine());
+        }finally {
+            b.close();
+            f.close();
+        }
+        return root;
     }
 }

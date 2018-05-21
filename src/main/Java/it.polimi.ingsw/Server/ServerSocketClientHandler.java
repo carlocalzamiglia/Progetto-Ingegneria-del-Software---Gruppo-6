@@ -22,7 +22,6 @@ public class ServerSocketClientHandler implements Runnable {
     public ServerSocketClientHandler(Socket socket, DBUsers DB) throws IOException {
         this.socket = socket;
         this.DB = DB;
-
     }
 
     @Override

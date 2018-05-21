@@ -1,5 +1,6 @@
 package it.polimi.ingsw.Server;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -13,5 +14,6 @@ public interface ServerRmiClientHandlerInt extends Remote {
     public Vector getConnected() throws RemoteException ;
     public boolean manageDisconnection(String nickname) throws RemoteException;
     public boolean clientAlive(String nickname) throws RemoteException;
+    public void newUserMessage(String nickname) throws IOException;
 
 }

@@ -5,8 +5,8 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class ClientSocket {
-    private final static int PORT=3001;
-    private final static String address="localhost";
+    private int PORT;
+    private String root;
     private String name;
     private Socket socket;
     private BufferedReader inSocket;
@@ -68,8 +68,11 @@ public class ClientSocket {
     {
         try
         {
-
-            socket = new Socket(address, PORT);
+            root=leggiDaFile();
+            String[] parts=root.split(":");
+            PORT=Integer.parseInt(parts[1]);
+            root=parts[0];
+            socket = new Socket(root, PORT);
             //canali di comunicazione
             inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outSocket = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
@@ -208,6 +211,22 @@ public class ClientSocket {
     public void sendMessage(String message) throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(message);
+    }
+
+
+    private String leggiDaFile() throws IOException {
+        System.out.println(System.getProperty("user.dir"));
+        FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
+
+        BufferedReader b = new BufferedReader(f);
+        String root;
+        try {
+            root = (b.readLine());
+        }finally {
+            b.close();
+            f.close();
+        }
+        return root;
     }
 
 }

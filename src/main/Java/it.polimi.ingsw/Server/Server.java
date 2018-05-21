@@ -14,6 +14,7 @@ public class Server {
         ServerSocket serverSocket;
         ServerRmi serverRmi;
         serverSocket=new ServerSocket(DB);
+        TimeUnit.SECONDS.sleep(1);
         serverRmi=new ServerRmi(DB);
         t1=new Thread(serverSocket);
         t2=new Thread(serverRmi);

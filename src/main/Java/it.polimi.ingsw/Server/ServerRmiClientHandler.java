@@ -70,7 +70,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         return flag;
     }
 
-    public synchronized void newUserMessage(String nickname) throws IOException {
+    public void newUserMessage(String nickname) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
                 if (DB.getUser(i).getClientHandler() != null)
