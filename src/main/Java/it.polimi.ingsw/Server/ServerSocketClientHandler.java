@@ -95,9 +95,10 @@ public class ServerSocketClientHandler implements Runnable {
     public boolean clientAlive(String nickname) throws ClassNotFoundException, InterruptedException {
         boolean checkalive;
         if (DB.getUser(nickname).isOnline()) {
-            try {
                 checkalive = alive;
-                sendMessageOut("@ALIVE");
+                try {
+                    sendMessageOut("@ALIVE");
+                }catch(IOException e){}
                 sleep(1000);
                 if (checkalive != alive) {
                     return true;
@@ -107,10 +108,6 @@ public class ServerSocketClientHandler implements Runnable {
                     System.out.println(nickname + " ha probabilmente perso la connessione.");
                     return false;
                 }
-
-            } catch (IOException e) {       //PROBABILMENTE NON E' NECESSARIO.
-                return false;
-            }
         } else {
             return false;
         }
