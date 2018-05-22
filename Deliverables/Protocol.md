@@ -41,7 +41,7 @@
 ##### Client:
 @DISCONNECTION
 ##### Server:
-@CHECKCONN
+@ALIVE
 
 
 

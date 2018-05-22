@@ -2,11 +2,14 @@ package it.polimi.ingsw.Client;
 
 
 import it.polimi.ingsw.Server.DBUsers;
+import it.polimi.ingsw.Server.HandleDisconnection;
 import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
 
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
@@ -18,6 +21,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     PrintWriter outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
     DBUsers DB=new DBUsers();
     private String nickname;
+    private String root;
+    private int PORT;
 
     public ClientRmi()         throws RemoteException{
         super();
@@ -51,10 +56,12 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         try
         {
             System.out.println("Il client tenta di connettersi");
-
-
-            server=(ServerRmiClientHandlerInt) Naming.lookup("rmi://127.0.0.1/myabc");
-
+            root=leggiDaFile();
+            String[] parts=root.split(":");
+            PORT=Integer.parseInt(parts[1]);
+            root=parts[0];
+            Registry registry = LocateRegistry.getRegistry(root,PORT);
+            server=(ServerRmiClientHandlerInt) registry.lookup("rmi://"+root+"/ser_con");
             System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
@@ -83,13 +90,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
                     System.out.println("Login effettuato correttamente");
 
                     this.nickname=username;
-                    Naming.rebind("rmi://127.0.0.1/Client_"+nickname,this); ;
-                    server.addRmi(username);
+                    server.addRmi(this, username);
                     server.publish(username);
 
                 }
-                else
-                    System.out.println("Login errato. Riprova");
+                else if(logged==3)
+                    System.out.println("L'utente selezionato è già connesso. Deve esserci un errore!");
+                else if(logged==2)
+                    System.out.println("Password di " + username + " errata");
             }
         }
         catch(Exception e)
@@ -100,11 +108,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     }
     //for now the method play is incomplete
     private void play()        throws RemoteException{
+        boolean disc;
 
         //for now we use a while loop always true for send message to the server
         while(10>1){
             System.out.println("Cosa vuoi fare?");
             System.out.println("0)manda messaggio");
+            System.out.println("1)esci");
             Scanner in = new Scanner(System.in);
             String choice = in.nextLine();
             switch (choice) {
@@ -112,6 +122,19 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
                     System.out.println("Scrivi messaggio:");
                     String message =in.nextLine();
                     server.sendMessage(nickname,message);
+                    break;
+                case "1":
+                    try {
+                        disc=server.manageDisconnection(nickname);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        disc=false;
+                    }
+                    if(disc==true){
+                        System.out.println("Disconnessione eseguita con successo. Arrivederci.");
+                        System.exit(0);
+                    }else
+                        System.out.println("Errore nella discossessione. Riprova.");
                     break;
                 default:
                     break;
@@ -127,4 +150,22 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         return nickname;
     }
 
+    public boolean aliveMessage(){
+        System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
+        return true;
+    }
+    private String leggiDaFile() throws IOException {
+        FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
+
+        BufferedReader b = new BufferedReader(f);
+        String root;
+        try {
+            b.readLine();
+            root = (b.readLine());
+        }finally {
+            b.close();
+            f.close();
+        }
+        return root;
+    }
 }

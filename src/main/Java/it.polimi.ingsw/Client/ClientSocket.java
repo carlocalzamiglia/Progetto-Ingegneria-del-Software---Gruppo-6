@@ -5,18 +5,19 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class ClientSocket {
-    private final static int PORT=3001;
-    private final static String address="localhost";
+    private int PORT;
+    private String root;
     private String name;
     private Socket socket;
     private BufferedReader inSocket;
     private PrintWriter outSocket;
     private BufferedReader inKeyboard;
     private PrintWriter outVideo;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     //quando viene chiamato dal client principale il costruttore fa partire il metodo esegui (speculare a rmi)
     public ClientSocket()
     {
-        System.out.println("ClientSetup avviato");
 
         try
         {
@@ -67,16 +68,17 @@ public class ClientSocket {
     {
         try
         {
-            System.out.println("Il client tenta di connettersi");
-
-            socket = new Socket(address, PORT);
+            root=leggiDaFile();
+            String[] parts=root.split(":");
+            PORT=Integer.parseInt(parts[1]);
+            root=parts[0];
+            socket = new Socket(root, PORT);
             //canali di comunicazione
             inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outSocket = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
             inKeyboard = new BufferedReader(new InputStreamReader(System.in));
             outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
 
-            System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
         {
@@ -95,13 +97,13 @@ public class ClientSocket {
     {
         try
         {
-            boolean logged=false;
+            String logged ="2";
 
-            while(!logged)
+            while(logged.equals("2") || logged.equals("3"))
             {
                 //legge nickname dal client
                 outVideo.println("Inserire nickname:");
-                String username=inKeyboard.readLine();
+                String nickname=inKeyboard.readLine();
 
                 //legge password dal client
                 outVideo.println("Inserire password:");
@@ -111,7 +113,7 @@ public class ClientSocket {
                 //pulisce l'uscita sul socket
                 outSocket.flush();
                 //manda al socket il nickname
-                outSocket.println(username);
+                outSocket.println(nickname);
                 //pulisce l'uscita sul socket
                 outSocket.flush();
                 //manda al socket il nickname
@@ -119,17 +121,18 @@ public class ClientSocket {
                 outSocket.flush();
 
                 //legge il valore se true o false all'ingresso del socket
-                logged=Boolean.valueOf(inSocket.readLine()).booleanValue();
+                //logged=Boolean.valueOf(inSocket.readLine()).booleanValue();
+                logged=inSocket.readLine();
 
-
-                if(logged) {
-                    outVideo.println("Login effettuato correttamente");
-                    outSocket.println(username);
+                if(logged.equals("1")||logged.equals("0")) {
+                    outSocket.println(nickname);
                     outSocket.flush();
-                    this.name=username;
+                    this.name=nickname;
                 }
-                else
-                    outVideo.println("Login errato. Riprova");
+                else if(logged.equals("2"))
+                    outVideo.println("Password di " + nickname + " errata");
+                else if(logged.equals("3"))
+                    outVideo.println("L'utente selezionato è già connesso. Deve esserci un errore!");
             }
         }
         catch(Exception e)
@@ -149,25 +152,80 @@ public class ClientSocket {
     private void play() throws IOException {
         //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
         //this is for the client part
+        new ListenFromServer().start();
+        sendMessage("@LOGGED");
         while(10>1){
             outVideo.println("Cosa vuoi fare?");
             outVideo.println("0)manda messaggio");
+            outVideo.println("1)chiudi");
             String choice= inKeyboard.readLine();
 
             switch (choice) {
                 case "0":
                     outVideo.println("Scrivi messaggio:");
                     String message = inKeyboard.readLine();
-                    outSocket.flush();
-                    outSocket.println(message);
-                    outSocket.flush();
-                    outSocket.println(name);
-                    outSocket.flush();
+                    sendMessage("@SEND"+message);
+                    break;
+
+                case "1":
+                    sendMessage("@LOGOUT");
+                    System.out.println("Disconnessione eseguita con successo. Arrivederci.");
+                    System.exit(0);
                     break;
                 default:
                     break;
+
             }
         }
+    }
+
+
+    class ListenFromServer extends Thread {
+
+        public void run() {
+            while(true) {
+                try {
+                    in = new ObjectInputStream(socket.getInputStream());
+                    // read the message form the input datastream
+                    //---------------------HERE THE IMPLEMENTATION OF THE PROTOCOL------------------------------
+
+
+                    String msg = (String) in.readObject();
+                    // print the message
+                    if(msg.equals("@ALIVE")) {
+                        sendMessage("@ALIVE"); //just to try, useless.
+                        System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
+                    }else
+                        System.out.println(msg);
+                }
+                catch(IOException e) {
+                    break;
+                }
+                catch(ClassNotFoundException e2) {
+                }
+            }
+        }
+    }
+
+
+    public void sendMessage(String message) throws IOException {
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(message);
+    }
+
+
+    private String leggiDaFile() throws IOException {
+        FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
+
+        BufferedReader b = new BufferedReader(f);
+        String root;
+        try {
+            root = (b.readLine());
+        }finally {
+            b.close();
+            f.close();
+        }
+        return root;
     }
 
 }

@@ -4,13 +4,14 @@ import it.polimi.ingsw.Game.Calculator;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Inventory;
 import it.polimi.ingsw.Game.Player;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
 
 import java.util.ArrayList;
 
 public class TestCalculator {
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void tCalculator() {
 
         Calculator calculator;
