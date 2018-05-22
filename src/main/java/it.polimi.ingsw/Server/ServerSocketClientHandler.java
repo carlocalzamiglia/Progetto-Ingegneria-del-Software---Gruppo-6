@@ -103,7 +103,7 @@ public class ServerSocketClientHandler implements Runnable {
                 try {
                     sendMessageOut("@ALIVE");
                 }catch(IOException e){}
-                sleep(1000);
+                sleep(2000);
                 if (checkalive != alive) {
                     return true;
                 } else {
