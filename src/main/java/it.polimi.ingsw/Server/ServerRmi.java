@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Server;
 
 
+import it.polimi.ingsw.Game.Matches;
+
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -10,17 +12,19 @@ import java.rmi.registry.Registry;
 
 public class ServerRmi implements Runnable{
     private DBUsers DB;
+    private Matches matches;
     private int PORT;
 
 
     //-------------------------------------------------constructor------------------------------------------------------
-    public ServerRmi(DBUsers DB){
+    public ServerRmi(DBUsers DB,Matches matches){
         this.DB=DB;
+        this.matches=matches;
     }
 
     //-----------------------------------------launch the connection method---------------------------------------------
     public void run() {
-        ServerRmi serverRmi = new ServerRmi(DB);
+        ServerRmi serverRmi = new ServerRmi(DB,matches);
         try {
             serverRmi.connect();
         }
@@ -36,7 +40,7 @@ public class ServerRmi implements Runnable{
             PORT=leggiDaFile();
             java.rmi.registry.LocateRegistry.createRegistry(PORT);
             Registry registry = LocateRegistry.getRegistry(PORT);
-            ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB);
+            ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB,matches);
             registry.rebind("RMICONNECTION", conn);
             System.out.println("Server rmi ready on port:"+PORT);
 

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.Server;
 
+import it.polimi.ingsw.Game.Matches;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,15 +12,17 @@ import java.util.concurrent.Executors;
 public class ServerSocket implements Runnable {
     private int PORT;
     private java.net.ServerSocket sc;
+    private Matches matches;
     public DBUsers DB;
-    public ServerSocket(DBUsers DB){
+    public ServerSocket(DBUsers DB,Matches matches){
         this.DB=DB;
+        this.matches=matches;
     }
 
     //----------------------------------------launch the connection method----------------------------------------------
     @Override
     public void run() {
-        ServerSocket ServerSocket = new ServerSocket(DB);
+        ServerSocket ServerSocket = new ServerSocket(DB,matches);
         try {
             ServerSocket.connect();
         }
@@ -36,7 +40,7 @@ public class ServerSocket implements Runnable {
         System.out.println("Server socket ready on port: " + PORT);
         while(10>1) {
             Socket socket = sc.accept();
-            executor.submit(new ServerSocketClientHandler(socket, DB));
+            executor.submit(new ServerSocketClientHandler(socket, DB, matches));
         }
     }
 

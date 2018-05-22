@@ -1,5 +1,7 @@
 package it.polimi.ingsw.Server;
 
+import it.polimi.ingsw.Game.Matches;
+
 import javax.print.PrintException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,15 +17,18 @@ import static java.lang.Thread.sleep;
 public class ServerSocketClientHandler implements Runnable {
     private Socket socket;
     private DBUsers DB;
+    private Matches matches;
     private ObjectOutputStream outs;
     private ObjectInputStream ins;
     private boolean alive = true;
 
 
+
     //-------------------------------------------------constructor------------------------------------------------------
-    public ServerSocketClientHandler(Socket socket, DBUsers DB) throws IOException {
+    public ServerSocketClientHandler(Socket socket, DBUsers DB, Matches matches) throws IOException {
         this.socket = socket;
         this.DB = DB;
+        this.matches=matches;
     }
 
     //-----------------------------------------------connection method--------------------------------------------------

@@ -2,6 +2,7 @@ package it.polimi.ingsw.Server;
 
 
 import it.polimi.ingsw.Client.ClientRmiInt;
+import it.polimi.ingsw.Game.Matches;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,8 +12,10 @@ import java.util.Vector;
 
 public class ServerRmiClientHandler extends UnicastRemoteObject implements ServerRmiClientHandlerInt {
     public DBUsers DB ;
-    protected ServerRmiClientHandler(DBUsers DB) throws RemoteException{
+    private Matches matches;
+    protected ServerRmiClientHandler(DBUsers DB,Matches matches) throws RemoteException{
         this.DB=DB;
+        this.matches=matches;
     }
 
 

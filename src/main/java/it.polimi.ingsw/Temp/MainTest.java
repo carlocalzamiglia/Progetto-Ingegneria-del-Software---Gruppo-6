@@ -14,7 +14,7 @@ public class MainTest {
 
     {
 
-        ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
+        /*ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         Inventory inventory = new Inventory();
         DiceBucket diceBucket = new DiceBucket();
         Player player1 = new Player("Cesna");
@@ -38,7 +38,8 @@ public class MainTest {
         boolean goodEnding = toolCardsExecutor.executeToolCard(12, player1, greenCarpet, ruler, diceBucket);
         greenCarpet.dump();
         System.out.println(goodEnding);
-        player1.dump();
+        player1.dump();*/
+
 
 
     }
