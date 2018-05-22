@@ -71,10 +71,12 @@ public class User {
     @Override
     public String toString() {
         String s=nickname+"\n"+wins+"\n"+"online: "+online+"\n"+"tipo di connessione: ";
-        if(this.clientHandler==null)
-            s=s+"rmi "+rmiClient+"\n";
-        if(this.rmiClient==null)
+        if(this.clientHandler!=null)
             s=s+"socket "+clientHandler+"\n";
+        else if(this.rmiClient!=null)
+            s=s+"rmi "+rmiClient+"\n";
+        else
+            s=s+"nessuna\n";
         return s;
     }
 
