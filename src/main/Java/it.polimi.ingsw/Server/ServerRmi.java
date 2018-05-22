@@ -37,7 +37,7 @@ public class ServerRmi implements Runnable{
             java.rmi.registry.LocateRegistry.createRegistry(PORT);
             Registry registry = LocateRegistry.getRegistry(PORT);
             ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB);
-            registry.rebind("rmi://localhost/ser_con", conn);
+            registry.rebind("RMICONNECTION", conn);
             System.out.println("Server rmi ready on port:"+PORT);
 
 

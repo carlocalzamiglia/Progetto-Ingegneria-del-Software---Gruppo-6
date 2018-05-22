@@ -65,7 +65,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
             PORT=Integer.parseInt(parts[1]);
             root=parts[0];
             Registry registry = LocateRegistry.getRegistry(root,PORT);
-            server=(ServerRmiClientHandlerInt) registry.lookup("rmi://"+root+"/ser_con");
+            server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
             System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
