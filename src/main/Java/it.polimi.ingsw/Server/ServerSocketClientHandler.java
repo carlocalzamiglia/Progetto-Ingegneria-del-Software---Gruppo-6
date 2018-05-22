@@ -36,7 +36,6 @@ public class ServerSocketClientHandler implements Runnable {
             String psw = in.nextLine();
 
             PrintWriter out = new PrintWriter(socket.getOutputStream());
-
             int check=DB.login(user, psw);
             while (check!=0 && check != 1) {
                 if(check==2) {
@@ -48,6 +47,7 @@ public class ServerSocketClientHandler implements Runnable {
                 }
                 user = in.nextLine();
                 psw = in.nextLine();
+                check=DB.login(user, psw);
             }
             out.println("0");
             out.flush();
