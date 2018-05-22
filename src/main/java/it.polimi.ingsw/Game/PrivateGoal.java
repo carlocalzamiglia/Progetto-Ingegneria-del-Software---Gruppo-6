@@ -7,6 +7,8 @@ public class PrivateGoal {
     private String description;
     private int serialNumber;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public PrivateGoal (int serialNumber) {
         switch (serialNumber) {
             case 1:
@@ -40,22 +42,22 @@ public class PrivateGoal {
         }
 
     }
+
+    //-----------------------------------------------Getters and Setters------------------------------------------------
     public void setDescription(String description) {
         this.description = description;
     }
-
     public String getName() {
         return name;
     }
-
     public String getDescription() {
         return description;
     }
-
     public int getSerialNumber() {
         return serialNumber;
     }
 
+    //-----------------------------------------------Print methods------------------------------------------------------
     @Override
     public String toString() {
         String s=new String();

@@ -6,6 +6,8 @@ import java.util.Scanner;
 public class ToolCardsExecutor {
 
 
+
+    //--------------------------------------Method that execute a tool card(requires input from keyboard)---------------
    public boolean executeToolCard(int serialnumber,Player player,GreenCarpet greenCarpet,Ruler ruler,DiceBucket diceBucket){
            boolean bool=true;
            Scanner scan = new Scanner(System.in);
@@ -515,6 +517,8 @@ public class ToolCardsExecutor {
            }
            return bool;
        }
+
+    //-----------------------------------------------Conversion methods-------------------------------------------------
     private int stringtoInt(String face){
         int i=0;
 

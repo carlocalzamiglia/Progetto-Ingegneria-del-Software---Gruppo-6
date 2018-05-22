@@ -9,6 +9,8 @@ public class GreenCarpet {
     private ToolCards[] toolCards;
     private int nPlayers;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public GreenCarpet(int nPlayers){
         this.nPlayers = nPlayers;
         int i=nPlayers*2+1;
@@ -17,16 +19,16 @@ public class GreenCarpet {
         publicGoals = new PublicGoal[3];
         toolCards = new ToolCards[3];
     }
+
+    //-----------------------------------------------Getters and Setters------------------------------------------------
     public void setPublicGoals(PublicGoal p1, PublicGoal p2, PublicGoal p3){
         publicGoals[0]=p1;
         publicGoals[1]=p2;
         publicGoals[2]=p3;
     }
-
     public PublicGoal getPublicGoal(int i) {
         return publicGoals[i];
     }
-
     public void setToolCards(ToolCards t1,ToolCards t2,ToolCards t3){
         this.toolCards[0]=t1;
         this.toolCards[1]=t2;
@@ -42,7 +44,6 @@ public class GreenCarpet {
     public ArrayList<Dice> getStock(){
         return stock;
     }
-
     public void setRoundPath(int round,ArrayList<Dice> dices){
         for(int i=0; i<dices.size();i++){
             this.roundPath[i][round-1]=dices.get(i);
@@ -64,16 +65,16 @@ public class GreenCarpet {
     public void setDiceInStock(Dice dice){
         this.stock.add(dice);
     }
-
+    public ToolCards getToolCard(int i) {
+        return toolCards[i-1];
+    }
     public int getnPlayers() {
         return nPlayers;
     }
 
-    public ToolCards getToolCard(int i) {
-        return toolCards[i-1];
-    }
 
-    @Override
+    //-----------------------------------------------Print methods------------------------------------------------------
+       @Override
     public String toString() {
         String s = new String();
         for(int i=0;i<9;i++){

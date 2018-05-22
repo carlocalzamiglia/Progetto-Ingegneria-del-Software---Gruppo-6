@@ -15,21 +15,22 @@ public class Box {
        this.restrictionValue=null;
        this.restrictionColour=null;
     }
+
+    //-----------------------------------------------Getters and setters------------------------------------------------
     public void setRestrictionValue(String restrictionValue){
         this.restrictionValue=restrictionValue;
     }
     public void setRestrictionColour(Colour restrictionColour){
         this.restrictionColour=restrictionColour;
     }
-
     public String getRestrictionValue() {
         return restrictionValue;
     }
-
     public Colour getRestrictionColour() {
         return restrictionColour;
     }
 
+    //-----------------------------------------------Get a dice from the scheme-----------------------------------------
     public Dice getAddedDice() {
         if(addedDice!=null)
             return addedDice;
@@ -37,13 +38,12 @@ public class Box {
             return null;
     }
 
+    //-----------------------------------------------Set a dice in the scheme-------------------------------------------
     public void setAddedDice(Dice addedDice) {
         this.addedDice = addedDice;
     }
-    public void dump() {
-        System.out.print(this);
-    }
 
+    //-----------------------------------------------Print methods------------------------------------------------------
     @Override
     public String toString() {
         if (addedDice != null)
@@ -59,5 +59,7 @@ public class Box {
             }
         }
     }
-
+    public void dump() {
+        System.out.print(this);
+    }
 }

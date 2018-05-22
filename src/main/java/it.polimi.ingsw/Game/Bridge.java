@@ -5,6 +5,8 @@ public class Bridge {
     private int serialNumber;
     private Scheme scheme;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public Bridge (int serialNumber){
         switch (serialNumber){
             case 1:
@@ -29,22 +31,22 @@ public class Bridge {
 
     }
 
+    //-----------------------------------------------Getters and Setters------------------------------------------------
     public Colour getColour() {
         return colour;
     }
-
     public int getSerialNumber() {
         return serialNumber;
     }
-
     public Scheme getScheme() {
         return scheme;
     }
-
     public void setScheme(Scheme scheme) {
         this.scheme = scheme;
     }
 
+
+    //-----------------------------------------------Print methods------------------------------------------------------
     @Override
     public String toString() {
         String s=new String();

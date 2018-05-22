@@ -6,6 +6,8 @@ package it.polimi.ingsw.Game;
         private Dice dice;
 
 
+
+        //---------------------------Method that checks all the placement restriction of a dice-------------------------
         public boolean checkCorrectPlacement(int row, int col,Dice dice,Scheme scheme) {
             boolean isCorrect = true;
             this.scheme=scheme;
@@ -27,6 +29,7 @@ package it.polimi.ingsw.Game;
         return isCorrect;
         }
 
+        //---------------------------Method that returns true if a dice can be placed in a specific box-----------------
         public boolean checkBox(int row, int col) {
             boolean bool = true;
             if (scheme.getBox(row, col).getAddedDice() == null) {
@@ -48,6 +51,7 @@ package it.polimi.ingsw.Game;
             return bool;
         }
 
+        //---------------------------Method that controls neighborhood restriction of a dice in a specific box----------
         public boolean checkNeighbors(int row, int col) {
             boolean bool=true;
             int flag=0;
@@ -91,6 +95,8 @@ package it.polimi.ingsw.Game;
                     bool=false;
             return bool;
         }
+
+        //---------------------------Method that controls that a specific box has no neighbors--------------------------
         public boolean checkEmptyNeighbors(int row, int col,Scheme scheme) {
             boolean bool=true;
             if (col-1>=0)
@@ -128,6 +134,7 @@ package it.polimi.ingsw.Game;
             return bool;
         }
 
+        //---------------------------Methods that control color and number restriction of the cardinal points-----------
         public boolean checkWest(int row, int col) {
             boolean bool = true;
                     if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
@@ -160,6 +167,8 @@ package it.polimi.ingsw.Game;
                         bool=false;
             return bool;
         }
+
+        //---------------------------Method that controls neighborhood restriction (only numbers)-----------------------
         public boolean checkNeighborsFaces(int row,int col,Dice dice,Scheme scheme){
             boolean bool=true;
             int flag=0;
@@ -208,6 +217,8 @@ package it.polimi.ingsw.Game;
             return bool;
 
         }
+
+        //---------------------------Method that controls neighborhood restriction (only colors)------------------------
         public boolean checkNeighborsColours(int row,int col,Dice dice,Scheme scheme) {
             boolean bool = true;
             int flag = 0;
@@ -255,6 +266,8 @@ package it.polimi.ingsw.Game;
                 bool = false;
             return bool;
         }
+
+        //---------------------------Useful method that converts a dice "face" into a number(string)--------------------
         private String faceToNo(String face) {
             String s= null ;
 

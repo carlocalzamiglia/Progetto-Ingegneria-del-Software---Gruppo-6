@@ -8,6 +8,8 @@ public class ToolCards {
     private int serialNumber;
     private int cost;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public ToolCards (int serialNumber) {
         switch (serialNumber) {
             case 1:
@@ -119,6 +121,7 @@ public class ToolCards {
 
     }
 
+    //-----------------------------------------------Getters and setters------------------------------------------------
     public void setCost(int cost) {
         this.cost = cost;
     }
@@ -126,6 +129,7 @@ public class ToolCards {
         return cost;
     }
 
+    //-----------------------------------------------Print methods------------------------------------------------------
     @Override
     public String toString() {
         String s=new String();

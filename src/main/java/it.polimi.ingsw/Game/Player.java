@@ -10,9 +10,13 @@ public class Player {
     private ArrayList<Markers> markers;
     private boolean online;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public Player(String nickname){
         this.nickname=nickname;
     }
+
+    //-----------------------------------------------Getters and Setters------------------------------------------------
     public void setBridge(Bridge bridge) {
         this.bridge = bridge;
     }
@@ -31,25 +35,23 @@ public class Player {
     public void setOnline(Boolean bool){
         this.online=bool;
     }
-
     public Bridge getBridge() {
         return bridge;
     }
     public PrivateGoal getPrivateGoal() {
         return privateGoal;
     }
-
     public Scheme getScheme() {
         return scheme;
     }
-
     public ArrayList<Markers> getMarkers() {
         return markers;
     }
-
     public boolean isOnline() {
         return online;
     }
+
+    //----------------------------------Method that consume markers when the player uses a toolcard---------------------
     public boolean useMarkers(int cost) {
         boolean bool=true;
         if (markers.size()>cost) {
@@ -64,6 +66,7 @@ public class Player {
         return bool;
     }
 
+    //-----------------------------------------------Print methods------------------------------------------------------
     @Override
     public String toString() {
         String s=new String();
