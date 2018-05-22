@@ -6,26 +6,28 @@ import java.util.ArrayList;
 public class DBUsers {
     private ArrayList<User> users;
 
+    //--------------------------------------------constructor-----------------------------------------------------------
     public DBUsers(){
         users=new ArrayList<>();
     }
+
+    //-------------------------------------------check user and password------------------------------------------------
     public int login(String nickname, String password){
-        //crea un fittizio nuovo utente
+        //just a temporary user
         User temp=new User(nickname,password);
-        //scanna tutti gli utenti del db
         for (User u: users) {
-            //se il nickname è uguale
+            //nickname already exist
             if (u.getNickname().equals(nickname)) {
-                //se il nickname è online vuol dire che esiste gia
+                //user already online
                 if (u.isOnline()) {
                     return 3;
                 }
-                //se non è online controlla
+                //user not online
                 else {
-                    //se la password è diversa il nickname esiste già ma la password è diversa
+                    //wrong password
                     if (!u.getPassword().equals(password)) {
                         return 2;
-                    }//altrimenti esegue l'accesso
+                    }//login correct
                     else {
                         u.setOnline(true);
                         return 1;
@@ -35,10 +37,12 @@ public class DBUsers {
 
 
         }
-        //se non trova utenti con quel nickname crea un nuovo utente e lo aggiunge al db
+        //new nickname
         users.add(temp);
         return 0;
     }
+
+    //----------------------------------------check if a user is present------------------------------------------------
     public boolean isPresent(User user){
         int index=users.indexOf(user);
         if(index==-1)
@@ -46,12 +50,18 @@ public class DBUsers {
         else
             return true;
     }
+
+    //-----------------------------------return the number of clients connected-----------------------------------------
     public int size(){
         return users.size();
     }
+
+    //--------------------------------------return a user finding it by index-------------------------------------------
     public User getUser(int i){
         return users.get(i);
     }
+
+    //--------------------------------------return a user finding it by name-------------------------------------------
     public User getUser(String nickname) {
         for (User u : users)
             if (u.getNickname().equals(nickname)) {
@@ -61,6 +71,8 @@ public class DBUsers {
         System.out.println("bo");
         return null;
     }
+
+    //---------------------------------------------print all users------------------------------------------------------
     public String toString(){
         String s= new String ();
         for (User u:users) {
@@ -68,6 +80,8 @@ public class DBUsers {
         }
         return s;
     }
+
+    //------------------------------------------------dump of "this"----------------------------------------------------
     public void dump(){
         System.out.println(this);
     }

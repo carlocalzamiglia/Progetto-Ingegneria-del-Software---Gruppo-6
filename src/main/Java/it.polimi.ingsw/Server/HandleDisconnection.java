@@ -10,18 +10,21 @@ public class HandleDisconnection extends Thread{
     final String nickname;
     int i=0;
 
+    //---------------------------------------------constructor for RMI--------------------------------------------------
     public HandleDisconnection(String nickname, ServerRmiClientHandlerInt serverRmi) throws RemoteException {
         this.nickname=nickname;
         this.serverRmi=serverRmi;
         this.serverSocket=null;
     }
 
+    //---------------------------------------------constructor for Socket-----------------------------------------------
     public HandleDisconnection(String nickname, ServerSocketClientHandler serverSocket) throws RemoteException {
         this.nickname=nickname;
         this.serverSocket=serverSocket;
         this.serverRmi=null;
     }
 
+    //----------------------------------------check if client is alive yet----------------------------------------------
     public void run() {
         while(alive){
             try {

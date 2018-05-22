@@ -14,6 +14,8 @@ public class ServerSocket implements Runnable {
     public ServerSocket(DBUsers DB){
         this.DB=DB;
     }
+
+    //----------------------------------------launch the connection method----------------------------------------------
     @Override
     public void run() {
         ServerSocket ServerSocket = new ServerSocket(DB);
@@ -25,6 +27,8 @@ public class ServerSocket implements Runnable {
         }
 
     }
+
+    //------------------------------------------wait for clients connection---------------------------------------------
     public void connect() throws IOException {
         PORT=leggiDaFile();
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -35,6 +39,8 @@ public class ServerSocket implements Runnable {
             executor.submit(new ServerSocketClientHandler(socket, DB));
         }
     }
+
+    //---------------------------------------read connection properties from file---------------------------------------
     private int leggiDaFile() throws IOException {
         System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");

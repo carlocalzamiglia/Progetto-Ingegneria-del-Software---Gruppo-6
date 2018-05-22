@@ -15,10 +15,8 @@ public class ClientSocket {
     private PrintWriter outVideo;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-    //quando viene chiamato dal client principale il costruttore fa partire il metodo esegui (speculare a rmi)
-    public ClientSocket()
-    {
-
+    //---------------------------------------------------launch execute-------------------------------------------------
+    public ClientSocket() {
         try
         {
             execute();
@@ -38,7 +36,8 @@ public class ClientSocket {
             }
         }
     }
-    //Stessa struttura di rmi
+
+    //--------------------------------------launch connect, then login and then play------------------------------------
     private void execute()
     {
         try
@@ -63,7 +62,8 @@ public class ClientSocket {
             }
         }
     }
-    //crea connessione
+
+    //----------------------------------------create the connection with server-----------------------------------------
     private void connect()
     {
         try
@@ -93,6 +93,8 @@ public class ClientSocket {
             }
         }
     }
+
+    //---------------------------------------------------login part-----------------------------------------------------
     private void login()
     {
         try
@@ -149,6 +151,8 @@ public class ClientSocket {
             }
         }
     }
+
+    //----------------------------------------------------game part-----------------------------------------------------
     private void play() throws IOException {
         //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
         //this is for the client part
@@ -179,9 +183,8 @@ public class ClientSocket {
         }
     }
 
-
+    //---------------------------------------------class for server messages--------------------------------------------
     class ListenFromServer extends Thread {
-
         public void run() {
             while(true) {
                 try {
@@ -207,13 +210,13 @@ public class ClientSocket {
         }
     }
 
-
+    //---------------------------------------------send message to server-----------------------------------------------
     public void sendMessage(String message) throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(message);
     }
 
-
+    //-----------------------------------------get connection properties from file--------------------------------------
     private String leggiDaFile() throws IOException {
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
 

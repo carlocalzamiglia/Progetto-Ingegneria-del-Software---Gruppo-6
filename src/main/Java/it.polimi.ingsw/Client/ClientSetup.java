@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class ClientSetup {
+
+    //-----------------------------------------launch RMI or Socket client----------------------------------------------
     public static void main(String[] args) throws RemoteException {
 
         System.out.println("scegli tipo di connessione:");

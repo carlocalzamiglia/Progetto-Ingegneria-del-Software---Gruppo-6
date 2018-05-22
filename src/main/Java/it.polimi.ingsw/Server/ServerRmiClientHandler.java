@@ -14,10 +14,16 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     protected ServerRmiClientHandler(DBUsers DB) throws RemoteException{
         this.DB=DB;
     }
+
+
+    //---------------------------------------check if login is all right------------------------------------------------
     @Override
     public int login(String nickname, String password) throws RemoteException {
         return DB.login(nickname,password) ;
     }
+
+
+    //--------------------------------add on user's array the RMI connection link---------------------------------------
     public void addRmi(ClientRmiInt client, String nickname) throws RemoteException{
         DB.getUser(nickname).setRmiClient(client);
         try {
@@ -28,19 +34,24 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         DB.getUser(nickname).getClient().tell("Benvenuto, "+nickname+". Ora puoi giocare!");
         new HandleDisconnection(nickname, this).start();
     }
+
+
+
+    //------------------------------------new user connected message on CLI---------------------------------------------
     @Override
     public void publish(String us) throws RemoteException{
         System.out.println(us+" loggato con connessione Rmi");
     }
+
+
+    //-----------------------------------send message to a certain user-------------------------------------------------
     @Override
     public void sendMessage(String nickname, String message) throws RemoteException {
         DB.getUser(nickname).getClient().tell(message);
     }
-    @Override
-    public Vector getConnected() throws RemoteException {
-        return null;
-    }
 
+
+    //---------------------------------close connections when a client decides to logout--------------------------------
     public boolean manageDisconnection(String nickname) throws RemoteException{
         try {
             DB.getUser(nickname).setOnline(false);
@@ -53,6 +64,8 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
 
     }
 
+
+    //--------------------------------------check if client is connected yet--------------------------------------------
     public boolean clientAlive(String nickname) throws RemoteException{
         boolean flag=false;
         if(DB.getUser(nickname).isOnline()==true){
@@ -70,6 +83,8 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         return flag;
     }
 
+
+    //--------------------------------------new client connected message------------------------------------------------
     public void newUserMessage(String nickname) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {

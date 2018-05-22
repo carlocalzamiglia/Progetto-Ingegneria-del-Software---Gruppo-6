@@ -19,11 +19,14 @@ public class ServerSocketClientHandler implements Runnable {
     private ObjectInputStream ins;
     private boolean alive = true;
 
+
+    //-------------------------------------------------constructor------------------------------------------------------
     public ServerSocketClientHandler(Socket socket, DBUsers DB) throws IOException {
         this.socket = socket;
         this.DB = DB;
     }
 
+    //-----------------------------------------------connection method--------------------------------------------------
     @Override
     public void run() {
         try {
@@ -60,15 +63,15 @@ public class ServerSocketClientHandler implements Runnable {
         }
     }
 
-
+    //-----------------------------------------wait for messages from client--------------------------------------------
     class ListenFromClient extends Thread {
         String message;
         String nickname;
-
+        //constructor
         public ListenFromClient(String nickname) {
             this.nickname = nickname;
         }
-
+        //method himself
         public void run() {
             while (true) {
                 try {
@@ -92,6 +95,7 @@ public class ServerSocketClientHandler implements Runnable {
         }
     }
 
+    //-----------------------------------------check if client is online yet--------------------------------------------
     public boolean clientAlive(String nickname) throws ClassNotFoundException, InterruptedException {
         boolean checkalive;
         if (DB.getUser(nickname).isOnline()) {
@@ -114,6 +118,7 @@ public class ServerSocketClientHandler implements Runnable {
 
     }
 
+    //-----------------------------------------new client connected message---------------------------------------------
     private synchronized void newUserMessage(String nickname) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
@@ -125,8 +130,7 @@ public class ServerSocketClientHandler implements Runnable {
         }
     }
 
-
-
+    //--------------------------------------------send message to the user----------------------------------------------
     public void sendMessageOut(String message) throws IOException {
         outs = new ObjectOutputStream(socket.getOutputStream());
         outs.writeObject(message);

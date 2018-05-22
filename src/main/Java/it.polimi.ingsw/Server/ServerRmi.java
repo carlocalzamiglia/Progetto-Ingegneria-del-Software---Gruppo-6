@@ -11,14 +11,14 @@ import java.rmi.registry.Registry;
 public class ServerRmi implements Runnable{
     private DBUsers DB;
     private int PORT;
+
+
+    //-------------------------------------------------constructor------------------------------------------------------
     public ServerRmi(DBUsers DB){
         this.DB=DB;
     }
 
-
-
-
-
+    //-----------------------------------------launch the connection method---------------------------------------------
     public void run() {
         ServerRmi serverRmi = new ServerRmi(DB);
         try {
@@ -30,9 +30,7 @@ public class ServerRmi implements Runnable{
 
     }
 
-
-
-
+    //---------------------------------------starts the RMI and the client handler--------------------------------------
     public void connect() throws IOException {
         try {
             PORT=leggiDaFile();
@@ -49,6 +47,7 @@ public class ServerRmi implements Runnable{
         }
     }
 
+    //-------------------------------------------------read from file---------------------------------------------------
     private int leggiDaFile() throws IOException {
         System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");

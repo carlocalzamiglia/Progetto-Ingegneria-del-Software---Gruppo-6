@@ -24,6 +24,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     private String root;
     private int PORT;
 
+    //-----------------------------------------launch execute method---------------------------------------------
     public ClientRmi()         throws RemoteException{
         super();
         System.out.println("ClientSetup avviato");
@@ -39,6 +40,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
 
     }
 
+    //-----------------------------------launch connect, then login and then play---------------------------------------
     private void execute()       throws RemoteException{
         try
         {
@@ -52,6 +54,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
             e.printStackTrace();
         }
     }
+
+    //------------------------------------------does the all RMI connection---------------------------------------------
     private void connect()     throws RemoteException{
         try
         {
@@ -70,6 +74,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
             e.printStackTrace();
         }
     }
+
+    //------------------------------------login part. If it is all right adds to DBUser---------------------------------
     private void login()        throws RemoteException{
         try
         {
@@ -106,7 +112,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
             e.printStackTrace();
         }
     }
-    //for now the method play is incomplete
+
+    //------------------------------------------------the game method---------------------------------------------------
     private void play()        throws RemoteException{
         boolean disc;
 
@@ -142,18 +149,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
 
         }
     }
-    //method tell and getName are the same from lab 4. we keep it for a future use
-    public void tell(String st) throws RemoteException{
-        System.out.println(st);
-    }
-    public String getName()     throws RemoteException{
-        return nickname;
-    }
 
+    //-----------------------------------------check if client is alive yet---------------------------------------------
     public boolean aliveMessage(){
         System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
         return true;
     }
+
+    //--------------------------------------get connection properties from file-----------------------------------------
     private String leggiDaFile() throws IOException {
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
 
@@ -167,5 +170,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
             f.close();
         }
         return root;
+    }
+
+    //---------------------------------------print a message on the CLI-------------------------------------------------
+    public void tell(String message) throws RemoteException{
+        System.out.println(message);
     }
 }

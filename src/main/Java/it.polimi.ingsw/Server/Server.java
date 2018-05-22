@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
 
+    //-----------------------------------------launch the two server threads--------------------------------------------
     public static void main(String[] args) throws InterruptedException, RemoteException {
 
         final DBUsers DB=new DBUsers();

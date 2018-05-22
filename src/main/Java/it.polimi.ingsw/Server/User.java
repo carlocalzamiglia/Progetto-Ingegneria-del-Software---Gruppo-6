@@ -31,6 +31,7 @@ public class User {
     public void setWins(Integer wins) {
         this.wins = wins;
     }
+
     public void hasWin(){
         this.wins=this.wins+1;
     }
@@ -76,6 +77,7 @@ public class User {
             s=s+"socket "+clientHandler+"\n";
         return s;
     }
+
     public void dump(){
         System.out.println(this);
     }
