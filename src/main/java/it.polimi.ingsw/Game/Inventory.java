@@ -9,6 +9,8 @@ public class Inventory {
     private ToolCards[] toolCards;
     private DiceBucket diceBucket;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public Inventory(){
         privateGoals=new PrivateGoal[5];
         publicGoals=new PublicGoal[10];
@@ -26,6 +28,7 @@ public class Inventory {
 
     }
 
+    //-----------------------------------------------Getters and Setters------------------------------------------------
     public void setBridges() {
         for(int i=0;i<4;i++) {
             bridges[i] = new Bridge(i + 1);
@@ -56,7 +59,6 @@ public class Inventory {
             toolCards[i] = new ToolCards(i+1);
         }
     }
-
     public Bridge[] getBridges() {
         return bridges;
     }
@@ -78,7 +80,6 @@ public class Inventory {
     public DiceBucket getDiceBucket() {
         return diceBucket;
     }
-
     public Bridge getBridge(int serialNumber){
         return bridges[serialNumber-1];
     }

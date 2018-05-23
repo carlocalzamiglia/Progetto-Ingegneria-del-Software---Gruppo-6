@@ -8,11 +8,14 @@ public class Calculator {
     private final ArrayList<Player> players;
     private final GreenCarpet greenCarpet;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public Calculator(ArrayList<Player> players, GreenCarpet greenCarpet){
         this.players=players;
         this.greenCarpet=greenCarpet;
     }
 
+    //---------------------------------Returns the points of the player-------------------------------------------------
     public int calculate(int i){
         int sum=0;
             sum=sum+checkPrivate(players.get(i));
@@ -25,6 +28,7 @@ public class Calculator {
 
     }
 
+    //---------------------------------It calculates the point given by the Private Goal--------------------------------
     private int checkPrivate(Player player){
 
         int serialNumber = player.getPrivateGoal().getSerialNumber();
@@ -74,9 +78,13 @@ public class Calculator {
 
     return sumPrivate;
     }
+
+    //---------------------------------It returns the remaining Markers-------------------------------------------------
     private int checkMarkers(Player player){
         return player.getMarkers().size();
     }
+
+    //---------------------------------It returns the number of empty boxes in the scheme-------------------------------
     private int checkEmpty(Player player){
         int e=0;
 
@@ -87,6 +95,8 @@ public class Calculator {
         return e;
 
     }
+
+    //---------------------------------It calculates the point given by the Public Goal---------------------------------
     private int checkPublic(Player player, GreenCarpet greenCarpet) {
         int sumPublic = 0;
         int serialNumber = 0;
@@ -350,7 +360,7 @@ public class Calculator {
         return sumPublic;
     }
 
-
+    //---------------------------------Method for the conversion of the faces into numbers------------------------------
     private int stringtoInt(String face){
         int i=0;
 
@@ -375,7 +385,7 @@ public class Calculator {
         return i;
     }
 
-
+    //---------------------------------Check color of the right box-----------------------------------------------------
     private void checkRight(Scheme testScheme, Scheme playerScheme, int row, int col){
         if(playerScheme.getBox(row+1, col+1).getAddedDice()!=null) {
             if (playerScheme.getBox(row, col).getAddedDice().getColour().equals(playerScheme.getBox(row + 1, col + 1).getAddedDice().getColour())) {
@@ -385,6 +395,7 @@ public class Calculator {
         }
     }
 
+    //---------------------------------Check color of the left box------------------------------------------------------
     private void checkLeft(Scheme testScheme, Scheme playerScheme, int row, int col){
         if(playerScheme.getBox(row+1, col-1).getAddedDice()!=null) {
             if (playerScheme.getBox(row, col).getAddedDice().getColour().equals(playerScheme.getBox(row + 1, col - 1).getAddedDice().getColour())) {
@@ -394,6 +405,7 @@ public class Calculator {
         }
     }
 
+    //---------------------------------Method that returns the number of dices in the scheme----------------------------
     private int schemeCount(Scheme testScheme){
 
         int sum=0;

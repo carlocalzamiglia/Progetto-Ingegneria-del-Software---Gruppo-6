@@ -6,10 +6,9 @@ public class Scheme {
     private int difficulty;
     private Boolean used;
 
-    public String getName() {
-        return name;
-    }
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public Scheme (int i){
         boxes=new Box[4][5];
         switch (i) {
@@ -619,22 +618,38 @@ public class Scheme {
 
     }
 
+    //-----------------------------------------------Getters and setters------------------------------------------------
+    public String getName() {
+        return name;
+    }
     public int getDifficulty(){
         return this.difficulty;
     }
-
     public Box[][] getBoxes() {
         return boxes;
     }
-
     public Box getBox(int i, int j) {
         return boxes[i][j];
     }
 
+    //-----------------------------------------------Method that place a dice in the scheme-----------------------------
     public void setBoxes(Dice dice,int row,int column) {
         this.boxes[row][column].setAddedDice(dice);
     }
 
+    //-----------------------------------------------Method that checks if a scheme is empty----------------------------
+    public boolean isEmpty(){
+        boolean status= true;
+        for (int i=0;i<4;i++) {
+            for (int j = 0; j < 5; j++) {
+                if (this.getBox(i, j).getAddedDice() != null)
+                    status= false;
+            }
+        }
+        return status;
+    }
+
+    //-----------------------------------------------Print methods------------------------------------------------------
     public String toString() {
         String s=new String();
         for (int i = 0; i < 4; i++){
@@ -648,16 +663,6 @@ public class Scheme {
             s=s+"•";
         }
         return s;
-    }
-    public boolean isEmpty(){
-        boolean status= true;
-        for (int i=0;i<4;i++) {
-            for (int j = 0; j < 5; j++) {
-                if (this.getBox(i, j).getAddedDice() != null)
-                    status= false;
-            }
-        }
-         return status;
     }
     public void dump(){
         System.out.println(this);

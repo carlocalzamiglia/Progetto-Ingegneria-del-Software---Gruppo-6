@@ -6,6 +6,8 @@ public class PublicGoal {
     private String points;
     private int serialNumber;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public PublicGoal (int serialNumber){
         switch (serialNumber) {
             case 1:
@@ -75,13 +77,12 @@ public class PublicGoal {
 
     }
 
+    //-----------------------------------------------Getter-------------------------------------------------------------
     public int getSerialNumber() {
         return serialNumber;
     }
 
-
-
-
+    //-----------------------------------------------Print methods------------------------------------------------------
     public String toString() {
         String s=new String();
         s=points+" "+name;

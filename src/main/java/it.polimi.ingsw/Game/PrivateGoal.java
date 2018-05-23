@@ -8,6 +8,8 @@ public class PrivateGoal {
     private String description;
     private int serialNumber;
 
+
+    //-----------------------------------------------Constructor--------------------------------------------------------
     public PrivateGoal (int serialNumber) {
         switch (serialNumber) {
             case 1:
@@ -41,22 +43,22 @@ public class PrivateGoal {
         }
 
     }
+
+    //-----------------------------------------------Getters and Setters------------------------------------------------
     public void setDescription(String description) {
         this.description = description;
     }
-
     public String getName() {
         return name;
     }
-
     public String getDescription() {
         return description;
     }
-
     public int getSerialNumber() {
         return serialNumber;
     }
 
+<<<<<<< HEAD
     public PrivateGoal[] getRndPrivateGoals(int numPlayer){
         Random rnd=new Random();
         PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
@@ -76,6 +78,9 @@ public class PrivateGoal {
         }
         return privateGoals;
     }
+=======
+    //-----------------------------------------------Print methods------------------------------------------------------
+>>>>>>> 916f8902c1ba7b43479a0cb786a307fd19d76519
     @Override
     public String toString() {
         String s=new String();
