@@ -58,7 +58,6 @@ public class PrivateGoal {
         return serialNumber;
     }
 
-<<<<<<< HEAD
     public PrivateGoal[] getRndPrivateGoals(int numPlayer){
         Random rnd=new Random();
         PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
@@ -78,9 +77,9 @@ public class PrivateGoal {
         }
         return privateGoals;
     }
-=======
+
     //-----------------------------------------------Print methods------------------------------------------------------
->>>>>>> 916f8902c1ba7b43479a0cb786a307fd19d76519
+
     @Override
     public String toString() {
         String s=new String();

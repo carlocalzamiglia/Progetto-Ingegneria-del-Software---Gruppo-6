@@ -27,7 +27,7 @@ public class GreenCarpet {
         publicGoals[1]=p2;
         publicGoals[2]=p3;
     }
-<<<<<<< HEAD
+
     public void setRndPublicGoals(){
         Random rnd=new Random();
         int index1=rnd.nextInt(9)+1;
@@ -42,8 +42,7 @@ public class GreenCarpet {
         publicGoals[1]=new PublicGoal(index2);
         publicGoals[2]=new PublicGoal(index3);
     }
-=======
->>>>>>> 916f8902c1ba7b43479a0cb786a307fd19d76519
+
     public PublicGoal getPublicGoal(int i) {
         return publicGoals[i];
     }
