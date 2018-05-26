@@ -1,5 +1,7 @@
 package it.polimi.ingsw.Game;
 
+import java.util.Random;
+
 public class Bridge {
     private Colour colour;
     private int serialNumber;
@@ -45,6 +47,25 @@ public class Bridge {
         this.scheme = scheme;
     }
 
+    public Bridge[] getRndBridges(int numPlayer) {
+        Random rnd = new Random();
+        Bridge[] bridges = new Bridge[numPlayer];
+        int index[] = new int[4];
+        index[0] = rnd.nextInt(4) + 1;
+        index[1] = rnd.nextInt(4) + 1;
+        index[2] = rnd.nextInt(4) + 1;
+        index[3] = rnd.nextInt(4) + 1;
+        while (index[0] == index[1] || index[1] == index[2] || index[0] == index[2] || index[0] == index[3] || index[1] == index[3] || index[3] == index[2]) {
+            index[0] = rnd.nextInt(4) + 1;
+            index[1] = rnd.nextInt(4) + 1;
+            index[2] = rnd.nextInt(4) + 1;
+            index[3] = rnd.nextInt(4) + 1;
+        }
+        for (int i = 0; i < numPlayer; i++) {
+            bridges[i] = new Bridge(index[i]);
+        }
+        return bridges;
+    }
 
     //-----------------------------------------------Print methods------------------------------------------------------
     @Override

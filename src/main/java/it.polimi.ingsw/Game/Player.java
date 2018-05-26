@@ -51,6 +51,10 @@ public class Player {
         return online;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
     //----------------------------------Method that consume markers when the player uses a toolcard---------------------
     public boolean useMarkers(int cost) {
         boolean bool=true;

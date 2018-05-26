@@ -8,20 +8,22 @@ public class ToolCardsExecutor {
 
 
     //--------------------------------------Method that execute a tool card(requires input from keyboard)---------------
-   public boolean executeToolCard(int serialnumber,Player player,GreenCarpet greenCarpet,Ruler ruler,DiceBucket diceBucket){
+   public boolean executeToolCard(int selection,Player player,GreenCarpet greenCarpet,Ruler ruler,DiceBucket diceBucket){
            boolean bool=true;
            Scanner scan = new Scanner(System.in);
-           int cost= greenCarpet.getToolCard(serialnumber).getCost();
+           int cost= greenCarpet.getToolCard(selection).getCost();
            bool=player.useMarkers(cost);
            String s;
            if (bool) {
                if (cost == 1)
-                   greenCarpet.getToolCard(serialnumber).setCost(2);
+                   greenCarpet.getToolCard(selection).setCost(2);
                int row = 0;
                int col = 0;
                boolean correct = false;
                boolean todo = true;
+               int serialnumber=greenCarpet.getToolCard(selection).getSerialNumber();
                switch (serialnumber) {
+
                    case 1:
                        int d = 0;
                        int num=0;
@@ -54,7 +56,7 @@ public class ToolCardsExecutor {
                                }
 
                            } else {
-                               System.out.println("Invalid Selection \n Retry...");
+                               System.out.println("Selezione errata \n riprova");
                            }
                        }
                        dice.setFace(intToString(num));
@@ -73,6 +75,7 @@ public class ToolCardsExecutor {
                        player.getScheme().setBoxes(dice, row, col);
 
                        break;
+
                    case 2:
                        Dice dice2=null ;
                        int rowTmp=7;
@@ -86,23 +89,27 @@ public class ToolCardsExecutor {
                                colTmp=col;
                                if (row>=0&&row<=3&&col>=0&&col<=4 && player.getScheme().getBox(row,col).getAddedDice()!=null) {
                                    dice2=player.getScheme().getBox(row,col).getAddedDice();
+                                   player.getScheme().setBoxes(null,row,col);
                                    System.out.println("Scegli nuove coordinate di inserimento");
                                    row = scan.nextInt();
                                    col = scan.nextInt();
                                    if (row>=0&&row<=3&&col>=0&&col<=4 && player.getScheme().getBox(row,col).getAddedDice()==null){
-                                       correct=ruler.checkNeighborsFaces(row,col,player.getScheme().getBox(rowTmp,colTmp).getAddedDice(),player.getScheme())&&(player.getScheme().getBox(row,col).getRestrictionValue().equals(faceToNo(dice2.getFace())) || player.getScheme().getBox(row,col).getRestrictionValue()==null);
-                                       if(!correct)
+                                       correct=ruler.checkNeighborsFaces(row,col,dice2,player.getScheme())&&(player.getScheme().getBox(row,col).getRestrictionValue()==null || player.getScheme().getBox(row,col).getRestrictionValue().equals(faceToNo(dice2.getFace())));
+                                       if(!correct) {
                                            System.out.println("Coordinate non valide");
+                                           player.getScheme().setBoxes(dice2,rowTmp,colTmp);
+                                       }
                                    }
-                                   else
+                                   else {
                                        System.out.println("Operazione non valida");
+                                       player.getScheme().setBoxes(dice2, rowTmp, colTmp);
+                                   }
                                }
                                else
                                    System.out.println("Coordinate non valide");
                            }
                            if(dice2!=null && rowTmp!=7 && colTmp!=7 ) {
                                player.getScheme().getBox(row, col).setAddedDice(dice2);
-                               player.getScheme().setBoxes(null,rowTmp,colTmp);
                            }
 
 
@@ -111,6 +118,7 @@ public class ToolCardsExecutor {
                            System.out.println("Schema vuoto. Carta non utilizzabile");
 
                        break;
+
                    case 3:
                        Dice dice3=null ;
                        int rowTmp3=7;
@@ -124,16 +132,21 @@ public class ToolCardsExecutor {
                                colTmp3=col;
                                if (row>=0&&row<=3&&col>=0&&col<=4 && player.getScheme().getBox(row,col).getAddedDice()!=null) {
                                    dice3=player.getScheme().getBox(row,col).getAddedDice();
+                                   player.getScheme().setBoxes(null,row,col);
                                    System.out.println("Scegli nuove coordinate di inserimento");
                                    row = scan.nextInt();
                                    col = scan.nextInt();
                                    if (row>=0&&row<=3&&col>=0&&col<=4 && player.getScheme().getBox(row,col).getAddedDice()==null){
-                                       correct=ruler.checkNeighborsColours(row,col,player.getScheme().getBox(rowTmp3,colTmp3).getAddedDice(),player.getScheme())&&(player.getScheme().getBox(row,col).getRestrictionColour().equals(dice3.getColour()) || player.getScheme().getBox(row,col).getRestrictionColour()==null);
-                                       if(!correct)
+                                       correct=ruler.checkNeighborsColours(row,col,dice3,player.getScheme())&&(player.getScheme().getBox(row,col).getRestrictionColour()==null || player.getScheme().getBox(row,col).getRestrictionColour().equals(dice3.getColour()) );
+                                       if(!correct) {
                                            System.out.println("Coordinate non valide");
+                                           player.getScheme().setBoxes(dice3,rowTmp3,colTmp3);
+                                       }
                                    }
-                                   else
+                                   else {
                                        System.out.println("Operazione non valida");
+                                       player.getScheme().setBoxes(dice3, rowTmp3, colTmp3);
+                                   }
                                }
                                else
                                    System.out.println("Coordinate non valide");
@@ -148,6 +161,7 @@ public class ToolCardsExecutor {
                        else
                            System.out.println("Schema vuoto. Carta non utilizzabile");
                        break;
+
                    case 4:
                        int row41=0;
                        int row42=0;
@@ -213,6 +227,7 @@ public class ToolCardsExecutor {
                                System.out.println("cordinate primo dado non valide");
                        }
                        break;
+
                    case 5:
                        boolean try5=true;
                        int d5 = 0;
@@ -297,6 +312,7 @@ public class ToolCardsExecutor {
                        for (Dice dice7:greenCarpet.getStock())
                            dice7.roll();
                    break;
+
                    case 9:
                        boolean try9=true;
                        int d9 = 0;
@@ -333,6 +349,7 @@ public class ToolCardsExecutor {
                        }
                        player.getScheme().setBoxes(dice9,row,col);
                        break;
+
                    case 10:
                        boolean try10=true;
                        int d10 = 0;
@@ -373,6 +390,7 @@ public class ToolCardsExecutor {
                        }
                        player.getScheme().setBoxes(dice10, row, col);
                        break;
+
                    case 11:
                        boolean try11=true;
                        int d11 = 0;
@@ -386,27 +404,33 @@ public class ToolCardsExecutor {
                        }
                        diceBucket.insertDice(greenCarpet.getDiceFromStock(d11));
                        Dice dice11=diceBucket.educe();
+                       dice11.dump();
                        System.out.println("Scegli il numero da piazzare");
                        dice11.setFace(intToString(scan.nextInt()));
                        dice11.dump();
-                       while(!correct){
-                           System.out.println("Scegli le coordinate di inserimento");
-                           row = scan.nextInt();
-                           col = scan.nextInt();
-                           if (row>=0&&row<=3 &&col>=0&&col<=4) {
-                               correct = ruler.checkCorrectPlacement(row, col, dice11, player.getScheme());
-                               if (!correct)
-                                   System.out.println("Coordinate non valide");
-
-                           }
-                           else
-                               System.out.println("Coordinate non valide");
+                       while (!ruler.checkAvailableDice(dice11,player.getScheme())) {
+                           System.out.println("il numero che hai scelto non può essere piazzato nel tuo schema\n per favore scegli un altro numero");
+                           dice11.setFace(intToString(scan.nextInt()));
+                           dice11.dump();
+                           ruler.checkAvailableDice(dice11, player.getScheme());
                        }
-                       player.getScheme().setBoxes(dice11, row, col);
+                           while (!correct) {
+                               System.out.println("Scegli le coordinate di inserimento");
+                               row = scan.nextInt();
+                               col = scan.nextInt();
+                               if (row >= 0 && row <= 3 && col >= 0 && col <= 4) {
+                                   correct = ruler.checkCorrectPlacement(row, col, dice11, player.getScheme());
+                                   if (!correct)
+                                       System.out.println("Coordinate non valide");
+
+                               } else
+                                   System.out.println("Coordinate non valide");
+                               player.getScheme().setBoxes(dice11, row, col);
+                           }
                        break;
+
                    case 12:
                        boolean try12 = false;
-
                        while(!try12){
                            System.out.println("scegli dado dal Roundpath");
                            col=scan.nextInt();

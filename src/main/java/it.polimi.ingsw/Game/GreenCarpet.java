@@ -16,7 +16,7 @@ public class GreenCarpet {
         this.nPlayers = nPlayers;
         int i=nPlayers*2+1;
         stock= new ArrayList<Dice>(i);
-        roundPath= new Dice[i][9];
+        roundPath= new Dice[i][10];
         publicGoals = new PublicGoal[3];
         toolCards = new ToolCards[3];
     }
@@ -76,11 +76,13 @@ public class GreenCarpet {
     public ArrayList<Dice> getStock(){
         return stock;
     }
-    public void setRoundPath(int round,ArrayList<Dice> dices){
-        for(int i=0; i<dices.size();i++){
-            this.roundPath[i][round-1]=dices.get(i);
+    public void setRoundPath(int round){
+        for(int i=0; stock.size()>0;i++){
+            this.roundPath[i][round-1]=getDiceFromStock(1);
         }
+
     }
+
     public Dice changeDiceFromRoundPath(int i, int round, Dice dice){
         Dice d=roundPath[i-1][round-1];
         roundPath[i-1][round-1]=dice;
@@ -92,6 +94,10 @@ public class GreenCarpet {
     public Dice getDiceFromStock(int i){
         Dice dice= stock.get(i-1);
         stock.remove(i-1);
+        return dice;
+    }
+    public Dice checkDiceFromStock(int i){
+        Dice dice= stock.get(i-1);
         return dice;
     }
     public void setDiceInStock(Dice dice){
@@ -109,12 +115,23 @@ public class GreenCarpet {
        @Override
     public String toString() {
         String s = new String();
-        for(int i=0;i<9;i++){
+        s="--OBBIETTIVI PUBBLICI--\n";
+        for (int i = 0; i < 3; i++){
+               s = s + publicGoals[i];
+               s = s + "\n";
+        }
+        s=s+"--CARTE UTENSILI--\n";
+        for (int i = 0; i < 3; i++) {
+               s = s + toolCards[i];
+               s = s + "\n";
+        }
+        s=s+"--TRACCIATO DEI ROUND--\n";
+        for(int i=0;i<10;i++){
             s=s+"[" + (i+1) +"°] ";
         }
         s=s+"\n";
         for (int i = 0; i < nPlayers * 2 + 1; i++) {
-            for (int j = 0; j < 9; j++) {
+            for (int j = 0; j < 10; j++) {
                 if (roundPath[i][j] == null)
                     s = s + "[  ] ";
                 else
@@ -122,21 +139,11 @@ public class GreenCarpet {
             }
             s = s+"\n";
         }
+           s=s+"--RISERVA--\n";
         for (int i=0;i<stock.size();i++)
             s=s+(i+1)+")"+stock.get(i).toString()+" ";
         s=s+"\n";
-        ;
-        s = s+"\n";
-        for (int i = 0; i < 3; i++){
-            s = s + "\n";
-            s = s + publicGoals[i];
-            s = s + "\n";
-        }
-        s = s + "\n";
-        for (int i = 0; i < 3; i++) {
-            s = s + toolCards[i];
-            s = s + "\n";
-        }
+
         return s;
     }
     public void dump(){

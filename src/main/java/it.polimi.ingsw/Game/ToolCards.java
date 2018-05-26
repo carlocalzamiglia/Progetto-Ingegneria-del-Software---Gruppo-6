@@ -81,7 +81,7 @@ public class ToolCards {
                 this.colour = Colour.ANSI_YELLOW;
                 this.description1 = "Dopo aver scelto un dado piazzalo in una casella che non sia adiacente a un altro dado";
                 this.description2 = "Devi rispettare tutte le restrizioni di piazzamento";
-                this.serialNumber = 10;
+                this.serialNumber = 9;
                 this.cost = 1;
                 break;
             case 10:
@@ -128,6 +128,19 @@ public class ToolCards {
     public int getCost(){
         return cost;
     }
+    public int getSerialNumber() {
+        return serialNumber;
+    }
+
+
+    public boolean checkSpecial(int serialNumber){
+        if(serialNumber==1 || serialNumber==5 ||serialNumber==6 ||serialNumber==9 ||serialNumber==10 ||serialNumber==11){
+            return true;
+        }
+        else
+            return false;
+    }
+
 
     //-----------------------------------------------Print methods------------------------------------------------------
     @Override

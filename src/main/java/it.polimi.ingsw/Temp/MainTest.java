@@ -2,12 +2,9 @@
 package it.polimi.ingsw.Temp;
 
 
-import it.polimi.ingsw.Game.DiceBucket;
-import it.polimi.ingsw.Game.Inventory;
-import it.polimi.ingsw.Game.Player;
-import it.polimi.ingsw.Game.ToolCardsExecutor;
-import it.polimi.ingsw.Game.Ruler;
-import it.polimi.ingsw.Game.GreenCarpet;
+
+import it.polimi.ingsw.Game.Game;
+import it.polimi.ingsw.Server.User;
 
 public class MainTest {
     public static void main(String[] args)
@@ -39,6 +36,15 @@ public class MainTest {
         greenCarpet.dump();
         System.out.println(goodEnding);
         player1.dump();*/
+
+        Game game=new Game(1);
+        User user1=new User("Cesna","nickname");
+        //User user2=new User("Ciccia","Rello");
+        //User user3 =new User("Carlo","Carli");
+        game.addUser(user1);
+        //game.addUser(user2);
+        //game.addUser(user3);
+        game.startGame();
 
 
 

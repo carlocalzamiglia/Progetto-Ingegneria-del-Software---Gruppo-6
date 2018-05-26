@@ -12,6 +12,10 @@ package it.polimi.ingsw.Game;
             boolean isCorrect = true;
             this.scheme=scheme;
             this.dice=dice;
+            if(row<0 || row>3 || col<0 || col>4) {
+                isCorrect = false;
+                return isCorrect;
+            }
             if (scheme.isEmpty() == true) {
                 if (row != 0 && row != 3 && col != 0 && col != 4)
                     isCorrect = false;
@@ -24,9 +28,32 @@ package it.polimi.ingsw.Game;
                 if (isCorrect)
                     isCorrect=checkNeighbors(row,col);
             }
-            if(!isCorrect)
-                System.out.println(isCorrect);
         return isCorrect;
+        }
+        public boolean checkAvailable(GreenCarpet greenCarpet,Scheme scheme){
+            boolean bool=false;
+            for(int i=0;i<greenCarpet.getStock().size();i++){
+                for(int row=0;row<4;row++){
+                    for(int col=0;col<5;col++){
+                        bool=checkCorrectPlacement(row,col,greenCarpet.checkDiceFromStock(i+1),scheme);
+                        if(bool)
+                            return bool;
+                    }
+                }
+            }
+            return bool;
+        }
+        public boolean checkAvailableDice(Dice dice,Scheme scheme){
+            boolean bool=false;
+                for(int row=0;row<4;row++){
+                    for(int col=0;col<5;col++){
+                        bool=checkCorrectPlacement(row,col,dice,scheme);
+                        if(bool)
+                            return bool;
+                    }
+                }
+            return bool;
+
         }
 
         //---------------------------Method that returns true if a dice can be placed in a specific box-----------------
@@ -172,6 +199,8 @@ package it.polimi.ingsw.Game;
         public boolean checkNeighborsFaces(int row,int col,Dice dice,Scheme scheme){
             boolean bool=true;
             int flag=0;
+            if (scheme.isEmpty())
+                return bool;
             if (col-1>=0)
                 if(scheme.getBox(row,col-1).getAddedDice()!=null) {
                     if(scheme.getBox(row, col - 1).getAddedDice().getFace().equals(dice.getFace()))
@@ -222,6 +251,8 @@ package it.polimi.ingsw.Game;
         public boolean checkNeighborsColours(int row,int col,Dice dice,Scheme scheme) {
             boolean bool = true;
             int flag = 0;
+            if (scheme.isEmpty())
+                return bool;
             if (col - 1 >= 0)
                 if (scheme.getBox(row, col - 1).getAddedDice() != null) {
                     if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
@@ -266,6 +297,8 @@ package it.polimi.ingsw.Game;
                 bool = false;
             return bool;
         }
+
+
 
         //---------------------------Useful method that converts a dice "face" into a number(string)--------------------
         private String faceToNo(String face) {

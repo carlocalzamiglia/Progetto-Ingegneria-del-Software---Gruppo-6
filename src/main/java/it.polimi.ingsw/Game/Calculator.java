@@ -197,10 +197,12 @@ public class Calculator {
 
                     for (int j = 0; j < 4; j++) {
                         for (int k = 0; k < 5 ; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680") && player.getScheme().getBox(j, k).getAddedDice() != null)
-                                nOne++;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681") && player.getScheme().getBox(j, k).getAddedDice() != null)
-                                nTwo++;
+                            if (player.getScheme().getBox(j, k).getAddedDice() != null) {
+                                if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680"))
+                                    nOne++;
+                                else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681"))
+                                    nTwo++;
+                            }
                         }
                     }
                     if (nOne >= nTwo)
@@ -212,13 +214,14 @@ public class Calculator {
 
                     int nThree = 0;
                     int nFour = 0;
-
                     for (int j = 0; j < 4; j++) {
                         for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682") && player.getScheme().getBox(j, k).getAddedDice() != null)
-                                nThree++;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683") && player.getScheme().getBox(j, k).getAddedDice() != null)
-                                nFour++;
+                            if (player.getScheme().getBox(j, k).getAddedDice() != null) {
+                                if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682"))
+                                    nThree++;
+                                else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683"))
+                                    nFour++;
+                            }
                         }
                     }
                     if (nThree >= nFour)
@@ -233,10 +236,12 @@ public class Calculator {
 
                     for (int j = 0; j < 4; j++) {
                         for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684") &&player.getScheme().getBox(j, k).getAddedDice() != null)
-                                nFive++;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685") && player.getScheme().getBox(j, k).getAddedDice() != null)
-                                nSix++;
+                            if (player.getScheme().getBox(j, k).getAddedDice() != null) {
+                                if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684"))
+                                    nFive++;
+                                else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685"))
+                                    nSix++;
+                            }
                         }
                     }
                     if (nFive >= nSix)
@@ -259,22 +264,22 @@ public class Calculator {
                             flag=0;
                             if (player.getScheme().getBox(j, k).getAddedDice() == null)
                                 flag = 1;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680")) {
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680") && flag!=1) {
                                 noOne++;
                                 values[0] = noOne;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681")) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681") && flag!=1) {
                                 noTwo++;
                                 values[1] = noTwo;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682")) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682")&& flag!=1) {
                                 noThree++;
                                 values[2] = noThree;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683")) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683")&& flag!=1) {
                                 noFour++;
                                 values[3] = noFour;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684")) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684")&& flag!=1) {
                                 noFive++;
                                 values[4] = noFive;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685")) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685")&& flag!=1) {
                                 noSix++;
                                 values[5] = noSix;
                             }
@@ -323,19 +328,19 @@ public class Calculator {
                             flag=0;
                             if (player.getScheme().getBox(j, k).getAddedDice() == null)
                                 flag = 1;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_PURPLE)) {
+                            else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_PURPLE)&& flag!=1) {
                                 nPurples++;
                                 nColors[0] = nPurples;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_BLUE)) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_BLUE)&& flag!=1) {
                                 nBlues++;
                                 nColors[1] = nBlues;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_YELLOW)) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_YELLOW)&& flag!=1) {
                                 nYellows++;
                                 nColors[2] = nYellows;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_RED)) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_RED)&& flag!=1) {
                                 nReds++;
                                 nColors[3] = nReds;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_GREEN)) {
+                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_GREEN)&& flag!=1) {
                                 nGreens++;
                                 nColors[4] = nGreens;
                             }
