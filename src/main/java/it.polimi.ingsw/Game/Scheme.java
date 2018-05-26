@@ -1,5 +1,7 @@
 package it.polimi.ingsw.Game;
 
+import java.util.Random;
+
 public class Scheme {
     private Box boxes[][];
     private String name;
@@ -630,6 +632,48 @@ public class Scheme {
     }
     public Box getBox(int i, int j) {
         return boxes[i][j];
+    }
+
+    public Scheme[] getRndSchemes(int numPlayer){
+        Random rnd=new Random();
+        Scheme [] schemes=new Scheme[numPlayer*4];
+        int index[]=new int[16];
+        index[0]=rnd.nextInt(12)*2+1;
+        index[2]=rnd.nextInt(12)*2+1;
+        while(index[0]==index[2])
+            index[2]=rnd.nextInt(12)*2+1;
+        index[4]=rnd.nextInt(12)*2+1;
+        while(index[4]==index[0] || index[4]==index[2])
+            index[4]=rnd.nextInt(12)*2+1;
+        index[6]=rnd.nextInt(12)*2+1;
+        while(index[6]==index[0] || index[6]==index[2] || index[6]==index[4])
+            index[6]=rnd.nextInt(12)*2+1;
+        index[8]=rnd.nextInt(12)*2+1;
+        while(index[8]==index[0] || index[8]==index[2] || index[8]==index[4] || index[8]==index[6])
+            index[8]=rnd.nextInt(12)*2+1;
+        index[10]=rnd.nextInt(12)*2+1;
+        while(index[10]==index[0] || index[10]==index[2] || index[10]==index[4] || index[10]==index[6] || index[10]==index[8])
+            index[10]=rnd.nextInt(12)*2+1;
+        index[12]=rnd.nextInt(12)*2+1;
+        while(index[12]==index[0] || index[12]==index[2] || index[12]==index[4] || index[12]==index[6]|| index[12]==index[8]|| index[12]==index[10])
+            index[12]=rnd.nextInt(12)*2+1;
+        index[14]=rnd.nextInt(12)*2+1;
+        while(index[14]==index[0] || index[14]==index[2] || index[14]==index[4] || index[14]==index[6]|| index[14]==index[8]|| index[14]==index[10]|| index[14]==index[12])
+            index[14]=rnd.nextInt(12)*2+1;
+
+
+        index[1]=index[0]+1;
+        index[3]=index[2]+1;
+        index[5]=index[4]+1;
+        index[7]=index[6]+1;
+        index[9]=index[8]+1;
+        index[11]=index[10]+1;
+        index[13]=index[12]+1;
+        index[15]=index[14]+1;
+        for(int i=0;i<numPlayer*4;i++) {
+            schemes[i] = new Scheme(index[i]);
+        }
+        return schemes;
     }
 
     //-----------------------------------------------Method that place a dice in the scheme-----------------------------

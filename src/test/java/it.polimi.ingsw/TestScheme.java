@@ -10,7 +10,7 @@ public class TestScheme {
 
     public void tScheme() {
 
-        Dice dice = new Dice(Colour.ANSI_BLUE);
+        /*Dice dice = new Dice(Colour.ANSI_BLUE);
 
         Scheme scheme[]=new Scheme[24];
         for(int i=1;i<=24;i++){
@@ -21,7 +21,11 @@ public class TestScheme {
         Dice d=new Dice(Colour.ANSI_BLUE);
         d.roll();
         scheme[0].setBoxes(d,1,0);
-        scheme[0].dump();
+        scheme[0].dump();*/
+
+        Scheme[] schemes=new Scheme(0).getRndSchemes(3);
+        for(int i=0;i<12;i++)
+            schemes[i].dump();
     }
 
     @org.junit.jupiter.api.Test
