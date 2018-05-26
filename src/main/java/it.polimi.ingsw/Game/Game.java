@@ -49,7 +49,7 @@ public class Game {
         greenCarpet.setRndToolCards();
 
         PrivateGoal[] privateGoals=new PrivateGoal(1).getRndPrivateGoals(numUser);
-        Scheme [] schemes=new Scheme();
+        Scheme [] schemes=new Scheme(0).getRndSchemes(numUser);
 
         for (int i=0;i<numUser;i++) {
             Player player=new Player(users.get(i).getNickname());
