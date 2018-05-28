@@ -66,8 +66,11 @@ public class Game {
             schemes[(i*4)+1].dump();
             schemes[(i*4)+2].dump();
             schemes[(i*4)+3].dump();
-
             int choose=scanner.nextInt();
+            while(choose<=0 || choose>4){
+                System.out.println("errore selezione\nScegli lo schema tra questi");
+                choose=scanner.nextInt();
+            }
             player.setBridge(bridges[i]);
             player.setScheme(schemes[(i*4)+choose-1]);
             player.setMarkers();
