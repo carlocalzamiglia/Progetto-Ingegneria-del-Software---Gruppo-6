@@ -132,7 +132,7 @@ public class ToolCards {
         return serialNumber;
     }
 
-
+    //-----------------------------------------------Checks the serialnumber of a tool card-----------------------------
     public boolean checkSpecial(int serialNumber){
         if(serialNumber==1 || serialNumber==5 ||serialNumber==6 ||serialNumber==9 ||serialNumber==10 ||serialNumber==11){
             return true;
@@ -140,7 +140,6 @@ public class ToolCards {
         else
             return false;
     }
-
 
     //-----------------------------------------------Print methods------------------------------------------------------
     @Override

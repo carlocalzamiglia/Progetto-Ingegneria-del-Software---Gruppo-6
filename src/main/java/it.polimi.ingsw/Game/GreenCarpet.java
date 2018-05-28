@@ -110,6 +110,15 @@ public class GreenCarpet {
         return nPlayers;
     }
 
+    //--------------------------------------Returns true if the roundpath isn't empty-----------------------------------
+    public boolean checkEmptyRoundpath(){
+        boolean bool=false;
+        for (int i=0; i<(getnPlayers()*2+1)&& !bool;i++)
+            for (int j=0;j<10 && !bool;j++)
+                if (roundPath[i][j]!=null)
+                    bool=true;
+        return bool;
+    }
 
     //-----------------------------------------------Print methods------------------------------------------------------
        @Override

@@ -58,10 +58,11 @@ public class Player {
     //----------------------------------Method that consume markers when the player uses a toolcard---------------------
     public boolean useMarkers(int cost) {
         boolean bool=true;
-        if (markers.size()>cost) {
+        if (markers.size()>=
+                cost) {
             bool = true;
             for (int i = 0; i < cost; i++)
-                markers.remove(i);
+                markers.remove(0);
         }
         else {
             bool = false;

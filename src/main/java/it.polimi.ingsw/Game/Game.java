@@ -104,7 +104,7 @@ public class Game {
                             System.out.println("errore selezione scegli un altra carta?");
                             cards = scanner.nextInt();
                         }
-                        if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber()) && flagDice)
+                        if((new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber()) && flagDice) || greenCarpet.getToolCard(cards).getSerialNumber()==7)
                             System.out.println("non puoi usare questa carta");
                         else if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())){
                             executor.executeToolCard(cards, player.get(i), greenCarpet, ruler, diceBucket);
@@ -122,8 +122,8 @@ public class Game {
                         if (ruler.checkAvailable(greenCarpet, player.get(i).getScheme())) {
                             System.out.println("Quale dado vuoi posizionare?");
                             int dice = scanner.nextInt();
-                            while(dice<=0 || dice >=greenCarpet.getStock().size()){
-                                System.out.println("Posizione non valida\n Quale dado vuoi posizionare?");
+                            while(dice<=0 || dice >=greenCarpet.getStock().size()+1){
+                                System.out.println("Posizione non valida\nQuale dado vuoi posizionare?");
                                 dice = scanner.nextInt();
                             }
                             System.out.println("inserisci riga");
@@ -181,9 +181,9 @@ public class Game {
                             System.out.println("errore selezione scegli un altra carta?");
                             cards = scanner.nextInt();
                         }
-                        if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber()) && flagDice)
+                        if((new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())||greenCarpet.getToolCard(cards).getSerialNumber()==7) && flagDice)
                             System.out.println("non puoi usare questa carta");
-                        else if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())){
+                        else if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())||greenCarpet.getToolCard(cards).getSerialNumber()==7){
                             executor.executeToolCard(cards, player.get(i), greenCarpet, ruler, diceBucket);
                             player.get(i).dump();
                             flagTool = true;
