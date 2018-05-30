@@ -39,6 +39,10 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         new HandleDisconnection(nickname, this).start();
     }
 
+    public void addToMatches(String username) throws IOException {
+        matches.addUser(DB.getUser(username));
+    }
+
 
 
     //------------------------------------new user connected message on CLI---------------------------------------------

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Game;
 
-public class Box {
+import java.io.Serializable;
+
+public class Box implements Serializable {
     private String restrictionValue;
     private Colour restrictionColour;
     private Dice addedDice;

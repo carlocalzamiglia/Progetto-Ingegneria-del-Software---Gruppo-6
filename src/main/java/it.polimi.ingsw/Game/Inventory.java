@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Game;
 
-public class Inventory {
+import java.io.Serializable;
+
+public class Inventory implements Serializable {
     private PrivateGoal[] privateGoals;
     private PublicGoal[] publicGoals;
     private Bridge[] bridges;

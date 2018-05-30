@@ -3,7 +3,11 @@ package it.polimi.ingsw.Game;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+<<<<<<< HEAD
 public class Player implements Serializable{
+=======
+public class Player implements Serializable {
+>>>>>>> 659b591b17950e09c3dd7c95aa589cbbcc53d133
     private String nickname;
     private Bridge bridge;
     private PrivateGoal privateGoal;

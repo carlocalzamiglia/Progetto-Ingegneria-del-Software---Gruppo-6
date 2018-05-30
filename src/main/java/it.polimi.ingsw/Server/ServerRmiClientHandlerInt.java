@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
+
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import it.polimi.ingsw.Client.ClientRmiInt;
 
 public interface ServerRmiClientHandlerInt extends Remote {
@@ -14,5 +16,6 @@ public interface ServerRmiClientHandlerInt extends Remote {
     public boolean manageDisconnection(String nickname) throws RemoteException;
     public boolean clientAlive(String nickname) throws RemoteException;
     public void newUserMessage(String nickname) throws IOException;
+    public void addToMatches(String username) throws IOException;
 
 }

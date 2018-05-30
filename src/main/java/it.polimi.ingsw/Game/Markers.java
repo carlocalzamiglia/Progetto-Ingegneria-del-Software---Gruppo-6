@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Game;
 
-public class Markers {
+import java.io.Serializable;
+
+public class Markers implements Serializable {
     private final int value = 1;
 
     public int getValue() {

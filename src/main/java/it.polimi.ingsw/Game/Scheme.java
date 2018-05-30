@@ -1,8 +1,9 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Scheme {
+public class Scheme implements Serializable {
     private Box boxes[][];
     private String name;
     private int difficulty;
@@ -711,4 +712,5 @@ public class Scheme {
     public void dump(){
         System.out.println(this);
     }
+
 }

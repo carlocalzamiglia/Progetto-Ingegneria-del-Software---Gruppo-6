@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Game;
 
-public class ToolCards {
+import java.io.Serializable;
+
+public class ToolCards implements Serializable {
     private String name;
     private Colour colour;
     private String description1;

@@ -2,18 +2,18 @@ package it.polimi.ingsw.Server;
 
 
 
-import it.polimi.ingsw.Game.Game;
+import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Matches;
 import it.polimi.ingsw.Game.Ruler;
 import it.polimi.ingsw.Game.Scheme;
+import it.polimi.ingsw.Game.Player;
 import it.polimi.ingsw.Game.Dice;
 import it.polimi.ingsw.Game.Colour;
 import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.Serializable;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
@@ -21,12 +21,12 @@ import java.util.Scanner;
 import static java.lang.Thread.sleep;
 import static jdk.nashorn.internal.objects.NativeMath.random;
 
-public class ServerSocketClientHandler implements Runnable,ServertoClient {
+public class ServerSocketClientHandler implements Runnable,ServertoClient, Serializable {
     private Socket socket;
     private DBUsers DB;
     private Matches matches;
-    private ObjectOutputStream outs;
-    private ObjectInputStream ins;
+    //private ObjectOutputStream outs;
+    //private ObjectInputStream ins;
     String message = "";
     String [] arrOfMsg;
 
@@ -80,7 +80,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
     //-----------------------------------------wait for messages from client--------------------------------------------
-    class ListenFromClient extends Thread {
+    class ListenFromClient extends Thread implements Serializable {
         String nickname;
         //constructor
 
@@ -89,6 +89,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
         //HERE THE IMPLEMENTATION OF THE PROTOCOL
         public void run() {
+            ObjectInputStream ins;
             while (true) {
                 try {
                     ins = new ObjectInputStream(socket.getInputStream());
@@ -146,6 +147,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     //--------------------------------------------send message to the user----------------------------------------------
     public void sendMessageOut(String message) throws IOException {
+        ObjectOutputStream outs;
         outs = new ObjectOutputStream(socket.getOutputStream());
         outs.writeObject(message);
     }
@@ -187,15 +189,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         System.out.println("SCHEMA RICEVUTO");
     }
 
-    public void handleturn(Game game, int i) throws IOException, InterruptedException {
+    public void handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
         boolean flagTool=false;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         while(true) {
+            sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
-            sendMessageOut("@GC-"+game.getGreenCarpet().toString()+"\n");
-            sendMessageOut("@PLAYER-"+game.getPlayer(i).toString()+"\n");
+            sendMessageOut("@GC-"+greenCarpet.toString()+"\n");
+            sendMessageOut("@PLAYER-"+player.toString()+"\n");
             sendMessageOut("@ERROR-1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
             sendMessageOut("@CHOOSEACTION");
             while (!(message.equals("@ACTIONCHOSE"))){sleep(300);}
@@ -205,15 +208,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 message="";
                 return;
             } else if (arrOfMsg[1].equals("2")) { //dice
-                if(ruler.checkAvailable(game.getGreenCarpet(), game.getPlayer(i).getScheme())) {
+                if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
                     System.out.println("E' stato scelto il dado");
                     if (!usedDice) {
-                        placedice(game, i);
+                        placedice(greenCarpet, player, i);
                         usedDice = true;
                         if (usedTool) {
                             sendMessageOut("@YOURTURN-false");
                             return;
-                        }
+                        }else
+                            sendMessageOut("@ERROR-Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
                     }
                 }else
                     sendMessageOut("@ERROR-Non è possibile inserire alcun dado. Passa il turno o utilizza una carta tool.");
@@ -221,7 +225,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 message="";
             } else if (arrOfMsg[1].equals("3")) {   //tool
                 System.out.println("E' stata scelta la tool");
-                flagTool = placeTool(game, i, usedDice);
+                flagTool = placeTool(greenCarpet, player, i, usedDice);
                 if (flagTool) {
                     sendMessageOut("@YOURTURN-false");
                     return;
@@ -233,7 +237,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
     }
 
-    private void placedice(Game game, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
+    private void placedice( GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
         Boolean checkdice = false;
         Random random = new Random();
         Ruler ruler = new Ruler();
@@ -241,9 +245,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             sendMessageOut("@YOURTURN-true");
             sendMessageOut("@PLACEDICE");
             while (!(message.equals("@DICEPLACED"))){sleep(300);}
-            Dice dice = game.getGreenCarpet().checkDiceFromStock(stringToInt(arrOfMsg[1]));
+            Dice dice = greenCarpet.checkDiceFromStock(stringToInt(arrOfMsg[1]));
             if(dice!=null) {
-                checkdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), dice, game.getPlayer(i).getScheme());
+                checkdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), dice, player.getScheme());
                 System.out.println("checkdice ha detto: " + checkdice);
                 if (!checkdice)
                     sendMessageOut("@ERROR-Il dado non può essere inserito");
@@ -252,18 +256,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
             message="";
         }
-        game.getPlayer(i).getScheme().setBoxes(game.getGreenCarpet().getDiceFromStock(stringToInt(arrOfMsg[1])), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
-        sendMessageOut("Ecco lo schema aggiornato:\n"+game.getPlayer(i).getScheme().toString());
+        player.getScheme().setBoxes(greenCarpet.getDiceFromStock(stringToInt(arrOfMsg[1])), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+        sendMessageOut("Ecco lo schema aggiornato:\n"+player.getScheme().toString());
     }
 
 
-    private boolean placeTool(Game game, int i, boolean useddice) throws IOException {
+    private boolean placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException {
         boolean checktool=false;
         boolean toolused;
         boolean toolok=false;
         while(!checktool){
-            sendMessageOut("@GC-"+game.getGreenCarpet().toString());
-            sendMessageOut("@PLAYER-"+game.getPlayer(i).toString());
             sendMessageOut("@YOURTURN-true");
             while(!toolok) {                //run 'till the card is correct and used
                 sendMessageOut("@USETOOL");

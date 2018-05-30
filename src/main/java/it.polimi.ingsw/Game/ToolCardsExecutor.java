@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ToolCardsExecutor implements Serializable {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 659b591b17950e09c3dd7c95aa589cbbcc53d133
 
 
     //--------------------------------------Method that execute a tool card(requires input from keyboard)---------------
