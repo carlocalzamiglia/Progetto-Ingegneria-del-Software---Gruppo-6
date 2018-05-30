@@ -1,7 +1,8 @@
 package it.polimi.ingsw.Game;
+import java.io.Serializable;
 import java.util.*;
 
-public class Dice {
+public class Dice implements Serializable {
     private String face;
     private Colour colour;
 

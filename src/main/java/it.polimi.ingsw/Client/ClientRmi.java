@@ -1,26 +1,32 @@
 package it.polimi.ingsw.Client;
 
 
-import it.polimi.ingsw.Game.Game;
-import it.polimi.ingsw.Server.DBUsers;
-import it.polimi.ingsw.Server.HandleDisconnection;
+import it.polimi.ingsw.Game.GreenCarpet;
+import it.polimi.ingsw.Game.Matches;
+import it.polimi.ingsw.Game.Ruler;
+import it.polimi.ingsw.Game.Scheme;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.Dice;
+import it.polimi.ingsw.Game.Colour;
+
 import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
+import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
 import java.io.*;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Random;
 import java.util.Scanner;
 
-public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
+
+public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, ServertoClient {
 
     private ClientRmiInt client;
     private ServerRmiClientHandlerInt server;
     BufferedReader inKeyboard = new BufferedReader(new InputStreamReader(System.in));
     PrintWriter outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
-    DBUsers DB=new DBUsers();
     private String nickname;
     private String root;
     private int PORT;
@@ -47,7 +53,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         {
             connect();
             login();
-            play();
+            //play();
             //chiudi();
         }
         catch(Exception e) {
@@ -99,7 +105,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
                     this.nickname=username;
                     server.addRmi(this, username);
                     server.publish(username);
-
+                    server.addToMatches(username);
                 }
                 else if(logged==3)
                     System.out.println("L'utente selezionato è già connesso. Deve esserci un errore!");
@@ -153,16 +159,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
 
     //-----------------------------------------check if client is alive yet---------------------------------------------
     public boolean aliveMessage(){
-        System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
         return true;
     }
 
-
-    //to be implement
-    @Override
-    public void handleturn(Game game, int i) throws IOException, InterruptedException {
-
-    }
 
     //--------------------------------------get connection properties from file-----------------------------------------
     private String leggiDaFile() throws IOException {
@@ -189,6 +188,112 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     //******************************************game methods***********************************************+
     @Override
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
-        return 0;
+        Scanner in = new Scanner(System.in);
+        String message;
+        do {
+            sendMessageOut("Scegli uno schema:\n" + scheme1 + "\n" + scheme2 + "\n" + scheme3 + "\n" + scheme4);
+            message = in.nextLine();
+        }while (stringToInt(message)<=0 || stringToInt(message)>4);
+        System.out.println(stringToInt(message));
+        return stringToInt(message);
     }
+
+
+    //to be implement
+    @Override
+    public void handleturn(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {
+        boolean usedDice=false;
+        boolean flagTool=false;
+        boolean usedTool=false;
+        Ruler ruler = new Ruler();
+        String value;
+        while(true){
+            sendMessageOut("Ecco qui il tavolo e il tuo schema:\n");
+            sendMessageOut(greenCarpet.toString()+"\n");
+            sendMessageOut(player.toString()+"\n");
+            sendMessageOut("1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
+            value = inKeyboard.readLine();
+            if(value.equals("1")){
+                return;
+            }else if(value.equals("2")){
+                if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
+                    System.out.println("E' stato scelto il dado");
+                    if (!usedDice) {
+                        placedice(greenCarpet, player, i);
+                        usedDice = true;
+                        if (usedTool)
+                            return;
+                    }else
+                        sendMessageOut("Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
+                }else
+                    sendMessageOut("Non è possibile inserire alcun dado. Passa il turno o utilizza una carta tool.");
+            }else if(value.equals("3")){
+                System.out.println("E' stata scelta la tool");
+                flagTool = placeTool(greenCarpet, player, i, usedDice);
+                if (flagTool) {
+                    sendMessageOut("@YOURTURN-false");
+                    return;
+                }
+                usedTool = true;
+            }
+        }
+    }
+
+    private boolean placeTool(GreenCarpet greenCarpet, Player player, int i, boolean usedDice) {
+        return true;
+    }
+
+
+    private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
+        Boolean checkdice = false;
+        Random random = new Random();
+        Ruler ruler = new Ruler();
+        String value="";
+        String row="";
+        String col="";
+        while (!checkdice) {
+            sendMessageOut("Inserisci il numero del dado della riserva che vuoi piazzare.");
+            value=inKeyboard.readLine();
+            sendMessageOut("Inserisci la riga dove vuoi piazzare il dado.");
+            row=inKeyboard.readLine();
+            sendMessageOut("Inserisci la colonna dove vuoi piazzare il dado.");
+            col=inKeyboard.readLine();
+            Dice dice = greenCarpet.checkDiceFromStock(stringToInt(value));
+            if(dice!=null) {
+                checkdice = ruler.checkCorrectPlacement(stringToInt(row), stringToInt(col), dice, player.getScheme());
+                if (!checkdice)
+                    sendMessageOut("Il dado non può essere inserito");
+            }else
+                sendMessageOut("Hai scelto un dado non valido");
+        }
+        player.getScheme().setBoxes(greenCarpet.getDiceFromStock(stringToInt(value)), stringToInt(row), stringToInt(col));
+        sendMessageOut("Ecco lo schema aggiornato:\n"+player.getScheme().toString());
+    }
+
+
+
+
+    private int stringToInt(String message){
+        if(message.equals("1"))
+            return 1;
+        else if(message.equals("2"))
+            return 2;
+        else if(message.equals("3"))
+            return 3;
+        else if(message.equals("4"))
+            return 4;
+        else if(message.equals("5"))
+            return 5;
+        else if(message.equals("6"))
+            return 6;
+        else if(message.equals("7"))
+            return 7;
+        else if(message.equals("8"))
+            return 8;
+        else if(message.equals("9"))
+            return 9;
+        else
+            return 0;
+    }
+
 }

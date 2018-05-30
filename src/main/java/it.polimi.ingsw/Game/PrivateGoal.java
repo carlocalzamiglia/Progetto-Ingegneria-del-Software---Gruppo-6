@@ -1,9 +1,10 @@
 package it.polimi.ingsw.Game;
 
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class PrivateGoal {
+public class PrivateGoal implements Serializable {
     private String name;
     private String description;
     private int serialNumber;

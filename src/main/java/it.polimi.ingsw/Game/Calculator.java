@@ -1,9 +1,10 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Calculator {
+public class Calculator implements Serializable {
 
     private final ArrayList<Player> players;
     private final GreenCarpet greenCarpet;

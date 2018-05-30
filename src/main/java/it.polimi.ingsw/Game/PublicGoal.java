@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Game;
 
-public class PublicGoal {
+import java.io.Serializable;
+
+public class PublicGoal implements Serializable {
     private String name;
     private String description;
     private String points;

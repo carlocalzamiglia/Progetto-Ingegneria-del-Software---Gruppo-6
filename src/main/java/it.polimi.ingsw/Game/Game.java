@@ -3,11 +3,12 @@ package it.polimi.ingsw.Game;
 import it.polimi.ingsw.Server.User;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Timer;
 
-public class Game {
+public class Game implements Serializable {
     private ArrayList<User> users;
     private ArrayList<Player> player;
     private GreenCarpet greenCarpet;
@@ -99,6 +100,7 @@ public class Game {
             users.get(i).getConnectionType().sendMessageOut("@ERROR-Il tuo obiettivo privato è: "+privateGoals[i]+"\n");
 
             int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+            System.out.println("Schema scelto dal client: "+schemechose);
             player.setBridge(bridges[i]);
             player.setScheme(schemes[(i*4)+schemechose-1]);
             player.setMarkers();
@@ -112,13 +114,13 @@ public class Game {
 
             for (int i = 0; i < numUser; i++) {
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                users.get(i).getConnectionType().handleturn(this, i);
+                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i);
             }
 
 
             for (int i = numUser-1; i >=0; i--) {
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                users.get(i).getConnectionType().handleturn(this, i);
+                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i);
             }
             greenCarpet.setRoundPath(j+1);
             player.add(player.get(0));

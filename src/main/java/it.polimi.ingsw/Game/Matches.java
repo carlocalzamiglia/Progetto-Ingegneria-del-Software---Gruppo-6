@@ -3,9 +3,10 @@ package it.polimi.ingsw.Game;
 import it.polimi.ingsw.Server.User;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Matches {
+public class Matches implements Serializable {
     private ArrayList<Game> matches;
 
     public Matches(){

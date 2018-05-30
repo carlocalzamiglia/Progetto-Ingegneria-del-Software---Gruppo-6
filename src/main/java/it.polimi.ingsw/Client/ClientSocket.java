@@ -2,7 +2,8 @@ package it.polimi.ingsw.Client;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
+
+import java.io.Serializable;
 
 public class ClientSocket {
     private int PORT;

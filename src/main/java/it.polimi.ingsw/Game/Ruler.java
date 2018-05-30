@@ -1,7 +1,9 @@
 package it.polimi.ingsw.Game;
 
 
-    public class Ruler {
+import java.io.Serializable;
+
+public class Ruler implements Serializable {
         private Scheme scheme;
         private Dice dice;
 

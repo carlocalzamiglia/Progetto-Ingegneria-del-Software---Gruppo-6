@@ -1,8 +1,9 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Bridge {
+public class Bridge implements Serializable {
     private Colour colour;
     private int serialNumber;
     private Scheme scheme;

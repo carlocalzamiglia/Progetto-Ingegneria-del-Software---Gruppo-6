@@ -1,9 +1,10 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class DiceBucket {
+public class DiceBucket implements Serializable {
     public ArrayList<Dice> diceArray;
 
 

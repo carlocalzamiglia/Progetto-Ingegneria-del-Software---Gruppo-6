@@ -1,9 +1,10 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ToolCardsExecutor {
+public class ToolCardsExecutor implements Serializable {
 
 
 

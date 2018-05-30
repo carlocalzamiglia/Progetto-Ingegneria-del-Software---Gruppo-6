@@ -1,9 +1,10 @@
 package it.polimi.ingsw.Server;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DBUsers {
+public class DBUsers implements Serializable {
     private ArrayList<User> users;
 
     //--------------------------------------------constructor-----------------------------------------------------------

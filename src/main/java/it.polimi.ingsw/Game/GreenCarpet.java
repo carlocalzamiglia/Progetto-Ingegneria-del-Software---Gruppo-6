@@ -1,9 +1,10 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GreenCarpet {
+public class GreenCarpet implements Serializable {
     private ArrayList<Dice> stock;
     private Dice[][] roundPath;
     private PublicGoal[] publicGoals;

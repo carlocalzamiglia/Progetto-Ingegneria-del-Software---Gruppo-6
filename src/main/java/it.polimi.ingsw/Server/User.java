@@ -3,7 +3,9 @@ package it.polimi.ingsw.Server;
 import it.polimi.ingsw.Client.ClientRmiInt;
 import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String nickname;
     private String password;
     private Integer wins;
