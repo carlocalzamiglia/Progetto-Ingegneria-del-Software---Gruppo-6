@@ -97,12 +97,10 @@ public class GreenCarpet {
         return dice;
     }
     public Dice checkDiceFromStock(int i){
-        try {
-            Dice dice = stock.get(i - 1);
-            return dice;
-        }catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+        Dice dice = null;
+        if(i>0 && i<=stock.size())
+            dice = stock.get(i - 1);
+        return dice;
     }
     public void setDiceInStock(Dice dice){
         this.stock.add(dice);
