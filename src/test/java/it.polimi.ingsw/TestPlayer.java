@@ -26,7 +26,7 @@ public class TestPlayer {
         greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
         greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
 
-        greenCarpet.setStock((2*2+1),inventory.getDiceBucket());
+        greenCarpet.setStock((2*2+1));
 
         Player player1=new Player("Cesna");
         player1.setScheme(inventory.getScheme(1));

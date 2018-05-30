@@ -1,8 +1,9 @@
 package it.polimi.ingsw.Game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Player {
+public class Player implements Serializable{
     private String nickname;
     private Bridge bridge;
     private PrivateGoal privateGoal;
@@ -57,25 +58,22 @@ public class Player {
     }
 
     //----------------------------------Method that consume markers when the player uses a toolcard---------------------
-    public boolean useMarkers(int cost) {
+    public void useMarkers(int cost) {
+        for (int i = 0; i < cost; i++)
+            markers.remove(0);
+    }
+    public boolean checkMarkers(int cost){
         boolean bool=true;
-        if (markers.size()>=
-                cost) {
+        if (markers.size()>= cost) {
             bool = true;
-            for (int i = 0; i < cost; i++)
-                markers.remove(0);
         }
-        else {
-            bool = false;
-            System.out.println("You don't have enough markers");
-        }
+        else
+            bool=false;
         return bool;
     }
-
     public void setPoints(int points) {
         this.points = points;
     }
-
     public int getPoints() {
         return points;
     }

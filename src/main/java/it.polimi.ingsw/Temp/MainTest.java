@@ -3,7 +3,7 @@ package it.polimi.ingsw.Temp;
 
 
 
-import it.polimi.ingsw.Game.Game;
+import it.polimi.ingsw.Game.*;
 import it.polimi.ingsw.Server.User;
 
 public class MainTest {
@@ -11,31 +11,29 @@ public class MainTest {
 
     {
 
-        /*ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
-        Inventory inventory = new Inventory();
-        DiceBucket diceBucket = new DiceBucket();
+        ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         Player player1 = new Player("Cesna");
-        player1.setScheme(inventory.getScheme(5));
+        GreenCarpet greenCarpet=new GreenCarpet(2);
+        player1.setScheme(new Scheme(5));
         player1.setMarkers();
-        player1.setBridge(inventory.getBridge(2));
-        player1.setPrivateGoal(inventory.getPrivateGoal(4));
+        player1.setBridge(new Bridge(2));
+        player1.setPrivateGoal(new PrivateGoal(4));
         player1.setOnline(true);
         player1.dump();
         Ruler ruler = new Ruler();
-        GreenCarpet greenCarpet = new GreenCarpet(3);
 
-        greenCarpet.setStock(7,diceBucket);
-        greenCarpet.setRoundPath(1,greenCarpet.getStock());
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(3), inventory.getPublicGoal(5), inventory.getPublicGoal(1));
-        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
+        greenCarpet.setStock(2);
+        greenCarpet.setRoundPath(1);
+        greenCarpet.setPublicGoals(new PublicGoal(3), new PublicGoal(5), new PublicGoal(1));
+        greenCarpet.setToolCards(new ToolCards(2),new ToolCards(3),new ToolCards(4));
         greenCarpet.dump();
+        greenCarpet.setStock(2);
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,2);
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,3);
-        player1.getScheme().dump();
-        boolean goodEnding = toolCardsExecutor.executeToolCard(12, player1, greenCarpet, ruler, diceBucket);
-        greenCarpet.dump();
-        System.out.println(goodEnding);
-        player1.dump();*/
+        player1.dump();
+        toolCardsExecutor.useMovementCard(player1,greenCarpet,1,0,2,1,3);
+
+        player1.dump();
 
         /*Game game=new Game(1);
         User user1=new User("Cesna","nickname");

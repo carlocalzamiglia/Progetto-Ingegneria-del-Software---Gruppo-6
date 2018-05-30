@@ -27,7 +27,7 @@ public class TestCalculator {
 
 
 
-        greenCarpet.setStock((2*2+1),inventory.getDiceBucket());
+        greenCarpet.setStock((2*2+1));
 
         Player player1=new Player("Cesna");
         player1.setScheme(inventory.getScheme(1));

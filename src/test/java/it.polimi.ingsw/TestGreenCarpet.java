@@ -12,7 +12,7 @@ public class TestGreenCarpet {
         GreenCarpet greenCarpet=new GreenCarpet(4);
         greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
         greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
-        greenCarpet.setStock((4*2+1),inventory.getDiceBucket());
+        greenCarpet.setStock((4*2+1));
         greenCarpet.dump();
 
         greenCarpet.setRndPublicGoals();
