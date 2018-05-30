@@ -2,6 +2,7 @@ package it.polimi.ingsw.Game;
 
 import it.polimi.ingsw.Server.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Matches {
@@ -10,7 +11,7 @@ public class Matches {
     public Matches(){
         matches=new ArrayList<>();
     }
-    public void addUser(User user){
+    public void addUser(User user) throws IOException {
 
         for (Game g:matches) {
             if (!g.getPlaying() && g.getPlaying()!=null) {
@@ -19,6 +20,7 @@ public class Matches {
             }
 
         }
+
         Game tmp=new Game(matches.size());
         tmp.addUser(user);
         matches.add(tmp);
@@ -32,6 +34,10 @@ public class Matches {
             }
         }
         return null;
+    }
+
+    public int size(){
+        return matches.size();
     }
 
 

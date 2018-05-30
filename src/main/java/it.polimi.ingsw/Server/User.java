@@ -1,14 +1,16 @@
 package it.polimi.ingsw.Server;
 
 import it.polimi.ingsw.Client.ClientRmiInt;
+import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
 public class User {
     private String nickname;
     private String password;
     private Integer wins;
     private boolean online;
-    public ClientRmiInt rmiClient;
-    private ServerSocketClientHandler clientHandler;
+    //public ClientRmiInt rmiClient;
+    //private ServerSocketClientHandler clientHandler;
+    private ServertoClient connectionType;
 
     public User(String nickname, String password){
         this.nickname=nickname;
@@ -44,20 +46,25 @@ public class User {
         return password;
     }
 
-    public ClientRmiInt getClient() {
-        return rmiClient;
-    }
+    //public ClientRmiInt getClient() {
+    //    return rmiClient;
+    //}
 
-    public ServerSocketClientHandler getClientHandler() {
-        return clientHandler;
+    //public ServerSocketClientHandler getClientHandler() {
+    //    return clientHandler;
+    //}
+
+
+    public ServertoClient getConnectionType() {
+        return connectionType;
     }
 
     public void setClientHandler(ServerSocketClientHandler clientHandler) {
-        this.clientHandler = clientHandler;
+        this.connectionType = clientHandler;
     }
 
     public void setRmiClient(ClientRmiInt rmiClient) {
-        this.rmiClient = rmiClient;
+        this.connectionType = rmiClient;
     }
 
     public boolean isOnline() {
@@ -71,10 +78,8 @@ public class User {
     @Override
     public String toString() {
         String s=nickname+"\n"+wins+"\n"+"online: "+online+"\n"+"tipo di connessione: ";
-        if(this.clientHandler!=null)
-            s=s+"Socket --> "+clientHandler+"\n";
-        else if(this.rmiClient!=null)
-            s=s+"RMI --> "+rmiClient+"\n";
+        if(this.getConnectionType()!=null)
+            s=s+"Connessione: "+getConnectionType()+"\n";
         else
             s=s+"nessuna\n";
         return s;

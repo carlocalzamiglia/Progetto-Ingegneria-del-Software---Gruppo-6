@@ -1,6 +1,7 @@
 package it.polimi.ingsw.Server;
 
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import it.polimi.ingsw.Client.ClientRmiInt;
 import it.polimi.ingsw.Game.Matches;
 
@@ -27,14 +28,14 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
 
 
     //--------------------------------add on user's array the RMI connection link---------------------------------------
-    public void addRmi(ClientRmiInt client, String nickname) throws RemoteException{
+    public void addRmi(ClientRmiInt client, String nickname) throws RemoteException {
         DB.getUser(nickname).setRmiClient(client);
         try {
             newUserMessage(nickname);
+            DB.getUser(nickname).getConnectionType().sendMessageOut("Benvenuto, "+nickname+". Ora puoi giocare!");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        DB.getUser(nickname).getClient().tell("Benvenuto, "+nickname+". Ora puoi giocare!");
         new HandleDisconnection(nickname, this).start();
     }
 
@@ -50,7 +51,9 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     //-----------------------------------send message to a certain user-------------------------------------------------
     @Override
     public void sendMessage(String nickname, String message) throws RemoteException {
-        DB.getUser(nickname).getClient().tell(message);
+        try {
+            DB.getUser(nickname).getConnectionType().sendMessageOut(message);
+        }catch (IOException e){}
     }
 
 
@@ -73,7 +76,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         boolean flag=false;
         if(DB.getUser(nickname).isOnline()==true){
             try{
-                flag=DB.getUser(nickname).getClient().aliveMessage();
+                flag=DB.getUser(nickname).getConnectionType().aliveMessage();
             }catch (Exception e){
                 flag=false;
                 DB.getUser(nickname).setOnline(false);
@@ -91,10 +94,10 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     public void newUserMessage(String nickname) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
-                if (DB.getUser(i).getClientHandler() != null)
-                    DB.getUser(i).getClientHandler().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
-                else if (DB.getUser(i).getClient() != null)
-                    DB.getUser(i).getClient().tell(nickname+" ha appena effettuato il login ed è pronto a giocare.");
+                if (DB.getUser(i).getConnectionType() != null)
+                    DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                else if (DB.getUser(i).getConnectionType() != null)
+                    DB.getUser(i).getConnectionType().sendMessageOut(nickname+" ha appena effettuato il login ed è pronto a giocare.");
             }
         }
     }

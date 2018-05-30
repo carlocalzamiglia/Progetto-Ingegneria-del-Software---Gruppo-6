@@ -15,6 +15,15 @@ public class ClientSocket {
     private PrintWriter outVideo;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+
+
+
+
+    //GAME VARIABLES
+    private boolean yourturn;
+    private String dicepos;
+    private String row;
+    private String col;
     //---------------------------------------------------launch execute-------------------------------------------------
     public ClientSocket() {
         try
@@ -157,9 +166,8 @@ public class ClientSocket {
         //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
         //this is for the client part
         new ListenFromServer().start();
-        sendMessage("@LOGGED");
         while(10>1){
-            outVideo.println("Cosa vuoi fare?");
+           /* outVideo.println("Cosa vuoi fare?");
             outVideo.println("0)manda messaggio");
             outVideo.println("1)chiudi");
             String choice= inKeyboard.readLine();
@@ -178,8 +186,9 @@ public class ClientSocket {
                     break;
                 default:
                     break;
+                     }
+*/
 
-            }
         }
     }
 
@@ -192,14 +201,50 @@ public class ClientSocket {
                     // read the message form the input datastream
                     //---------------------HERE THE IMPLEMENTATION OF THE PROTOCOL------------------------------
 
-
                     String msg = (String) in.readObject();
+                    String [] arrOfStr = msg.split("-");
+
                     // print the message
-                    if(msg.equals("@ALIVE")) {
-                        sendMessage("@ALIVE"); //just to try, useless.
-                        System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
-                    }else
+                    if(arrOfStr[0].equals("@ALIVE")) {
+                        //System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
+                    }
+
+                    else if(arrOfStr[0].equals("@SCHEME")) {
+                        String scheme;
+                        System.out.println(arrOfStr[1]);
+                        scheme=inKeyboard.readLine();
+                        sendMessage("@SCHEME-"+scheme);
+
+                    }
+
+                    else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
+                        if(arrOfStr[1].equals("true"))
+                            yourturn=true;
+                        else
+                            yourturn=false;
+                    }
+
+                    else if(arrOfStr[0].equals("@PLACEDICE")){          //choose and place dice
+                        if(yourturn==true) {
+                            outVideo.println("Scegli dado dalla riserva.");
+                            dicepos = inKeyboard.readLine();
+                            outVideo.println("Scegli la riga");
+                            row = inKeyboard.readLine();
+                            outVideo.println("Scegli la colonna");
+                            col = inKeyboard.readLine();
+                            sendMessage("@DICEPLACED-" + dicepos + "-" + row + "-" + col);
+                        }
+                    }else if(arrOfStr[0].equals("@CHOOSEACTION")){
+                        outVideo.println("scegli azione");
+                        String action = inKeyboard.readLine();
+                        sendMessage("@ACTIONCHOSE-"+action);
+
+                    }else if(arrOfStr[0].equals("@ERROR")){
+                        outVideo.println(arrOfStr[1]);
+                    }
+                    else {
                         System.out.println(msg);
+                    }
                 }
                 catch(IOException e) {
                     break;
@@ -230,6 +275,9 @@ public class ClientSocket {
         }
         return root;
     }
+
+
+    //******************************************* now all the game methods *********************************************
 
 }
 

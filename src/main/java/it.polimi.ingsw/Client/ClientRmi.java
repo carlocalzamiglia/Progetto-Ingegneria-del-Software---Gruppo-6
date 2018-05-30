@@ -1,6 +1,7 @@
 package it.polimi.ingsw.Client;
 
 
+import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Server.DBUsers;
 import it.polimi.ingsw.Server.HandleDisconnection;
 import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
@@ -156,6 +157,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
         return true;
     }
 
+
+    //to be implement
+    @Override
+    public void handleturn(Game game, int i) throws IOException, InterruptedException {
+
+    }
+
     //--------------------------------------get connection properties from file-----------------------------------------
     private String leggiDaFile() throws IOException {
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
@@ -173,7 +181,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt {
     }
 
     //---------------------------------------print a message on the CLI-------------------------------------------------
-    public void tell(String message) throws RemoteException{
+    public void sendMessageOut(String message) throws RemoteException{
         System.out.println(message);
+    }
+
+
+    //******************************************game methods***********************************************+
+    @Override
+    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
+        return 0;
     }
 }

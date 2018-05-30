@@ -33,6 +33,7 @@ public class HandleDisconnection extends Thread{
                     alive = serverRmi.clientAlive(nickname);
                 }else {
                     alive = serverSocket.clientAlive(nickname);
+                    //serverSocket.test();
                 }
 
             } catch (InterruptedException | RemoteException | ClassNotFoundException e) {

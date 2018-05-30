@@ -9,6 +9,7 @@ public class Player {
     private Scheme scheme;
     private ArrayList<Markers> markers;
     private boolean online;
+    private int points;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
@@ -69,6 +70,14 @@ public class Player {
             System.out.println("You don't have enough markers");
         }
         return bool;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public int getPoints() {
+        return points;
     }
 
     //-----------------------------------------------Print methods------------------------------------------------------

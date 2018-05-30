@@ -16,18 +16,25 @@
 ### REAL GAME:
 ##### Server:
 @START-game started
-@TURN-your turn
-@ENDTURN-your turn is ended
+@TURN-true/false
+@CHOOSEACTION
+##### Client:
+@ACTIONCHOSE-pass/dice/tool
+
 
 
 ### GAME TOOLS:
 ##### Server:
 @GC-greencarpetstring		(include dices, public goals, rounds)
 @SCH@USER-schemestring		(print other player scheme)
-@PLAYER.playerstring		(include scheme, name, markers, private goals)
+@PLAYER-playerstring		(include scheme, name, markers, private goals)
+@PLACEDICE
+@ERROR
+@USETOOL
+@TOOL-number 
 ##### Client:
 @GAME@PASS
-@GAME@CHOOSEDICE@DiceAndCoordinates
+@DICEPLACED-Dice-Row-Col
 @GAME@USETOOLCARD@ToolCardNumber@ToolCardUtilization
 
 

@@ -2,10 +2,10 @@ package it.polimi.ingsw.Game;
 
 import it.polimi.ingsw.Server.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Random;
 import java.util.Scanner;
+import java.util.Timer;
 
 public class Game {
     private ArrayList<User> users;
@@ -24,12 +24,48 @@ public class Game {
         users=new ArrayList<>();
         player=new ArrayList<>();
     }
-    public void addUser(User user) {
+    public void addUser(User user) throws IOException {
         if (numUser != 4) {
             numUser = numUser + 1;
             this.users.add(user);
         }
+        if(numUser==4){
+            new GameStart().start();
+        }
+        if(numUser==2)
+            new GameStartonTime().start();
+
     }
+
+    class GameStart extends Thread{
+        public void run(){
+            try {
+                startGame();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    class GameStartonTime extends Thread{
+        public void run(){
+            try {
+                GameStartonTime.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                if(isPlaying==false && numUser>1)
+                    startGame();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public Boolean getPlaying() {
         return isPlaying;
@@ -42,7 +78,7 @@ public class Game {
         return player.get(index);
     }
 
-    public void startGame(){
+    public void startGame() throws IOException, InterruptedException {
         Scanner scanner=new Scanner(System.in);
         Ruler ruler=new Ruler();
         ToolCardsExecutor executor=new ToolCardsExecutor();
@@ -59,192 +95,67 @@ public class Game {
         for (int i=0;i<numUser;i++) {
             Player player=new Player(users.get(i).getNickname());
             player.setPrivateGoal(privateGoals[i]);
-            System.out.println(users.get(i).getNickname()+" il tuo obbiettivo privato è:");
-            privateGoals[i].dump();
-            System.out.println("Scegli lo schema tra questi");
-            schemes[(i*4)].dump();
-            schemes[(i*4)+1].dump();
-            schemes[(i*4)+2].dump();
-            schemes[(i*4)+3].dump();
-            int choose=scanner.nextInt();
-            while(choose<=0 || choose>4){
-                System.out.println("errore selezione\nScegli lo schema tra questi");
-                choose=scanner.nextInt();
-            }
+
+            users.get(i).getConnectionType().sendMessageOut("@ERROR-Il tuo obiettivo privato è: "+privateGoals[i]+"\n");
+
+            int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
             player.setBridge(bridges[i]);
-            player.setScheme(schemes[(i*4)+choose-1]);
+            player.setScheme(schemes[(i*4)+schemechose-1]);
             player.setMarkers();
 
             this.player.add(player);
         }
-
 
         for(int j=0;j<10;j++) {
             System.out.println("ROUND "+(j+1));
             greenCarpet.setStock(numUser*2+1,diceBucket);
 
             for (int i = 0; i < numUser; i++) {
-                boolean flagDice=false;
-                boolean flagTool=false;
-                boolean [] flagRound=new boolean[numUser];
-                for (int indBol=0;indBol<numUser;indBol++)
-                    flagRound[indBol]=false;
-
-                greenCarpet.dump();
-                System.out.println("ROUND "+(j+1)+" TURNO:"+(1));
-                System.out.println("tocca a \n" + player.get(i));
-                System.out.println("Cosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                int choose = scanner.nextInt();
-                while (choose != 1 && choose != 2 && choose!=3) {
-                    System.out.println("Errore scelta\nCosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                    choose = scanner.nextInt();
-                }
-                while(choose!=3) {
-                    if (choose == 2 && !flagTool) {
-                        System.out.println("che carta vuoi usare?");
-                        int cards = scanner.nextInt();
-                        while(!(cards>0 && cards<4)){
-                            System.out.println("errore selezione scegli un altra carta?");
-                            cards = scanner.nextInt();
-                        }
-                        if((new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber()) && flagDice) || greenCarpet.getToolCard(cards).getSerialNumber()==7)
-                            System.out.println("non puoi usare questa carta");
-                        else if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())){
-                            executor.executeToolCard(cards, player.get(i), greenCarpet, ruler, diceBucket);
-                            player.get(i).dump();
-                            flagTool = true;
-                            flagDice=true;
-                        }
-                        else{
-                            executor.executeToolCard(cards, player.get(i), greenCarpet, ruler, diceBucket);
-                            player.get(i).dump();
-                            flagTool = true;
-                        }
-                    }
-                    if (choose == 1 && !flagDice) {
-                        if (ruler.checkAvailable(greenCarpet, player.get(i).getScheme())) {
-                            System.out.println("Quale dado vuoi posizionare?");
-                            int dice = scanner.nextInt();
-                            while(dice<=0 || dice >=greenCarpet.getStock().size()+1){
-                                System.out.println("Posizione non valida\nQuale dado vuoi posizionare?");
-                                dice = scanner.nextInt();
-                            }
-                            System.out.println("inserisci riga");
-                            int row = scanner.nextInt();
-                            System.out.println("inserisci colonna");
-                            int col = scanner.nextInt();
-                            boolean correct = ruler.checkCorrectPlacement(row, col, greenCarpet.checkDiceFromStock(dice), player.get(i).getScheme());
-                            while (!correct) {
-                                System.out.println("errore piazzamento.");
-                                System.out.println("Quale dado vuoi posizionare?");
-                                dice = scanner.nextInt();
-                                System.out.println("inserisci riga");
-                                row = scanner.nextInt();
-                                System.out.println("inserisci colonna");
-                                col = scanner.nextInt();
-                                correct = ruler.checkCorrectPlacement(row, col, greenCarpet.checkDiceFromStock(dice), player.get(i).getScheme());
-                            }
-                            player.get(i).getScheme().setBoxes(greenCarpet.getDiceFromStock(dice), row, col);
-                            player.get(i).dump();
-                            flagDice = true;
-                        } else {
-                            System.out.println("non è possibile inserire alcun dado");
-                            flagDice = true;
-                        }
-                    }
-                    System.out.println("Cosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                    choose=scanner.nextInt();
-                    while (choose != 1 && choose != 2 && choose!=3) {
-                        System.out.println("Errore scelta\nCosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                        choose = scanner.nextInt();
-                    }
-                }
+                System.out.println("tocca a: "+users.get(i).getNickname());
+                users.get(i).getConnectionType().handleturn(this, i);
             }
-            for (int i = numUser-1; i>=0; i--) {
-                boolean flagDice=false;
-                boolean flagTool=false;
-                boolean [] flagRound=new boolean[numUser];
-                for (int indBol=0;indBol<numUser;indBol++)
-                    flagRound[indBol]=false;
 
-                greenCarpet.dump();
-                System.out.println("ROUND "+(j+1)+" TURNO:"+(2));
-                System.out.println("tocca a \n" + player.get(i));
-                System.out.println("Cosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                int choose = scanner.nextInt();
-                while (choose != 1 && choose != 2 && choose!=3) {
-                    System.out.println("Errore scelta\nCosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                    choose = scanner.nextInt();
-                }
-                while(choose!=3) {
-                    if (choose == 2 && !flagTool) {
-                        System.out.println("che carta vuoi usare?");
-                        int cards = scanner.nextInt();
-                        while(!(cards>0 && cards<4)){
-                            System.out.println("errore selezione scegli un altra carta?");
-                            cards = scanner.nextInt();
-                        }
-                        if((new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())||greenCarpet.getToolCard(cards).getSerialNumber()==7) && flagDice)
-                            System.out.println("non puoi usare questa carta");
-                        else if(new ToolCards(0).checkSpecial(greenCarpet.getToolCard(cards).getSerialNumber())||greenCarpet.getToolCard(cards).getSerialNumber()==7){
-                            executor.executeToolCard(cards, player.get(i), greenCarpet, ruler, diceBucket);
-                            player.get(i).dump();
-                            flagTool = true;
-                            flagDice=true;
-                        }
-                        else{
-                            executor.executeToolCard(cards, player.get(i), greenCarpet, ruler, diceBucket);
-                            player.get(i).dump();
-                            flagTool = true;
-                        }
-                    }
-                    if (choose == 1 && !flagDice) {
-                        if (ruler.checkAvailable(greenCarpet, player.get(i).getScheme())) {
-                            System.out.println("Quale dado vuoi posizionare?");
-                            int dice = scanner.nextInt();
-                            System.out.println("inserisci riga");
-                            int row = scanner.nextInt();
-                            System.out.println("inserisci colonna");
-                            int col = scanner.nextInt();
-                            boolean correct = ruler.checkCorrectPlacement(row, col, greenCarpet.checkDiceFromStock(dice), player.get(i).getScheme());
-                            while (!correct) {
-                                System.out.println("errore piazzamento.");
-                                System.out.println("Quale dado vuoi posizionare?");
-                                dice = scanner.nextInt();
-                                System.out.println("inserisci riga");
-                                row = scanner.nextInt();
-                                System.out.println("inserisci colonna");
-                                col = scanner.nextInt();
-                                correct = ruler.checkCorrectPlacement(row, col, greenCarpet.checkDiceFromStock(dice), player.get(i).getScheme());
-                            }
-                            player.get(i).getScheme().setBoxes(greenCarpet.getDiceFromStock(dice), row, col);
-                            player.get(i).dump();
-                            flagDice = true;
-                        } else {
-                            System.out.println("non è possibile inserire alcun dado");
-                            flagDice = true;
-                        }
-                    }
-                    System.out.println("Cosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                    choose=scanner.nextInt();
-                    while (choose != 1 && choose != 2 && choose!=3) {
-                        System.out.println("Errore scelta\nCosa vuoi fare:\n1)posiziona un dado\n2)usa una carta\n3)passa");
-                        choose = scanner.nextInt();
-                    }
-                }
+
+            for (int i = numUser-1; i >=0; i--) {
+                System.out.println("tocca a: "+users.get(i).getNickname());
+                users.get(i).getConnectionType().handleturn(this, i);
             }
             greenCarpet.setRoundPath(j+1);
             player.add(player.get(0));
             player.remove(0);
             users.add(users.get(0));
             users.remove(0);
+
         }
         greenCarpet.dump();
         for(int i=0;i<numUser;i++)
             player.get(i).dump();
+
+        //------------start calculating------------
         Calculator calculator=new Calculator(player,greenCarpet);
         for(int i=0;i<numUser;i++)
-            System.out.println(player.get(i).getNickname()+" punteggio: "+calculator.calculate(i));
+            player.get(i).setPoints(calculator.calculate(i));       //set points to each player
+
+        Player [] playerscore = new Player[numUser];
+        for(int i=0;i<numUser;i++)
+            playerscore[i]=player.get(i);
+
+        for(int i=0;i<numUser;i++){
+            for(int j=i+1; j<playerscore.length;j++){
+                if(playerscore[i].getPoints()<playerscore[j].getPoints()){
+                    Player tmp=playerscore[i];
+                    playerscore[i]=playerscore[j];
+                    playerscore[j]=tmp;
+                }
+            }
+        }
+        System.out.println("E' appena terminata la partita con il seguente risultato:\n");
+        for (int i=0;i<numUser;i++) {
+            System.out.println((i + 1) + "°: " + playerscore[i].getNickname() + "Punteggio: " + playerscore[i].getPoints());
+            users.get(i).getConnectionType().sendMessageOut("@ERROR-Ti sei posizionato "+(i+1)+"°, complimenti!");
+
+        }
+
     }
 
     public ArrayList<User> getUsers() {

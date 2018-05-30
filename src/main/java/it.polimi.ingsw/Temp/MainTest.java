@@ -37,14 +37,14 @@ public class MainTest {
         System.out.println(goodEnding);
         player1.dump();*/
 
-        Game game=new Game(1);
+        /*Game game=new Game(1);
         User user1=new User("Cesna","nickname");
         //User user2=new User("Ciccia","Rello");
         //User user3 =new User("Carlo","Carli");
         game.addUser(user1);
         //game.addUser(user2);
         //game.addUser(user3);
-        game.startGame();
+        game.startGame();*/
 
 
 
