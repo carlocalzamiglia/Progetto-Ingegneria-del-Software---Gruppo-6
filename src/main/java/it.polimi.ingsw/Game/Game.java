@@ -52,7 +52,7 @@ public class Game implements Serializable {
     class GameStartonTime extends Thread{
         public void run(){
             try {
-                GameStartonTime.sleep(3000);
+                GameStartonTime.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -114,13 +114,13 @@ public class Game implements Serializable {
 
             for (int i = 0; i < numUser; i++) {
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i);
+                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
             }
 
 
             for (int i = numUser-1; i >=0; i--) {
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i);
+                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
             }
             greenCarpet.setRoundPath(j+1);
             player.add(player.get(0));
@@ -173,5 +173,33 @@ public class Game implements Serializable {
     }
     public void dump(){
         System.out.println(this);
+    }
+
+
+    public String playersToString(int user){
+        String s = new String();
+        for(int i=0; i<player.size(); i++){
+            if(i!=user) {
+                if (user == (player.size() - 1) && i == (player.size() - 2))
+                    s = s.concat(player.get(i).getNickname());
+                else if(i == player.size() - 1)
+                    s = s.concat(player.get(i).getNickname());
+                else
+                    s=s.concat(player.get(i).getNickname()+", ");
+            }
+        }
+        s=s.concat("\n");
+        for(int row=0; row<4; row++){
+            for(int play=0; play<player.size();play++){
+                if(play!=user) {
+                    for (int col = 0; col < 5; col++) {
+                        s = s.concat(player.get(play).getScheme().getBox(row, col).toString());
+                    }
+                    s = s.concat("\t\t");
+                }
+            }
+            s=s.concat("\n");
+        }
+        return s;
     }
 }

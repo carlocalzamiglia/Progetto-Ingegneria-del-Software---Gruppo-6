@@ -189,12 +189,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         System.out.println("SCHEMA RICEVUTO");
     }
 
-    public void handleturn(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {
+    public void handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
         boolean flagTool=false;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         while(true) {
+            sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
             sendMessageOut("@GC-"+greenCarpet.toString()+"\n");
             sendMessageOut("@PLAYER-"+player.toString()+"\n");
@@ -265,8 +266,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         boolean toolused;
         boolean toolok=false;
         while(!checktool){
-            sendMessageOut("@GC-"+greenCarpet.toString());
-            sendMessageOut("@PLAYER-"+player.toString());
             sendMessageOut("@YOURTURN-true");
             while(!toolok) {                //run 'till the card is correct and used
                 sendMessageOut("@USETOOL");

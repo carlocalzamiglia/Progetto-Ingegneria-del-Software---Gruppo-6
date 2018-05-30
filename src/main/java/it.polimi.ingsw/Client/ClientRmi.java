@@ -201,13 +201,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //to be implement
     @Override
-    public void handleturn(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {
+    public void handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
         boolean flagTool=false;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         String value;
         while(true){
+            sendMessageOut("Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("Ecco qui il tavolo e il tuo schema:\n");
             sendMessageOut(greenCarpet.toString()+"\n");
             sendMessageOut(player.toString()+"\n");
