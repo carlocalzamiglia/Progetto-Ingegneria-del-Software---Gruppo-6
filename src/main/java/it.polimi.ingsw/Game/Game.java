@@ -110,7 +110,7 @@ public class Game implements Serializable {
 
         for(int j=0;j<10;j++) {
             System.out.println("ROUND "+(j+1));
-            greenCarpet.setStock(numUser*2+1,diceBucket);
+            greenCarpet.setStock(numUser*2+1);
 
             for (int i = 0; i < numUser; i++) {
                 System.out.println("tocca a: "+users.get(i).getNickname());

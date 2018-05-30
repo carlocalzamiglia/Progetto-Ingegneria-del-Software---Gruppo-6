@@ -3,7 +3,16 @@ package it.polimi.ingsw.Temp;
 
 
 
-import it.polimi.ingsw.Game.*;
+
+import it.polimi.ingsw.Game.GreenCarpet;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.Ruler;
+import it.polimi.ingsw.Game.ToolCardsExecutor;
+import it.polimi.ingsw.Game.Bridge;
+import it.polimi.ingsw.Game.Scheme;
+import it.polimi.ingsw.Game.PrivateGoal;
+import it.polimi.ingsw.Game.ToolCards;
+import it.polimi.ingsw.Game.PublicGoal;
 import it.polimi.ingsw.Server.User;
 
 public class MainTest {
@@ -22,12 +31,12 @@ public class MainTest {
         player1.dump();
         Ruler ruler = new Ruler();
 
-        greenCarpet.setStock(2);
+        //greenCarpet.setStock(3);
         greenCarpet.setRoundPath(1);
         greenCarpet.setPublicGoals(new PublicGoal(3), new PublicGoal(5), new PublicGoal(1));
         greenCarpet.setToolCards(new ToolCards(2),new ToolCards(3),new ToolCards(4));
         greenCarpet.dump();
-        greenCarpet.setStock(2);
+        //greenCarpet.setStock(2);
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,2);
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,3);
         player1.dump();

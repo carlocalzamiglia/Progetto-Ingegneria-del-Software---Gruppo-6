@@ -10,6 +10,7 @@ public class GreenCarpet implements Serializable {
     private PublicGoal[] publicGoals;
     private ToolCards[] toolCards;
     private int nPlayers;
+    private DiceBucket diceBucket;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
@@ -20,6 +21,7 @@ public class GreenCarpet implements Serializable {
         roundPath= new Dice[i][10];
         publicGoals = new PublicGoal[3];
         toolCards = new ToolCards[3];
+        diceBucket=new DiceBucket();
     }
 
     //-----------------------------------------------Getters and Setters------------------------------------------------
@@ -67,7 +69,7 @@ public class GreenCarpet implements Serializable {
         toolCards[2]=new ToolCards(index3);
     }
 
-    public void setStock(int numbers,DiceBucket diceBucket){
+    public void setStock(int numbers){
         for(int i=0; i<numbers;i++){
             Dice dice=diceBucket.educe();
             dice.roll();
