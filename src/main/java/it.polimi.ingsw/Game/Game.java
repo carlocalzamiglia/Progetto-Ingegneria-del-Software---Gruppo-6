@@ -157,8 +157,9 @@ public class Game implements Serializable {
         System.out.println("E' appena terminata la partita con il seguente risultato:\n");
         for (int i=0;i<numUser;i++) {
             System.out.println((i + 1) + "°: " + playerscore[i].getNickname() + "Punteggio: " + playerscore[i].getPoints());
-            users.get(i).getConnectionType().sendMessageOut("@ERROR-Ti sei posizionato "+(i+1)+"°, complimenti!");
-
+            for(int j=0; j<users.size();j++)
+                if(users.get(j).getNickname().equals(playerscore[i].getNickname()))
+                    users.get(j).getConnectionType().sendMessageOut("@ERROR-Ti sei posizionato "+(i+1)+"°, complimenti!");
         }
 
     }
