@@ -88,45 +88,6 @@ public class Ruler implements Serializable {
             if(checkNeighborsColours(row,col,dice,scheme)&&checkNeighborsFaces(row,col,dice,scheme)&&!checkEmptyNeighbors(row,col,scheme));
             else
                 bool=false;
-            /*if (col - 1 >= 0)
-                if (scheme.getBox(row, col - 1).getAddedDice() != null) {
-                    bool = checkWest(row, col);
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && bool)
-                if (scheme.getBox(row, col + 1).getAddedDice() != null) {
-                    bool = checkEast(row, col);
-                    flag = 1;
-                }
-            if (row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col).getAddedDice() != null) {
-                    flag = 1;
-                    bool = checkNorth(row, col);
-                }
-            if (row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col).getAddedDice() != null) {
-                    flag = 1;
-                    bool = checkSouth(row, col);
-                }
-            if (col - 1 >= 0 && row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col - 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col - 1 >= 0 && row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col - 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col + 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col + 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-
-            if (flag == 0 && bool)
-                bool = false;*/
             return bool;
         }
 
@@ -167,41 +128,6 @@ public class Ruler implements Serializable {
                 }
             return bool;
         }
-
-        //---------------------------Methods that control color and number restriction of the cardinal points-----------
-       /* public boolean checkWest(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if (scheme.getBox(row, col - 1).getAddedDice().getFace().equals(dice.getFace()))
-                bool = false;
-            return bool;
-        }
-        public boolean checkEast(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row, col + 1).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if (scheme.getBox(row, col + 1).getAddedDice().getFace().equals(dice.getFace()))
-                bool = false;
-            return bool;
-        }
-        public boolean checkNorth(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row - 1, col).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if (scheme.getBox(row - 1, col).getAddedDice().getFace().equals(dice.getFace()))
-                bool = false;
-            return bool;
-        }
-        public boolean checkSouth(int row, int col) {
-            boolean bool = true;
-            if (scheme.getBox(row + 1, col).getAddedDice().getColour().equals(dice.getColour()))
-                bool = false;
-            if (scheme.getBox(row + 1, col).getAddedDice().getFace().equals(dice.getFace()))
-                bool = false;
-            return bool;
-        }
-        */
 
         //---------------------------Method that controls neighborhood restriction (only numbers)-----------------------
         public boolean checkNeighborsFaces(int row, int col, Dice dice, Scheme scheme) {
@@ -306,32 +232,6 @@ public class Ruler implements Serializable {
             return bool;
         }
 
-        //---------------------------Useful method that converts a dice "face" into a number(string)--------------------
-        /*private String faceToNo(String face) {
-            System.out.println("face: "+face);
-            String s = null;
-
-            if (face == "\u2680") {
-                s = "1";
-            }
-            if (face == "\u2681") {
-                s = "2";
-            }
-            if (face == "\u2682") {
-                s = "3";
-            }
-            if (face == "\u2683") {
-                s = "4";
-            }
-            if (face == "\u2684") {
-                s = "5";
-            }
-            if (face == "\u2685") {
-                s = "6";
-            }
-            return s;
-        }*/
-
         //---------------------------Returns the number of dices in the scheme------------------------------------------
         public int schemeCount(Scheme testScheme) {
 
@@ -365,6 +265,30 @@ public class Ruler implements Serializable {
             }
             return bool;
         }
+
+        public int stringtoInt(String face){
+        int i=0;
+
+        if(face.equals("\u2680")){
+            i=1;
+        }
+        if(face.equals("\u2681")){
+            i=2;
+        }
+        if(face.equals("\u2682")){
+            i=3;
+        }
+        if(face.equals("\u2683")){
+            i=4;
+        }
+        if(face.equals("\u2684")){
+            i=5;
+        }
+        if(face.equals("\u2685")){
+            i=6;
+        }
+        return i;
+    }
 
 
 

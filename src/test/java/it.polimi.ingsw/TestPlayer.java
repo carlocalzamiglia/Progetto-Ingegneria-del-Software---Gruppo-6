@@ -16,7 +16,7 @@ public class TestPlayer {
         player1.setPrivateGoal(inventory.getPrivateGoal(4));
         player1.setOnline(true);
         player1.dump();
-        player1.useMarkers(1);
+        //player1.useMarkers(g);
         player1.dump();
     }
     @org.junit.jupiter.api.Test

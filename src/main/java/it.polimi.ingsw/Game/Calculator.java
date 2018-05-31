@@ -35,42 +35,42 @@ public class Calculator implements Serializable {
         int serialNumber = player.getPrivateGoal().getSerialNumber();
         int sumPrivate = 0;
         int z=0;
-
+        Ruler ruler= new Ruler();
         switch (serialNumber) {
             case 1:
                 for(int i=0;i<4;i++)
                     for(int j=0; j<5;j++)
                         if(player.getScheme().getBox(i, j).getAddedDice()!=null)
                             if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_RED))
-                                sumPrivate=sumPrivate+stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
+                                sumPrivate=sumPrivate+ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
                 break;
             case 2:
                 for(int i=0;i<4;i++)
                     for(int j=0; j<5;j++)
                         if(player.getScheme().getBox(i, j).getAddedDice()!=null)
                             if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_YELLOW))
-                                sumPrivate = sumPrivate + stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
+                                sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
                 break;
             case 3:
                 for(int i=0;i<4;i++)
                     for(int j=0; j<5;j++)
                         if(player.getScheme().getBox(i, j).getAddedDice()!=null)
                             if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_GREEN))
-                                sumPrivate=sumPrivate+stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
+                                sumPrivate=sumPrivate+ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
                 break;
             case 4:
                 for(int i=0;i<4;i++)
                     for(int j=0; j<5;j++)
                         if(player.getScheme().getBox(i, j).getAddedDice()!=null)
                             if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_BLUE))
-                                sumPrivate = sumPrivate + stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
+                                sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
                 break;
             case 5:
                 for(int i=0;i<4;i++)
                     for(int j=0; j<5;j++)
                         if(player.getScheme().getBox(i, j).getAddedDice()!=null)
                             if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_PURPLE))
-                                sumPrivate = sumPrivate + stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
+                                sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
                 break;
             default:
                 break;
@@ -367,29 +367,7 @@ public class Calculator implements Serializable {
     }
 
     //---------------------------------Method for the conversion of the faces into numbers------------------------------
-    private int stringtoInt(String face){
-        int i=0;
 
-        if(face=="\u2680"){
-            i=1;
-        }
-        if(face=="\u2681"){
-            i=2;
-        }
-        if(face=="\u2682"){
-            i=3;
-        }
-        if(face=="\u2683"){
-            i=4;
-        }
-        if(face=="\u2684"){
-            i=5;
-        }
-        if(face=="\u2685"){
-            i=6;
-        }
-        return i;
-    }
 
     //---------------------------------Check color of the right box-----------------------------------------------------
     private void checkRight(Scheme testScheme, Scheme playerScheme, int row, int col){

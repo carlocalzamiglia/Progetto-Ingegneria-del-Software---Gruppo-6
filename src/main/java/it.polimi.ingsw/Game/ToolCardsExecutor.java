@@ -11,7 +11,11 @@ public class ToolCardsExecutor implements Serializable {
     //--------------------------------------Method that execute a tool card(requires input from keyboard)---------------
    public boolean checkCost(Player player,GreenCarpet greenCarpet,int selection) {
        boolean bool;
-       int cost = greenCarpet.getToolCard(selection).getCost();
+       int cost=0;
+       for(int i =1;i<greenCarpet.getToolCards().length;i++)
+           if(greenCarpet.getToolCards()[i].getSerialNumber()==selection) {
+               cost = greenCarpet.getToolCards()[i].getCost();
+           }
        bool = player.checkMarkers(cost);
        /*if (bool) {
            player.useMarkers(cost);
@@ -26,11 +30,12 @@ public class ToolCardsExecutor implements Serializable {
    }
 
    //-----------------------------------------------Tool methods--------------------------------------------------------
+    //---------------------------------------Tool number 2/3------------------------------------------------------------
     public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int row,int col,int newRow,int newCol) {
         boolean bool = checkCost(player,greenCarpet,choose);
         Dice dice;
         Ruler ruler = new Ruler();
-        int serialnumber = greenCarpet.getToolCard(choose).getSerialNumber();
+        int serialnumber = choose;
         if (bool) {
             if (!player.getScheme().isEmpty()) {
                 if (checkCoordinate(row,col) && player.getScheme().getBox(row, col).getAddedDice() != null) {
@@ -41,7 +46,7 @@ public class ToolCardsExecutor implements Serializable {
                         if (serialnumber == 2) {
                             bool = ruler.checkNeighborsFaces(newRow, newCol, dice, player.getScheme())
                                     && (player.getScheme().getBox(newRow, newCol).getRestrictionValue() == null
-                                    || player.getScheme().getBox(newRow, newCol).getRestrictionValue().equals(faceToNo(dice.getFace())));
+                                    || player.getScheme().getBox(newRow, newCol).getRestrictionValue().equals(dice.faceToNo()));
                         //----------------------Tool card number 3---------------------
                         } else if (serialnumber == 3) {
                             bool = ruler.checkNeighborsColours(newRow, newCol, dice, player.getScheme())
@@ -63,8 +68,14 @@ public class ToolCardsExecutor implements Serializable {
             } else
                 bool = false;
         }
+        if(bool && serialnumber!=12){
+            player.useMarkers(greenCarpet,serialnumber);
+
+        }
         return bool;
     }
+
+    //-----------------------------------------------tool number 4------------------------------------------------------
     public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2) {
         boolean bool = checkCost(player,greenCarpet,choose);
         Ruler ruler = new Ruler();
@@ -120,12 +131,25 @@ public class ToolCardsExecutor implements Serializable {
             else
                 bool=false;
         }
+        if(bool && choose!=12){
+            player.useMarkers(greenCarpet,choose);
+        }
         return bool;
 
     }
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,Dice dice) {
+
+    //-----------------------------------------------tool number 12-----------------------------------------------------
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,int round, int d) {
         boolean bool = checkCost(player,greenCarpet,choose);
-        Ruler ruler=new Ruler();
+        Dice dice= new Dice(null);
+        if (d>0 && d<=greenCarpet.getnPlayers()*2+1 && round >0 && round <=10)
+            dice=greenCarpet.getDiceFromRoundPath(d,round);
+        else
+            bool=false;
+        if (dice==null)
+            bool=false;
+        if(numdice!=1 && numdice!=2)
+            bool=false;
         if (bool) {
             switch (numdice){
                 case 1:
@@ -148,6 +172,9 @@ public class ToolCardsExecutor implements Serializable {
             }
 
         }
+        if(bool){
+            player.useMarkers(greenCarpet,choose);
+        }
         return bool;
 
     }
@@ -157,7 +184,7 @@ public class ToolCardsExecutor implements Serializable {
         return false;
     }
     //-----------------------------------------------Conversion methods-------------------------------------------------
-    private int stringtoInt(String face){
+    /*private int stringtoInt(String face){ For use: call it from ruler!
         int i=0;
 
         if(face=="\u2680"){
@@ -180,6 +207,7 @@ public class ToolCardsExecutor implements Serializable {
         }
         return i;
     }
+    */
     private String intToString(int i){
        String s=new String();
        if (i==1)
@@ -196,7 +224,7 @@ public class ToolCardsExecutor implements Serializable {
            s="\u2685";
        return s;
     }
-    private String faceToNo(String face) {
+   /* private String faceToNo(String face) { For use: call it from the dice itself!
         String s= null ;
 
         if (face == "\u2680") {
@@ -222,4 +250,5 @@ public class ToolCardsExecutor implements Serializable {
     public int chooseInt(int n){
        return n;
     }
+    */
 }

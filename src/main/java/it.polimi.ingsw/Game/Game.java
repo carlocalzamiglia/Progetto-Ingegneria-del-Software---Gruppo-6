@@ -52,7 +52,7 @@ public class Game implements Serializable {
     class GameStartonTime extends Thread{
         public void run(){
             try {
-                GameStartonTime.sleep(10000);
+                GameStartonTime.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -87,8 +87,8 @@ public class Game implements Serializable {
         this.greenCarpet=new GreenCarpet(numUser);
         DiceBucket diceBucket=inventory.getDiceBucket();
         greenCarpet.setRndPublicGoals();
-        greenCarpet.setRndToolCards();
-
+        //greenCarpet.setRndToolCards();
+        greenCarpet.setToolCards(new ToolCards(2),new ToolCards(3),new ToolCards(12));
         PrivateGoal[] privateGoals=new PrivateGoal(1).getRndPrivateGoals(numUser);
         Scheme [] schemes=new Scheme(0).getRndSchemes(numUser);
         Bridge[] bridges=new Bridge(0).getRndBridges(numUser);

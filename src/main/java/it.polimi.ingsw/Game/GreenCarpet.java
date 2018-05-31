@@ -68,7 +68,9 @@ public class GreenCarpet implements Serializable {
         toolCards[1]=new ToolCards(index2);
         toolCards[2]=new ToolCards(index3);
     }
-
+    public ToolCards[] getToolCards(){
+        return toolCards;
+    }
     public void setStock(int numbers){
         for(int i=0; i<numbers;i++){
             Dice dice=diceBucket.educe();

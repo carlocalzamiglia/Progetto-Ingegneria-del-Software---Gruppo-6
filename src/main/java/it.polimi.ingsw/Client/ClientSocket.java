@@ -279,9 +279,9 @@ public class ClientSocket {
                             String newrow2=inKeyboard.readLine();
                             outVideo.println("Inserisci la nuova colonna");
                             String newcol2=inKeyboard.readLine();
-                            sendMessage("@TOOLUSED2-"+row+"-"+col+"-"+newrow+"-"+newcol+row2+"-"+col2+"-"+newrow2+"-"+newcol2);
+                            sendMessage("@TOOLUSED2-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+row2+"-"+col2+"-"+newrow2+"-"+newcol2);
                         }
-                        if(arrOfStr[3].equals("3")){
+                        if(arrOfStr[1].equals("3")){
                             outVideo.println("INSERISCI IL NUMERO DI DADI CHE VUOI SPOSTARE (1 o 2):\n");
                             String ndice = inKeyboard.readLine();
                             outVideo.println("Inserisci il numero del round da cui prendere il dado\n");
@@ -308,9 +308,9 @@ public class ClientSocket {
                                 String newrow2=inKeyboard.readLine();
                                 outVideo.println("Inserisci la nuova colonna");
                                 String newcol2=inKeyboard.readLine();
-                                sendMessage("@TOOLUSED3-"+ndice+"-"+row+"-"+col+"-"+newrow+"-"+newcol+row2+"-"+col2+"-"+newrow2+"-"+newcol2+"-"+round+"-"+dice);
+                                sendMessage("@TOOLUSED3-"+ndice+"-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+row2+"-"+col2+"-"+newrow2+"-"+newcol2+"-"+round+"-"+dice);
                             }else
-                                sendMessage("@TOOLUSED1-"+ndice+"-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+round+"-"+dice);
+                                sendMessage("@TOOLUSED3-"+ndice+"-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+round+"-"+dice);
                         }
 
                     } else {

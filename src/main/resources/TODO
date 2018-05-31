@@ -14,6 +14,7 @@ synchronize scoreTable with user order      //DONE
 
 block input when is not the tourn
 
+IMPORTANT handle the case if you choose an action and you have no option to do that action to return to choice menù.
 
 
 
