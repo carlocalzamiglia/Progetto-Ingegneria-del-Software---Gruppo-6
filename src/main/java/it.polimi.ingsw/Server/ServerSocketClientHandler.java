@@ -10,6 +10,7 @@ import it.polimi.ingsw.Game.Scheme;
 import it.polimi.ingsw.Game.Player;
 import it.polimi.ingsw.Game.Dice;
 import it.polimi.ingsw.Game.Colour;
+import it.polimi.ingsw.Game.ToolCardsExecutor;
 import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
 import java.io.Serializable;
@@ -230,14 +231,17 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 arrOfMsg[1]="";
                 message="";
             } else if (arrOfMsg[1].equals("3")) {   //tool
+                if(!usedTool)
                 System.out.println("E' stata scelta la tool");
                 flagTool = placeTool(greenCarpet, player, i, usedDice);
+                //IF METHOD RETURN TRUE I USED A "PLACE DICE" TOOL AND I RETURN.
                 if (flagTool) {
                     sendMessageOut("@YOURTURN-false");
                     game.setGreenCarpet(greenCarpet);
                     game.setPlayer(player, i);
                     return game;
-                }
+                }else
+                    sendMessageOut("@ERROR-Hai già utilizzato una carta tool in questo giro!");
                 usedTool = true;
                 arrOfMsg[1]="";
                 message="";
@@ -269,35 +273,46 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     }
 
 
-    private boolean placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException {
-        boolean checktool=false;
-        boolean toolused;
+    private boolean placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
+        ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         boolean toolok=false;
-        while(!checktool){
             sendMessageOut("@YOURTURN-true");
             while(!toolok) {                //run 'till the card is correct and used
                 sendMessageOut("@USETOOL");
-                while (!(message.equals("@TOOLUSED")));
+                while (!(message.equals("@TOOLUSED"))){sleep(300);}
                 int choice = stringToInt(arrOfMsg[1]);
+
+                //rembember to check if the tool chosen is inside the greencarpet.
+
+
                 switch (choice) {
                     case 1:
                         if (!useddice) {
                             sendMessageOut("@TOOL-4");
-                            while (!(message.equals("@TOOLUSED-4"))) ;
+                            while (!(message.equals("@TOOLUSED4"))) ;
                         }else
                             sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
                         break;
                     case 2:
-                        sendMessageOut("@TOOL-1");
-                        while (!(message.equals("@TOOLUSED-1"))) ;
+                        while(!toolok) {        //used to have a correct use of the tool
+                            sendMessageOut("@TOOL-1");
+                            while (!(message.equals("@TOOLUSED1"))){sleep(300);}
+                            toolok=toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]));
+                        }
                         break;
                     case 3:
-                        sendMessageOut("@TOOL-1");
-                        while (!(message.equals("@TOOLUSED-1"))) ;
+                        while(!toolok) {
+                            sendMessageOut("@TOOL-1");
+                            while (!(message.equals("@TOOLUSED1"))){sleep(300);}
+                            toolok=toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]));
+                        }
                         break;
                     case 4:
-                        sendMessageOut("@TOOL-2");
-                        while (!(message.equals("@TOOLUSED-2"))) ;
+                        while(!toolok) {
+                            sendMessageOut("@TOOL-2");
+                            while (!(message.equals("@TOOLUSED2"))) {sleep(300);}
+                            toolok=toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]));
+                        }
                         break;
                     case 5:
                         if (!useddice) {
@@ -342,14 +357,18 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
                         break;
                     case 12:
-                        sendMessageOut("@TOOL-3");
-                        while (!(message.equals("@TOOLUSED-3"))) ;
+                        while(!toolok) {
+                            sendMessageOut("@TOOL-3");
+                            while (!(message.equals("@TOOLUSED3"))) {sleep(300);}
+                            if(arrOfMsg[1].equals("2"))
+                                toolok=toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]), stringToInt(arrOfMsg[9]), stringToInt(arrOfMsg[10]), stringToInt(arrOfMsg[11]));
+                            else
+                                toolok=toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]));
+                        }
                         break;
                 }
             }
-
-        }
-        return true;
+        return false;           //REMEMBER TO CHANGE THIS (USE THE TYPE-TOOL METHOD)
     }
 
 

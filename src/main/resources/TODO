@@ -1,6 +1,6 @@
 RMI messages part
 
-Other players scheme
+Other players scheme        //DONE
 
 add round for every player
 
@@ -10,6 +10,11 @@ Scheme add check number between 1 and 4
 
 check dump in client side
 
-synchronize scoreTable with user order
+synchronize scoreTable with user order      //DONE
 
 block input when is not the tourn
+
+
+
+
+Try/Catch usetoolcard!!!!
