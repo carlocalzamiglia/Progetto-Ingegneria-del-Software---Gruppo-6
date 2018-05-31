@@ -2,6 +2,7 @@ package it.polimi.ingsw.Server;
 
 
 
+import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Matches;
 import it.polimi.ingsw.Game.Ruler;
@@ -189,8 +190,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         System.out.println("SCHEMA RICEVUTO");
     }
 
-    public void handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
+    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
+        Game game= new Game(0);
         boolean flagTool=false;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
@@ -206,7 +208,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 System.out.println("E' stato scelto il passo");
                 arrOfMsg[1]="";
                 message="";
-                return;
+                game.setGreenCarpet(greenCarpet);
+                game.setPlayer(player, i);
+                return game;
             } else if (arrOfMsg[1].equals("2")) { //dice
                 if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
                     System.out.println("E' stato scelto il dado");
@@ -215,7 +219,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         usedDice = true;
                         if (usedTool) {
                             sendMessageOut("@YOURTURN-false");
-                            return;
+                            game.setGreenCarpet(greenCarpet);
+                            game.setPlayer(player, i);
+                            return game;
                         }else
                             sendMessageOut("@ERROR-Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
                     }
@@ -228,7 +234,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 flagTool = placeTool(greenCarpet, player, i, usedDice);
                 if (flagTool) {
                     sendMessageOut("@YOURTURN-false");
-                    return;
+                    game.setGreenCarpet(greenCarpet);
+                    game.setPlayer(player, i);
+                    return game;
                 }
                 usedTool = true;
                 arrOfMsg[1]="";

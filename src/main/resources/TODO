@@ -7,3 +7,9 @@ add round for every player
 tool cards fix
 
 Scheme add check number between 1 and 4
+
+check dump in client side
+
+synchronize scoreTable with user order
+
+block input when is not the tourn

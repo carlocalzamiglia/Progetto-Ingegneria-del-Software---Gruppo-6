@@ -114,14 +114,17 @@ public class Game implements Serializable {
 
             for (int i = 0; i < numUser; i++) {
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                Game game=users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                this.greenCarpet=game.greenCarpet;
+                this.player.set(i,game.getPlayer(0));
             }
 
 
             for (int i = numUser-1; i >=0; i--) {
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
-            }
+                Game game=users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                this.greenCarpet=game.greenCarpet;
+                this.player.set(i,game.getPlayer(0));            }
             greenCarpet.setRoundPath(j+1);
             player.add(player.get(0));
             player.remove(0);
@@ -201,5 +204,13 @@ public class Game implements Serializable {
             s=s.concat("\n");
         }
         return s;
+    }
+
+    public void setGreenCarpet(GreenCarpet greenCarpet) {
+        this.greenCarpet = greenCarpet;
+    }
+
+    public void setPlayer(Player player,int i) {
+        this.player.add(player);
     }
 }

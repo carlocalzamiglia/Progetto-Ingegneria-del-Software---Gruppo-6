@@ -1,6 +1,6 @@
 package it.polimi.ingsw.Client;
 
-
+import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Matches;
 import it.polimi.ingsw.Game.Ruler;
@@ -201,7 +201,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //to be implement
     @Override
-    public void handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
+    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
+
+        Game game = new Game(0);
         boolean usedDice=false;
         boolean flagTool=false;
         boolean usedTool=false;
@@ -215,15 +217,20 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             sendMessageOut("1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
             value = inKeyboard.readLine();
             if(value.equals("1")){
-                return;
+                game.setGreenCarpet(greenCarpet);
+                game.setPlayer(player, i);
+                return game;
             }else if(value.equals("2")){
                 if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
                     System.out.println("E' stato scelto il dado");
                     if (!usedDice) {
                         placedice(greenCarpet, player, i);
                         usedDice = true;
-                        if (usedTool)
-                            return;
+                        if (usedTool) {
+                            game.setGreenCarpet(greenCarpet);
+                            game.setPlayer(player, i);
+                            return game;
+                        }
                     }else
                         sendMessageOut("Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
                 }else
@@ -233,7 +240,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 flagTool = placeTool(greenCarpet, player, i, usedDice);
                 if (flagTool) {
                     sendMessageOut("@YOURTURN-false");
-                    return;
+                    game.setGreenCarpet(greenCarpet);
+                    game.setPlayer(player, i);
+                    return game;
                 }
                 usedTool = true;
             }
