@@ -18,10 +18,12 @@ public class Ruler implements Serializable {
                 return isCorrect;
             }
             if (scheme.isEmpty() == true) {
-                if (row != 0 && row != 3 && col != 0 && col != 4)
+                if (row != 0 && row != 3 && col != 0 && col != 4) {
                     isCorrect = false;
-                else if (checkBox(row, col) == false)
+                }
+                else if (checkBox(row, col) == false) {
                     isCorrect = false;
+                }
             } else {
                 isCorrect = checkBox(row, col);
                 if (isCorrect)
@@ -68,7 +70,7 @@ public class Ruler implements Serializable {
                         bool = false;
                 }
                 if (scheme.getBox(row, col).getRestrictionValue() != null) {
-                    String num = faceToNo(dice.getFace());
+                    String num = dice.faceToNo();
                     if (scheme.getBox(row, col).getRestrictionValue().equals(num))
                         bool = true;
                     else
@@ -305,7 +307,8 @@ public class Ruler implements Serializable {
         }
 
         //---------------------------Useful method that converts a dice "face" into a number(string)--------------------
-        private String faceToNo(String face) {
+        /*private String faceToNo(String face) {
+            System.out.println("face: "+face);
             String s = null;
 
             if (face == "\u2680") {
@@ -327,7 +330,7 @@ public class Ruler implements Serializable {
                 s = "6";
             }
             return s;
-        }
+        }*/
 
         //---------------------------Returns the number of dices in the scheme------------------------------------------
         public int schemeCount(Scheme testScheme) {
@@ -354,7 +357,7 @@ public class Ruler implements Serializable {
                             if (player.getScheme().getBox(k, x).getRestrictionColour() != null)
                                 bool = player.getScheme().getBox(k, x).getRestrictionColour().equals(dice.getColour());
                             else if (player.getScheme().getBox(k, x).getRestrictionValue() != null)
-                                bool = player.getScheme().getBox(k, x).getRestrictionValue().equals(faceToNo(dice.getFace()));
+                                bool = player.getScheme().getBox(k, x).getRestrictionValue().equals(dice.faceToNo());
                             else
                                 bool = true;
                         }

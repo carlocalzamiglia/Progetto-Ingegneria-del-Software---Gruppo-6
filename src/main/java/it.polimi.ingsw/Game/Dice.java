@@ -50,4 +50,28 @@ public class Dice implements Serializable {
         this.face = faces[index];
     }
 
+    public String faceToNo(){
+        String s = null;
+
+        if (face.equals("\u2680")) {
+            s = "1";
+        }
+        if (face.equals("\u2681")) {
+            s = "2";
+        }
+        if (face.equals("\u2682")) {
+            s = "3";
+        }
+        if (face.equals("\u2683")) {
+            s = "4";
+        }
+        if (face.equals("\u2684")) {
+            s = "5";
+        }
+        if (face.equals("\u2685")) {
+            s = "6";
+        }
+        return s;
+    }
+
 }
