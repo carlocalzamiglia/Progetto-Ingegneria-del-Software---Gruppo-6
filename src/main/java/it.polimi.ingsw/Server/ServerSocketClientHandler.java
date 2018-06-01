@@ -194,7 +194,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
         Game game= new Game(0);
-        boolean flagTool=false;
+        String flagTool="";
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         while(true) {
@@ -235,18 +235,20 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     System.out.println("E' stata scelta la tool");
                     flagTool = placeTool(greenCarpet, player, i, usedDice);
                     //IF METHOD RETURN TRUE I USED A "PLACE DICE" TOOL AND I RETURN.
-                    if (flagTool) {
+                    if (flagTool.equals("1")) {     //used a toolcard which include dice placement
                         sendMessageOut("@YOURTURN-false");
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
+                        arrOfMsg[1]="";
                         return game;
+                    }
+                    if(flagTool.equals("2")) {
+                        usedTool = true;
+                        arrOfMsg[1] = "";
                     }
                 }else
                     sendMessageOut("@ERROR-Hai già utilizzato una carta tool in questo giro!");
-
-                usedTool = true;
-                arrOfMsg[1] = "";
-                message = "";
+                message="";
             }
         }
     }
@@ -275,118 +277,156 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     }
 
 
-    private boolean placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
+    private String placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         boolean toolok=false;
-            sendMessageOut("@YOURTURN-true");
-            while(!toolok) {                //run 'till the card is correct and used
-                sendMessageOut("@USETOOL");
-                while (!(message.equals("@TOOLUSED"))){sleep(300);}
-                int choice = stringToInt(arrOfMsg[1]);
-                if(choice>0 && choice<13) {
-                    //rembember to check if the tool chosen is inside the greencarpet.
-
-
-                    switch (choice) {
-                        case 1:
-                            if (!useddice) {
+        boolean exit=false;     //catch the exit message
+        boolean tooldice=false; //if the tool cards include dice placement
+        sendMessageOut("@YOURTURN-true");
+        while(!toolok) {                //run 'till the card is correct and used
+            sendMessageOut("@USETOOL");
+            while (!(message.equals("@TOOLUSED"))){sleep(300);}
+            int choice = stringToInt(arrOfMsg[1]);
+            if(choice>0 && choice<13) {
+                //rembember to check if the tool chosen is inside the greencarpet.
+                switch (choice) {
+                    case 1:     //no placement
+                        while(!toolok) {
                                 sendMessageOut("@TOOL-4");
-                                while (!(message.equals("@TOOLUSED4"))) ;
-                            } else
-                                sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                            break;
-                        case 2:
-                            while (!toolok) {        //used to have a correct use of the tool
-                                sendMessageOut("@TOOL-1");
-                                while (!(message.equals("@TOOLUSED1"))) {
-                                    sleep(300);
-                                }
+                                while (!(message.equals("@TOOLUSED4")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                                if(!(message.equals("@TOOLEXIT"))) {
+                                    System.out.println("Eseguo toolcard 1");
+                                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
+                                    System.out.println("toolok: "+toolok);
+                                }else
+                                    exit=true;
+                                message="";
+                        }
+                        break;
+                    case 2:
+                        while (!toolok) {        //used to have a correct use of the tool
+                            sendMessageOut("@TOOL-1");
+                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            if(!(message.equals("@TOOLEXIT")))
                                 toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]));
-                                message = "";
+                            else {
+                                exit = true;
+                                toolok = true;
                             }
-                            break;
-                        case 3:
-                            while (!toolok) {
-                                sendMessageOut("@TOOL-1");
-                                while (!(message.equals("@TOOLUSED1"))) {
-                                    sleep(300);
-                                }
+                            message = "";
+                        }
+                        break;
+                    case 3:
+                        while (!toolok) {
+                            sendMessageOut("@TOOL-1");
+                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            if(!(message.equals("@TOOLEXIT")))
                                 toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]));
-                                message = "";
+                            else {
+                                exit = true;
+                                toolok = true;
                             }
-                            break;
-                        case 4:
-                            while (!toolok) {
-                                sendMessageOut("@TOOL-2");
-                                while (!(message.equals("@TOOLUSED2"))) {
-                                    sleep(300);
-                                }
+                            message = "";
+                        }
+                        break;
+                    case 4:
+                        while (!toolok) {
+                            sendMessageOut("@TOOL-2");
+                            while (!(message.equals("@TOOLUSED2")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            if(!(message.equals("@TOOLEXIT")))
                                 toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]));
-                                message = "";
+                            else {
+                                exit = true;
+                                toolok = true;
                             }
-                            break;
-                        case 5:
-                            if (!useddice) {
-                                sendMessageOut("@TOOL-5");
-                                while (!(message.equals("@TOOLUSED-5"))) ;
-                            } else
-                                sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                            break;
-                        case 6:
-                            if (!useddice) {
-                                sendMessageOut("@TOOL-6");
-                                while (!(message.equals("@TOOLUSED-6"))) ;
+                            message = "";
+                        }
+                        break;
+                    case 5:
+                        while(!toolok) {
+                            sendMessageOut("@TOOL-5");
+                            System.out.println("check1");
+                            while (!(message.equals("@TOOLUSED5")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                            System.out.println("check2");
+                            if(!message.equals("@TOOLEXIT"))
+                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+                            else {
+                                exit = true;
+                                toolok = true;
                             }
-                            break;
-                        case 7:
-                            sendMessageOut("@TOOL-7");
-                            while (!(message.equals("@TOOLUSED-7"))) ;
-                            break;
-                        case 8:
-                            sendMessageOut("@TOOL-manca");
-                            while (!(message.equals("@TOOLUSED-9"))) ;
-                            break;
-                        case 9:
-                            if (!useddice) {
-                                sendMessageOut("@TOOL-1");
-                                while (!(message.equals("@TOOLUSED-1"))) ;
-                            } else
-                                sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                            break;
-                        case 10:
-                            if (!useddice) {
-                                sendMessageOut("@TOOL-6");
-                                while (!(message.equals("@TOOLUSED-6"))) ;
-                            } else
-                                sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                            break;
-                        case 11:
-                            if (!useddice) {
-                                sendMessageOut("@TOOL-8");
-                                while (!(message.equals("@TOOLUSED-8"))) ;
-                            } else
-                                sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                            break;
-                        case 12:
-                            while (!toolok) {
-                                sendMessageOut("@TOOL-3");
-                                while (!(message.equals("@TOOLUSED3"))) {
-                                    sleep(300);
-                                }
+                        }
+                        break;
+                    case 6:
+                        if (!useddice) {
+                            sendMessageOut("@TOOL-6");
+                            while (!(message.equals("@TOOLUSED-6")) && !(message.equals("@TOOLEXIT"))) ;
+                        }
+                        break;
+                    case 7:
+                        sendMessageOut("@TOOL-7");
+                        while (!(message.equals("@TOOLUSED-7")) && !(message.equals("@TOOLEXIT"))) ;
+                        break;
+                    case 8:
+                        sendMessageOut("@TOOL-manca");
+                        while (!(message.equals("@TOOLUSED-9")) && !(message.equals("@TOOLEXIT"))) ;
+                        break;
+                    case 9:
+                        if (!useddice) {
+                            sendMessageOut("@TOOL-1");
+                            while (!(message.equals("@TOOLUSED-1")) && !(message.equals("@TOOLEXIT"))) ;
+                        } else
+                            sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                        break;
+                    case 10:
+                        while(!toolok) {
+                            sendMessageOut("@TOOL-6");
+                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                            System.out.println("Sono arrivato");
+                            if(!(message.equals("@TOOLEXIT")))
+                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), 0);
+                            else {
+                                exit = true;
+                                toolok = true;
+                            }
+                            message="";
+                        }
+                        break;
+                    case 11:
+                        if (!useddice) {
+                            sendMessageOut("@TOOL-8");
+                            while (!(message.equals("@TOOLUSED-8")) && !(message.equals("@TOOLEXIT"))) ;
+                        } else
+                            sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                        break;
+                    case 12:
+                        while (!toolok) {
+                            sendMessageOut("@TOOL-3");
+                            while (!(message.equals("@TOOLUSED3")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            if(!(message.equals("@TOOLEXIT")))
                                 if (arrOfMsg[1].equals("2"))
                                     toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]), stringToInt(arrOfMsg[9]), stringToInt(arrOfMsg[10]), stringToInt(arrOfMsg[11]));
                                 else
                                     toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), 0, 0, 0, 0, stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]));
-                                message = "";
+                            else {
+                                exit = true;
+                                toolok = true;
                             }
-                            break;
-                    }
-                }else{
-                    sendMessageOut("@ERROR-Hai inserito un valore sbagliato!");
-                    message="";
+                            message = "";
+                        }
+                        break;
                 }
+            }else{
+                sendMessageOut("@ERROR-Hai inserito un valore sbagliato!");
+                message="";
             }
-        return false;           //REMEMBER TO CHANGE THIS (USE THE TYPE-TOOL METHOD)
+        }
+        if(exit==true)
+            return "3";
+        else
+            if(tooldice==true)      //return 1 if the tool card include dice placement
+                return "1";
+            else
+                return "2";
     }
 
 

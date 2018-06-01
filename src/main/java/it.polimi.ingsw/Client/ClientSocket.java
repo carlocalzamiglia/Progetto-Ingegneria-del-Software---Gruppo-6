@@ -248,70 +248,106 @@ public class ClientSocket {
                     }else if(arrOfStr[0].equals("@ERROR")){
                         outVideo.println(arrOfStr[1]);
                     }else if(arrOfStr[0].equals("@TOOL")){
+                        String choose="a";
+                        while((!(choose.equals("y"))) && (!(choose.equals("n")))) {
+                            outVideo.println("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
+                            choose = inKeyboard.readLine();
+                        }
                         //--------------------USE TOOL CARDS------------------------
-                        if(arrOfStr[1].equals("1")){
-                            outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                            String row=inKeyboard.readLine();
-                            outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                            String col=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova riga");
-                            String newrow=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova colonna");
-                            String newcol=inKeyboard.readLine();
-                            sendMessage("@TOOLUSED1-"+row+"-"+col+"-"+newrow+"-"+newcol);
-                        }
-                        if(arrOfStr[1].equals("2")){
-                            outVideo.println("PRIMO DADO:\n");
-                            outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                            String row=inKeyboard.readLine();
-                            outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                            String col=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova riga");
-                            String newrow=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova colonna");
-                            String newcol=inKeyboard.readLine();
-                            outVideo.println("SECONDO DADO:\n");
-                            outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                            String row2=inKeyboard.readLine();
-                            outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                            String col2=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova riga");
-                            String newrow2=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova colonna");
-                            String newcol2=inKeyboard.readLine();
-                            sendMessage("@TOOLUSED2-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+row2+"-"+col2+"-"+newrow2+"-"+newcol2);
-                        }
-                        if(arrOfStr[1].equals("3")){
-                            outVideo.println("INSERISCI IL NUMERO DI DADI CHE VUOI SPOSTARE (1 o 2):\n");
-                            String ndice = inKeyboard.readLine();
-                            outVideo.println("Inserisci il numero del round da cui prendere il dado\n");
-                            String round = inKeyboard.readLine();
-                            outVideo.println("Inserisci la posizione del dado nel round (numero di riga)\n");
-                            String dice = inKeyboard.readLine();
-
-                            outVideo.println("PRIMO DADO:\n");
-                            outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                            String row=inKeyboard.readLine();
-                            outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                            String col=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova riga");
-                            String newrow=inKeyboard.readLine();
-                            outVideo.println("Inserisci la nuova colonna");
-                            String newcol=inKeyboard.readLine();
-                            if(ndice.equals("2")){
+                        if(choose.equals("y")) {
+                            if (arrOfStr[1].equals("1")) {
+                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
+                                String row = inKeyboard.readLine();
+                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
+                                String col = inKeyboard.readLine();
+                                outVideo.println("Inserisci la nuova riga");
+                                String newrow = inKeyboard.readLine();
+                                outVideo.println("Inserisci la nuova colonna");
+                                String newcol = inKeyboard.readLine();
+                                sendMessage("@TOOLUSED1-" + row + "-" + col + "-" + newrow + "-" + newcol);
+                            }
+                            if (arrOfStr[1].equals("2")) {
+                                outVideo.println("PRIMO DADO:\n");
+                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
+                                String row = inKeyboard.readLine();
+                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
+                                String col = inKeyboard.readLine();
+                                outVideo.println("Inserisci la nuova riga");
+                                String newrow = inKeyboard.readLine();
+                                outVideo.println("Inserisci la nuova colonna");
+                                String newcol = inKeyboard.readLine();
                                 outVideo.println("SECONDO DADO:\n");
                                 outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                                String row2=inKeyboard.readLine();
+                                String row2 = inKeyboard.readLine();
                                 outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                                String col2=inKeyboard.readLine();
+                                String col2 = inKeyboard.readLine();
                                 outVideo.println("Inserisci la nuova riga");
-                                String newrow2=inKeyboard.readLine();
+                                String newrow2 = inKeyboard.readLine();
                                 outVideo.println("Inserisci la nuova colonna");
-                                String newcol2=inKeyboard.readLine();
-                                sendMessage("@TOOLUSED3-"+ndice+"-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+row2+"-"+col2+"-"+newrow2+"-"+newcol2+"-"+round+"-"+dice);
-                            }else
-                                sendMessage("@TOOLUSED3-"+ndice+"-"+row+"-"+col+"-"+newrow+"-"+newcol+"-"+round+"-"+dice);
-                        }
+                                String newcol2 = inKeyboard.readLine();
+                                sendMessage("@TOOLUSED2-" + row + "-" + col + "-" + newrow + "-" + newcol + "-" + row2 + "-" + col2 + "-" + newrow2 + "-" + newcol2);
+                            }
+                            if (arrOfStr[1].equals("3")) {
+                                outVideo.println("INSERISCI IL NUMERO DI DADI CHE VUOI SPOSTARE (1 o 2):\n");
+                                String ndice = inKeyboard.readLine();
+                                outVideo.println("Inserisci il numero del round da cui prendere il dado\n");
+                                String round = inKeyboard.readLine();
+                                outVideo.println("Inserisci la posizione del dado nel round (numero di riga)\n");
+                                String dice = inKeyboard.readLine();
+
+                                outVideo.println("PRIMO DADO:\n");
+                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
+                                String row = inKeyboard.readLine();
+                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
+                                String col = inKeyboard.readLine();
+                                outVideo.println("Inserisci la nuova riga");
+                                String newrow = inKeyboard.readLine();
+                                outVideo.println("Inserisci la nuova colonna");
+                                String newcol = inKeyboard.readLine();
+                                if (ndice.equals("2")) {
+                                    outVideo.println("SECONDO DADO:\n");
+                                    outVideo.println("Inserisci la riga del dado che vuoi scegliere");
+                                    String row2 = inKeyboard.readLine();
+                                    outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
+                                    String col2 = inKeyboard.readLine();
+                                    outVideo.println("Inserisci la nuova riga");
+                                    String newrow2 = inKeyboard.readLine();
+                                    outVideo.println("Inserisci la nuova colonna");
+                                    String newcol2 = inKeyboard.readLine();
+                                    sendMessage("@TOOLUSED3-" + ndice + "-" + row + "-" + col + "-" + newrow + "-" + newcol + "-" + row2 + "-" + col2 + "-" + newrow2 + "-" + newcol2 + "-" + round + "-" + dice);
+                                } else
+                                    sendMessage("@TOOLUSED3-" + ndice + "-" + row + "-" + col + "-" + newrow + "-" + newcol + "-" + round + "-" + dice);
+                            }
+                            if(arrOfStr[1].equals("4")){
+                                outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
+                                String vdice=inKeyboard.readLine();
+                                outVideo.println("Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
+                                String dicechose=inKeyboard.readLine();
+                                while(!(dicechose.equals("c")) && !(dicechose.equals("d"))){
+                                    outVideo.println("Scelta errata. Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
+                                    dicechose=inKeyboard.readLine();
+                                }
+                                if(dicechose.equals("c"))
+                                    sendMessage("@TOOLUSED4-"+vdice+"-1");
+                                else
+                                    sendMessage("@TOOLUSED4-"+vdice+"-2");
+                            }
+                            if(arrOfStr[1].equals("6")){
+                                outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
+                                String ndice=inKeyboard.readLine();
+                                sendMessage("@TOOLUSED6-"+ndice);
+                            }
+                            if(arrOfStr[1].equals("5")){
+                                outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
+                                String vdice=inKeyboard.readLine();
+                                outVideo.println("Inserisci il round da cui vuoi prelevare il dado da scambiare");
+                                String round=inKeyboard.readLine();
+                                outVideo.println("Inserisci la posizione del dado nel round (numero di riga)");
+                                String dicepos = inKeyboard.readLine();
+                                sendMessage("@TOOLUSED5-"+vdice+"-"+round+"-"+dicepos);
+                            }
+                        }else
+                            sendMessage("@TOOLEXIT");
 
                     } else {
                         System.out.println(msg);
