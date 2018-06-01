@@ -264,7 +264,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             Dice dice = greenCarpet.checkDiceFromStock(stringToInt(arrOfMsg[1]));
             if(dice!=null) {
                 checkdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), dice, player.getScheme());
-                System.out.println("checkdice ha detto: " + checkdice);
                 if (!checkdice)
                     sendMessageOut("@ERROR-Il dado non può essere inserito");
             }else
@@ -295,11 +294,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                 sendMessageOut("@TOOL-4");
                                 while (!(message.equals("@TOOLUSED4")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
                                 if(!(message.equals("@TOOLEXIT"))) {
-                                    System.out.println("Eseguo toolcard 1");
                                     toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
-                                    System.out.println("toolok: "+toolok);
-                                }else
-                                    exit=true;
+                                }else {
+                                    exit = true;
+                                    toolok = true;
+                                }
                                 message="";
                         }
                         break;
@@ -345,15 +344,14 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 5:
                         while(!toolok) {
                             sendMessageOut("@TOOL-5");
-                            System.out.println("check1");
                             while (!(message.equals("@TOOLUSED5")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
-                            System.out.println("check2");
                             if(!message.equals("@TOOLEXIT"))
                                 toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
                             else {
                                 exit = true;
                                 toolok = true;
                             }
+                            message="";
                         }
                         break;
                     case 6:
@@ -381,7 +379,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         while(!toolok) {
                             sendMessageOut("@TOOL-6");
                             while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
-                            System.out.println("Sono arrivato");
                             if(!(message.equals("@TOOLEXIT")))
                                 toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), 0);
                             else {
