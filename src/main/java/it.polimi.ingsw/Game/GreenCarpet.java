@@ -87,11 +87,10 @@ public class GreenCarpet implements Serializable {
         }
 
     }
-
-    public Dice changeDiceFromRoundPath(int i, int round, Dice dice){
+    public void changeDiceFromRoundPath(int i, int round, Dice dice){
         Dice d=roundPath[i-1][round-1];
         roundPath[i-1][round-1]=dice;
-        return d;
+        setDiceInStock(d);
     }
     public Dice getDiceFromRoundPath(int i, int round){
         return roundPath[i-1][round-1];

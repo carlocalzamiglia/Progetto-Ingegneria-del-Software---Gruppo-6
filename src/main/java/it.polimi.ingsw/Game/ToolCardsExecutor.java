@@ -29,13 +29,63 @@ public class ToolCardsExecutor implements Serializable {
        return bool;
    }
 
-   //-----------------------------------------------Tool methods--------------------------------------------------------
-    //---------------------------------------Tool number 2/3------------------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int row,int col,int newRow,int newCol) {
-        boolean bool = checkCost(player,greenCarpet,choose);
+    //-----------------------------------------------Tool methods--------------------------------------------------------
+    //--------------------------------------Tool card 1 and 10-----------------------------------------------------------
+    public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int choice){
+       boolean bool=checkCost(player,greenCarpet,serialnumber);
+       Dice dice;
+       Ruler ruler= new Ruler();
+       int face;
+       if (bool) {
+           if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
+               dice = greenCarpet.getDiceFromStock(stockPos);
+               if (serialnumber == 1) {//----------------tool 1---------------------------------------------------------
+                   face = ruler.stringtoInt(dice.getFace());
+                   if (choice == 1 && face != 6)
+                       face++;
+                   else if (choice == 2 && face != 1)
+                       face--;
+                   else
+                       bool = false;
+                   dice.setFace(ruler.intToString(face));
+               }else if (serialnumber==10) {//-----------tool 10(at the invocation choice can be any)-------------------
+                   setOppositeFace(dice);
+               }
+               greenCarpet.setDiceInStock(dice);
+           }else
+               bool=false;
+       }
+        if(bool)
+            player.useMarkers(greenCarpet,serialnumber);
+       return bool;
+    }
+    //---------------------------------------Tool card 5----------------------------------------------------------------
+    public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int round,int dicePos){
+       boolean bool=checkCost(player,greenCarpet,serialnumber);
+       Dice dice;
+       if (bool){
+           if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
+               dice=greenCarpet.getDiceFromStock(stockPos);
+               bool=greenCarpet.checkEmptyRoundpath();
+               if (bool && dicePos>0 && dicePos<=greenCarpet.getnPlayers()*2+1 && round >0 && round <=10 && greenCarpet.getDiceFromRoundPath(dicePos,round)!=null){
+                  greenCarpet.changeDiceFromRoundPath(dicePos,round,dice);
+               }else{
+                   bool=false;
+                   greenCarpet.setDiceInStock(dice);
+               }
+           }else
+               bool=false;
+       }
+       if (bool){
+           player.useMarkers(greenCarpet,serialnumber);
+       }
+       return bool;
+    }
+    //---------------------------------------Tool Card 2 and 3----------------------------------------------------------
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int row,int col,int newRow,int newCol) {
+        boolean bool = checkCost(player,greenCarpet,serialnumber);
         Dice dice;
         Ruler ruler = new Ruler();
-        int serialnumber = choose;
         if (bool) {
             if (!player.getScheme().isEmpty()) {
                 if (checkCoordinate(row,col) && player.getScheme().getBox(row, col).getAddedDice() != null) {
@@ -75,7 +125,7 @@ public class ToolCardsExecutor implements Serializable {
         return bool;
     }
 
-    //-----------------------------------------------tool number 4------------------------------------------------------
+    //---------------------------------------Tool card 4----------------------------------------------------------------
     public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2) {
         boolean bool = checkCost(player,greenCarpet,choose);
         Ruler ruler = new Ruler();
@@ -138,12 +188,12 @@ public class ToolCardsExecutor implements Serializable {
 
     }
 
-    //-----------------------------------------------tool number 12-----------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,int round, int d) {
+    //---------------------------------------Tool card 12---------------------------------------------------------------
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,int round, int dicePos) {
         boolean bool = checkCost(player,greenCarpet,choose);
         Dice dice= new Dice(null);
-        if (d>0 && d<=greenCarpet.getnPlayers()*2+1 && round >0 && round <=10)
-            dice=greenCarpet.getDiceFromRoundPath(d,round);
+        if (dicePos>0 && dicePos<=greenCarpet.getnPlayers()*2+1 && round >0 && round <=10)
+            dice=greenCarpet.getDiceFromRoundPath(dicePos,round);
         else
             bool=false;
         if (dice==null)
@@ -178,77 +228,26 @@ public class ToolCardsExecutor implements Serializable {
         return bool;
 
     }
+
+    //---------------------------------------Returns true if the row and col are in the scheme--------------------------
     public boolean checkCoordinate(int row,int col){
         if(row >= 0 && row <= 3 && col >= 0 && col <= 4)
             return true;
         return false;
     }
     //-----------------------------------------------Conversion methods-------------------------------------------------
-    /*private int stringtoInt(String face){ For use: call it from ruler!
-        int i=0;
-
-        if(face=="\u2680"){
-            i=1;
-        }
-        if(face=="\u2681"){
-            i=2;
-        }
-        if(face=="\u2682"){
-            i=3;
-        }
-        if(face=="\u2683"){
-            i=4;
-        }
-        if(face=="\u2684"){
-            i=5;
-        }
-        if(face=="\u2685"){
-            i=6;
-        }
-        return i;
+    private void setOppositeFace(Dice dice){
+        if (dice.getFace().equals("\u2680"))
+            dice.setFace("\u2685");
+        else if (dice.getFace().equals("\u2681"))
+            dice.setFace("\u2684");
+        else if (dice.getFace().equals("\u2682"))
+            dice.setFace("\u2683");
+        else if (dice.getFace().equals("\u2683"))
+            dice.setFace("\u2682");
+        else if (dice.getFace().equals("\u2684"))
+            dice.setFace("\u2681");
+        else if (dice.getFace().equals("\u2685"))
+            dice.setFace("\u2680");
     }
-    */
-    private String intToString(int i){
-       String s=new String();
-       if (i==1)
-           s="\u2680";
-       if (i==2)
-           s="\u2681";
-       if (i==3)
-           s="\u2682";
-       if(i==4)
-           s="\u2683";
-       if (i==5)
-           s="\u2684";
-       if (i==6)
-           s="\u2685";
-       return s;
-    }
-   /* private String faceToNo(String face) { For use: call it from the dice itself!
-        String s= null ;
-
-        if (face == "\u2680") {
-            s = "1";
-        }
-        if (face == "\u2681") {
-            s = "2";
-        }
-        if (face == "\u2682") {
-            s = "3";
-        }
-        if (face == "\u2683") {
-            s = "4";
-        }
-        if (face == "\u2684") {
-            s = "5";
-        }
-        if (face == "\u2685") {
-            s= "6";
-        }
-        return s;
-    }
-    public int chooseInt(int n){
-       return n;
-    }
-    */
 }

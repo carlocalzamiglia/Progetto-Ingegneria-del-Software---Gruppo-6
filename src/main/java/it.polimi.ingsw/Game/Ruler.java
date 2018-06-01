@@ -289,6 +289,22 @@ public class Ruler implements Serializable {
         }
         return i;
     }
+        public String intToString(int i) {
+            String s = new String();
+            if (i == 1)
+                s = "\u2680";
+            if (i == 2)
+                s = "\u2681";
+            if (i == 3)
+                s = "\u2682";
+            if (i == 4)
+                s = "\u2683";
+            if (i == 5)
+                s = "\u2684";
+            if (i == 6)
+                s = "\u2685";
+            return s;
+        }
 
 
 
