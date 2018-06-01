@@ -126,6 +126,18 @@ public class GreenCarpet implements Serializable {
         return bool;
     }
 
+    //--------------------------------------Returns true if the Tool Card is in The Green Carpet------------------------
+    public boolean toolIsIn(int serialnumber){
+        boolean bool=false;
+        for(int j=0; j<getToolCards().length && !bool;j++) {
+            if (getToolCards()[j].getSerialNumber() == serialnumber)
+                return true;
+            else
+                bool=false;
+        }
+        return bool;
+    }
+
     //-----------------------------------------------Print methods------------------------------------------------------
        @Override
     public String toString() {

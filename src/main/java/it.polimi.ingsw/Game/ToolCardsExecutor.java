@@ -30,7 +30,7 @@ public class ToolCardsExecutor implements Serializable {
    }
 
     //-----------------------------------------------Tool methods--------------------------------------------------------
-    //--------------------------------------Tool card 1 and 10-----------------------------------------------------------
+    //--------------------------------------Tool card 1,10,6------------------------------------------------------------
     public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int choice){
        boolean bool=checkCost(player,greenCarpet,serialnumber);
        Dice dice;
@@ -50,8 +50,17 @@ public class ToolCardsExecutor implements Serializable {
                    dice.setFace(ruler.intToString(face));
                }else if (serialnumber==10) {//-----------tool 10(at the invocation choice can be any)-------------------
                    setOppositeFace(dice);
+               }else if (serialnumber==6){
+                   dice.roll();
+                   if(ruler.checkAvailableDice(dice,player.getScheme())) {
+                       bool = false;
+                   }
+                   else
+                       greenCarpet.setDiceInStock(dice);
                }
-               greenCarpet.setDiceInStock(dice);
+               if(serialnumber!=6) {
+                   greenCarpet.setDiceInStock(dice);
+               }
            }else
                bool=false;
        }
@@ -126,8 +135,8 @@ public class ToolCardsExecutor implements Serializable {
     }
 
     //---------------------------------------Tool card 4----------------------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2) {
-        boolean bool = checkCost(player,greenCarpet,choose);
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2) {
+        boolean bool = checkCost(player,greenCarpet,serialnumber);
         Ruler ruler = new Ruler();
         if (bool) {
             if (ruler.schemeCount(player.getScheme()) >= 2) {
@@ -181,16 +190,16 @@ public class ToolCardsExecutor implements Serializable {
             else
                 bool=false;
         }
-        if(bool && choose!=12){
-            player.useMarkers(greenCarpet,choose);
+        if(bool && serialnumber!=12){
+            player.useMarkers(greenCarpet,serialnumber);
         }
         return bool;
 
     }
 
     //---------------------------------------Tool card 12---------------------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int choose,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,int round, int dicePos) {
-        boolean bool = checkCost(player,greenCarpet,choose);
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,int round, int dicePos) {
+        boolean bool = checkCost(player,greenCarpet,serialnumber);
         Dice dice= new Dice(null);
         if (dicePos>0 && dicePos<=greenCarpet.getnPlayers()*2+1 && round >0 && round <=10)
             dice=greenCarpet.getDiceFromRoundPath(dicePos,round);
@@ -205,7 +214,7 @@ public class ToolCardsExecutor implements Serializable {
                 case 1:
                    Dice dice11=player.getScheme().getBox(row1,col1).getAddedDice();
                    if (dice11.getColour().equals(dice.getColour()))
-                        bool=useMovementCard(player,greenCarpet,choose,row1,col1,newRow1,newCol1);
+                        bool=useMovementCard(player,greenCarpet,serialnumber,row1,col1,newRow1,newCol1);
                    else
                        bool=false;
                     break;
@@ -213,7 +222,7 @@ public class ToolCardsExecutor implements Serializable {
                     Dice dice1 = player.getScheme().getBox(row1, col1).getAddedDice();
                     Dice dice2 = player.getScheme().getBox(row2, col2).getAddedDice();
                     if(dice1.getColour().equals(dice.getColour())&& dice2.getColour().equals(dice.getColour())){
-                        bool=useMovementCard(player,greenCarpet,choose,row1,col1,newRow1,newCol1,row2,col2,newRow2,newCol2);
+                        bool=useMovementCard(player,greenCarpet,serialnumber,row1,col1,newRow1,newCol1,row2,col2,newRow2,newCol2);
                     }
                     else
                         bool=false;
@@ -223,7 +232,7 @@ public class ToolCardsExecutor implements Serializable {
 
         }
         if(bool){
-            player.useMarkers(greenCarpet,choose);
+            player.useMarkers(greenCarpet,serialnumber);
         }
         return bool;
 
