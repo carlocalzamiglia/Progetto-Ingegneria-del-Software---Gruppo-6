@@ -240,11 +240,21 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
                         arrOfMsg[1]="";
+                        message="";
                         return game;
                     }
                     if(flagTool.equals("2")) {
-                        usedTool = true;
-                        arrOfMsg[1] = "";
+                        if(!usedDice) {
+                            usedTool = true;
+                            arrOfMsg[1] = "";
+                        }else{
+                            sendMessageOut("@YOURTURN-false");
+                            game.setGreenCarpet(greenCarpet);
+                            game.setPlayer(player, i);
+                            arrOfMsg[1]="";
+                            message="";
+                            return game;
+                        }
                     }
                 }else
                     sendMessageOut("@ERROR-Hai già utilizzato una carta tool in questo giro!");
