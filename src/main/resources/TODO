@@ -8,6 +8,14 @@ tool cards fix
 
 Scheme add check number between 1 and 4
 
+Check in the choice menu if imput is not 1-2-3
+
+set an action in the place dice turn to return to main menù
+
+check when coordinates imput are no numbers
+
+implement a method that converts serial number of tool cards into "case numbers" to avoid useless cases ?????
+
 check dump in client side
 
 synchronize scoreTable with user order      //DONE
