@@ -30,7 +30,7 @@ public class ToolCardsExecutor implements Serializable {
    }
 
     //-----------------------------------------------Tool methods--------------------------------------------------------
-    //--------------------------------------Tool card 1,10,6------------------------------------------------------------
+    //--------------------------------------Tool card 1,10------------------------------------------------------------
     public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int choice){
        boolean bool=checkCost(player,greenCarpet,serialnumber);
        Dice dice;
@@ -50,17 +50,8 @@ public class ToolCardsExecutor implements Serializable {
                    dice.setFace(ruler.intToString(face));
                }else if (serialnumber==10) {//-----------tool 10(at the invocation choice can be any)-------------------
                    setOppositeFace(dice);
-               }else if (serialnumber==6){
-                   dice.roll();
-                   if(ruler.checkAvailableDice(dice,player.getScheme())) {
-                       bool = false;
-                   }
-                   else
-                       greenCarpet.setDiceInStock(dice);
                }
-               if(serialnumber!=6) {
-                   greenCarpet.setDiceInStock(dice);
-               }
+               greenCarpet.setDiceInStock(dice);
            }else
                bool=false;
        }
@@ -236,6 +227,21 @@ public class ToolCardsExecutor implements Serializable {
         }
         return bool;
 
+    }
+
+
+    //----------------------------------tool card 6---------------------------------------------------------------------
+    public Dice usetool6(Player player,GreenCarpet greenCarpet, int stockPos){
+        Dice dice = null;
+        boolean bool=checkCost(player,greenCarpet,6);
+        if(bool) {
+            if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
+                dice = greenCarpet.getDiceFromStock(stockPos);
+                dice.roll();
+                player.useMarkers(greenCarpet, 6);
+            }
+        }
+        return dice;
     }
 
     //---------------------------------------Returns true if the row and col are in the scheme--------------------------

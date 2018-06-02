@@ -249,10 +249,13 @@ public class ClientSocket {
                         outVideo.println(arrOfStr[1]);
                     }else if(arrOfStr[0].equals("@TOOL")){
                         String choose="a";
-                        while((!(choose.equals("y"))) && (!(choose.equals("n")))) {
-                            outVideo.println("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            choose = inKeyboard.readLine();
-                        }
+                        if(!(arrOfStr[1].equals("61"))) {       //avoids a double check.
+                            while ((!(choose.equals("y"))) && (!(choose.equals("n")))) {
+                                outVideo.println("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
+                                choose = inKeyboard.readLine();
+                            }
+                        }else
+                            choose="y";
                         //--------------------USE TOOL CARDS------------------------
                         if(choose.equals("y")) {
                             if (arrOfStr[1].equals("1")) {
@@ -336,6 +339,13 @@ public class ClientSocket {
                                 outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
                                 String ndice=inKeyboard.readLine();
                                 sendMessage("@TOOLUSED6-"+ndice);
+                            }
+                            if(arrOfStr[1].equals("61")){
+                                outVideo.println("Il dado è stato nuovamente lanciato. E' uscito: "+arrOfStr[2]+". Sei pregato di indicare dove piazzarlo.\nInserisci la riga.\n");
+                                String row=inKeyboard.readLine();
+                                outVideo.println("Ora inserisci la colonna.");
+                                String col=inKeyboard.readLine();
+                                sendMessage("@TOOLUSED61-"+row+"-"+col);
                             }
                             if(arrOfStr[1].equals("5")){
                                 outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");

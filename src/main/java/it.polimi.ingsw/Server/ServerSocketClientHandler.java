@@ -365,9 +365,40 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         }
                         break;
                     case 6:
-                        if (!useddice) {
+                        Ruler ruler = new Ruler();
+                        boolean checkplacement;
+                        boolean checkcorrdice=false;
+                        Dice dice=null;
+                        while(!toolok) {
                             sendMessageOut("@TOOL-6");
-                            while (!(message.equals("@TOOLUSED-6")) && !(message.equals("@TOOLEXIT"))) ;
+                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                            if(!message.equals("@TOOLEXIT")) {
+                                dice = toolCardsExecutor.usetool6(player, greenCarpet, stringToInt(arrOfMsg[1]));
+                                if(dice!=null) {
+                                    if (ruler.checkAvailableDice(dice, player.getScheme())) {
+                                        while (!checkcorrdice) {
+                                            sendMessageOut("@TOOL-61-" + dice);
+                                            while (!(message.equals("@TOOLUSED61"))) {
+                                                sleep(200);
+                                            }
+                                            checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
+                                            message = "";
+                                        }
+                                        player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
+
+                                    }
+                                    toolok = true;
+                                }else{
+                                    sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+                                    toolok=true;
+                                    exit=true;
+                                }
+                            }
+                            else {
+                                exit = true;
+                                toolok = true;
+                            }
+                            message="";
                         }
                         break;
                     case 7:
