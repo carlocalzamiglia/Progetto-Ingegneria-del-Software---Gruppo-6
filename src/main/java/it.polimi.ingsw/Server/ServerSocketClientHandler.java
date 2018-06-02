@@ -194,7 +194,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
         Game game= new Game(0);
-        String flagTool="";
+        int flagTool=0;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         while(true) {
@@ -235,15 +235,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     System.out.println("E' stata scelta la tool");
                     flagTool = placeTool(greenCarpet, player, i, usedDice);
                     //IF METHOD RETURN TRUE I USED A "PLACE DICE" TOOL AND I RETURN.
-                    if (flagTool.equals("1")) {     //used a toolcard which include dice placement
+                    if (flagTool==1) {     //used a toolcard which include dice placement
                         sendMessageOut("@YOURTURN-false");
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
                         arrOfMsg[1]="";
                         message="";
+                        sendMessageOut("@ERROR-Il tuo turno è terminato: hai finito le mosse possibili!");
                         return game;
                     }
-                    if(flagTool.equals("2")) {
+                    if(flagTool==2) {
                         if(!usedDice) {
                             usedTool = true;
                             arrOfMsg[1] = "";
@@ -253,6 +254,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             game.setPlayer(player, i);
                             arrOfMsg[1]="";
                             message="";
+                            sendMessageOut("@ERROR-Il tuo turno è terminato: hai finito le mosse possibili!");
                             return game;
                         }
                     }
@@ -286,7 +288,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     }
 
 
-    private String placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
+    private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         boolean toolok=false;
         boolean exit=false;     //catch the exit message
@@ -385,7 +387,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                             message = "";
                                         }
                                         player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
-
+                                        tooldice=true;
                                     }
                                     toolok = true;
                                 }else{
@@ -458,13 +460,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 message="";
             }
         }
-        if(exit==true)
-            return "3";
+        if(exit)
+            return 3;
         else
-            if(tooldice==true)      //return 1 if the tool card include dice placement
-                return "1";
+            if(tooldice)      //return 1 if the tool card include dice placement
+                return 1;
             else
-                return "2";
+                return 2;
     }
 
 

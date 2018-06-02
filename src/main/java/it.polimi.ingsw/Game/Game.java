@@ -89,7 +89,7 @@ public class Game implements Serializable {
         DiceBucket diceBucket=inventory.getDiceBucket();
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
-        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(5),new ToolCards(10));
+        greenCarpet.setToolCards(new ToolCards(6),new ToolCards(5),new ToolCards(10));
         PrivateGoal[] privateGoals=getRndPrivateGoals(numUser);
         Scheme [] schemes=getRndSchemes(numUser);
         Bridge[] bridges=getRndBridges(numUser);
