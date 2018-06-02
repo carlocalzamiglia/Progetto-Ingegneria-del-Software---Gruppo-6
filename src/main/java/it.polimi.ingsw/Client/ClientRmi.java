@@ -410,7 +410,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     Dice dice=null;
                     String row="";
                     String col="";
-                    while(!toolok) {
+                    while(!toolok && !usedDice) {
                         goon="a";
                         while(!goon.equals("y") && !goon.equals("n")) {
                             sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
@@ -432,6 +432,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                     player.getScheme().setBoxes(dice, stringToInt(row), stringToInt(col));
                                     tooldice=true;
                                 }
+                                else
+                                    greenCarpet.setDiceInStock(dice);
                                 toolok = true;
                             } else
                                 sendMessageOut("C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
@@ -583,7 +585,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
 
     private int stringToInt(String message){
-        if(message.equals("1"))
+        if(message.equals("0"))
+            return 0;
+        else if(message.equals("1"))
             return 1;
         else if(message.equals("2"))
             return 2;
@@ -608,7 +612,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         else if(message.equals("12"))
             return 12;
         else
-            return 0;
+            return -1;
     }
 
 }

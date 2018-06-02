@@ -164,8 +164,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
 
     //********************************************* all game methods ***************************************+
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
-        sendMessageOut("@SCHEME-Scegli uno schema:\n"+scheme1+"\n"+scheme2+"\n"+scheme3+"\n"+scheme4);
-        while(!(message.equals("@SCHEME"))){sleep(300);}
+        do {
+            message="";
+            sendMessageOut("@SCHEME-Scegli uno schema:\n" + scheme1 + "\n" + scheme2 + "\n" + scheme3 + "\n" + scheme4);
+            while(!(message.equals("@SCHEME"))){sleep(300);}
+        }while (stringToInt(arrOfMsg[1])<=0 || stringToInt(arrOfMsg[1])>4);
+
         System.out.println("schema scelto: "+arrOfMsg[1]);
         return stringToInt(arrOfMsg[1]);
     }
@@ -262,6 +266,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     sendMessageOut("@ERROR-Hai già utilizzato una carta tool in questo giro!");
                 message="";
             }
+            message="";
         }
     }
 
@@ -371,7 +376,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         boolean checkplacement;
                         boolean checkcorrdice=false;
                         Dice dice=null;
-                        while(!toolok) {
+                        while(!toolok && !useddice) {
                             sendMessageOut("@TOOL-6");
                             while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
                             if(!message.equals("@TOOLEXIT")) {
@@ -389,6 +394,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                         player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
                                         tooldice=true;
                                     }
+                                    else
+                                        greenCarpet.setDiceInStock(dice);
                                     toolok = true;
                                 }else{
                                     sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
@@ -402,6 +409,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             }
                             message="";
                         }
+                        if(useddice){
+                            sendMessageOut("@ERROR-è gia stato posizionato un dado, non puoi utilizzare questa carta utensile");
+                        }
+                        message="";
                         break;
                     case 7:
                         sendMessageOut("@TOOL-7");
@@ -485,7 +496,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     }
 
     private int stringToInt(String message){
-        if(message.equals("1"))
+        if(message.equals("0"))
+            return 0;
+        else if(message.equals("1"))
             return 1;
         else if(message.equals("2"))
             return 2;
@@ -510,7 +523,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         else if(message.equals("12"))
             return 12;
         else
-            return 0;
+            return -1;
     }
 
 }
