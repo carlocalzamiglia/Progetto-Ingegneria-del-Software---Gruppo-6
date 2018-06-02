@@ -96,6 +96,7 @@ public class Game implements Serializable {
 
         for (int i=0;i<numUser;i++) {
             Player player=new Player(users.get(i).getNickname());
+            player.setOnline(true);
             player.setPrivateGoal(privateGoals[i]);
 
             users.get(i).getConnectionType().sendMessageOut("@ERROR-Il tuo obiettivo privato è: "+privateGoals[i]+"\n");

@@ -150,38 +150,35 @@ public class GreenCarpet implements Serializable {
     //-----------------------------------------------Print methods------------------------------------------------------
        @Override
     public String toString() {
-        String s = new String();
-        s="--OBBIETTIVI PUBBLICI--\n";
-        for (int i = 0; i < 3; i++){
-               s = s + publicGoals[i];
-               s = s + "\n";
-        }
-        s=s+"--CARTE UTENSILI--\n";
-        for (int i = 0; i < 3; i++) {
+           String s = new String();
+           s = "--OBBIETTIVI PUBBLICI--\n";
+           for(int i=0;i<3;i++)
+               s=s+(i+1)+")\t\t"+publicGoals[i];
+           s = s + "--CARTE UTENSILI--\n";
+           for (int i = 0; i < 3; i++) {
                s = s + toolCards[i];
+           }
+           s = s + "--TRACCIATO DEI ROUND--\n";
+           for (int i = 0; i < 10; i++) {
+               s = s + "[" + (i + 1) + "°] ";
+           }
+           s = s + "\n";
+           for (int i = 0; i < nPlayers * 2 + 1; i++) {
+               for (int j = 0; j < 10; j++) {
+                   if (roundPath[i][j] == null)
+                       s = s + "[  ] ";
+                   else
+                       s = s + roundPath[i][j] + "  ";
+               }
                s = s + "\n";
-        }
-        s=s+"--TRACCIATO DEI ROUND--\n";
-        for(int i=0;i<10;i++){
-            s=s+"[" + (i+1) +"°] ";
-        }
-        s=s+"\n";
-        for (int i = 0; i < nPlayers * 2 + 1; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (roundPath[i][j] == null)
-                    s = s + "[  ] ";
-                else
-                    s = s + roundPath[i][j] + "  ";
-            }
-            s = s+"\n";
-        }
-           s=s+"--RISERVA--\n";
-        for (int i=0;i<stock.size();i++)
-            s=s+(i+1)+")"+stock.get(i).toString()+" ";
-        s=s+"\n";
+           }
+           s = s + "--RISERVA--\n";
+           for (int i = 0; i < stock.size(); i++)
+               s = s + (i + 1) + ")" + stock.get(i).toString() + " ";
+           s = s + "\n";
 
-        return s;
-    }
+           return s;
+       }
     public void dump(){
         System.out.println(this);
     }

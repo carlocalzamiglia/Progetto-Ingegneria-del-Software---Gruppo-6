@@ -151,9 +151,11 @@ public class ToolCards implements Serializable {
             s=colour.escape()+"[]"+Colour.RESET;
         else
             s=s+"[?]";
-        s=s+name+"\n"+serialNumber+"\n"+description1+"\n";
+        s=s+name+"\t"+serialNumber+"\n  "+description1+". ";
         if(description2!=null)
             s=s+description2+"\n";
+        else
+            s=s+"\n";
         return s;
     }
     public void dump(){

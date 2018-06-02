@@ -61,10 +61,7 @@ public class PublicGoal implements Serializable {
 
     //-----------------------------------------------Print methods------------------------------------------------------
     public String toString() {
-        String s=new String();
-        s=points+" "+name;
-        s=s.concat("\n");
-        s=s+description;
+        String s="punti: "+points+"\t"+name+"\tObbiettivo: "+description+"\n";
         return s;
     }
     public void dump(){
