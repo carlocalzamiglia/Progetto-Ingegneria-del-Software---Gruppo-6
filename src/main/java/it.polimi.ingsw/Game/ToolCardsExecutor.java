@@ -242,11 +242,10 @@ public class ToolCardsExecutor implements Serializable {
     }
 
     //----------------------------------tool card 6 and 11--------------------------------------------------------------
-    public Dice usetool6(Player player,GreenCarpet greenCarpet, int stockPos){
+    public Dice usePlacementCard(Player player,GreenCarpet greenCarpet, int stockPos,int serialnumber, int value){
         Dice dice = null;
         Ruler ruler=new Ruler();
-        int serialnumber=6;
-        boolean bool=checkCost(player,greenCarpet,6);
+        boolean bool=checkCost(player,greenCarpet,serialnumber);
         if(bool) {
             if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
                 dice = greenCarpet.getDiceFromStock(stockPos);
@@ -255,7 +254,7 @@ public class ToolCardsExecutor implements Serializable {
                 else if (serialnumber==11){
                     greenCarpet.getDiceBucket().insertDice(dice);
                     dice=greenCarpet.getDiceBucket().educe();
-                    //dice.setFace(ruler.intToString(value));
+                    dice.setFace(ruler.intToString(value));
                 }
                 player.useMarkers(greenCarpet, serialnumber);
             }

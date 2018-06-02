@@ -375,7 +375,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             sendMessageOut("@TOOL-6");
                             while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
                             if(!message.equals("@TOOLEXIT")) {
-                                dice = toolCardsExecutor.usetool6(player, greenCarpet, stringToInt(arrOfMsg[1]));
+                                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]),6,0);
                                 if(dice!=null) {
                                     if (ruler.checkAvailableDice(dice, player.getScheme())) {
                                         while (!checkcorrdice) {
