@@ -20,10 +20,11 @@ check dump in client side
 
 synchronize scoreTable with user order      //DONE
 
-block input when is not the tourn
+block input when is not the turn
 
 IMPORTANT handle the case if you choose an action and you have no option to do that action to return to choice menù.
 
+minor fix tool 6 doesn't have to place a dice if i place already a dice in the turn
 
 
 Try/Catch usetoolcard!!!!

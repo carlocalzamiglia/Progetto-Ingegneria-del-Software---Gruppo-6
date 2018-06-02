@@ -13,6 +13,7 @@ public class Player implements Serializable {
     private ArrayList<Markers> markers;
     private boolean online;
     private int points;
+    private boolean secondTurn;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
@@ -53,6 +54,12 @@ public class Player implements Serializable {
     }
     public boolean isOnline() {
         return online;
+    }
+    public boolean getSecondTurn() {
+        return secondTurn;
+    }
+    public void setSecondTurn(boolean secondTurn) {
+        this.secondTurn = secondTurn;
     }
 
     public String getNickname() {

@@ -9,7 +9,7 @@ public class ToolCardsExecutor implements Serializable {
 
 
     //--------------------------------------Method that execute a tool card(requires input from keyboard)---------------
-   public boolean checkCost(Player player,GreenCarpet greenCarpet,int selection) {
+    private boolean checkCost(Player player,GreenCarpet greenCarpet,int selection) {
        boolean bool;
        int cost=0;
        for(int i =1;i<greenCarpet.getToolCards().length;i++)
@@ -59,6 +59,7 @@ public class ToolCardsExecutor implements Serializable {
             player.useMarkers(greenCarpet,serialnumber);
        return bool;
     }
+
     //---------------------------------------Tool card 5----------------------------------------------------------------
     public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int round,int dicePos){
        boolean bool=checkCost(player,greenCarpet,serialnumber);
@@ -81,6 +82,17 @@ public class ToolCardsExecutor implements Serializable {
        }
        return bool;
     }
+
+    //---------------------------------------Tool card 7----------------------------------------------------------------
+    public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber){
+        boolean bool=checkCost(player,greenCarpet,serialnumber);
+        if (bool) {
+            greenCarpet.reRollStock();
+            player.useMarkers(greenCarpet, serialnumber);
+        }
+        return bool;
+    }
+
     //---------------------------------------Tool Card 2 and 3----------------------------------------------------------
     public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int row,int col,int newRow,int newCol) {
         boolean bool = checkCost(player,greenCarpet,serialnumber);
@@ -229,23 +241,60 @@ public class ToolCardsExecutor implements Serializable {
 
     }
 
-
-    //----------------------------------tool card 6---------------------------------------------------------------------
+    //----------------------------------tool card 6 and 11--------------------------------------------------------------
     public Dice usetool6(Player player,GreenCarpet greenCarpet, int stockPos){
         Dice dice = null;
+        Ruler ruler=new Ruler();
+        int serialnumber=6;
         boolean bool=checkCost(player,greenCarpet,6);
         if(bool) {
             if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
                 dice = greenCarpet.getDiceFromStock(stockPos);
-                dice.roll();
-                player.useMarkers(greenCarpet, 6);
+                if (serialnumber==6)
+                  dice.roll();
+                else if (serialnumber==11){
+                    greenCarpet.getDiceBucket().insertDice(dice);
+                    dice=greenCarpet.getDiceBucket().educe();
+                    //dice.setFace(ruler.intToString(value));
+                }
+                player.useMarkers(greenCarpet, serialnumber);
             }
         }
         return dice;
     }
 
+    //----------------------------------tool card 8 and 9---------------------------------------------------------------
+    public boolean usePlacementCard(Player player,GreenCarpet greenCarpet, int stockPos,int serialnumber,int row,int col){
+       boolean bool=checkCost(player,greenCarpet,serialnumber);
+       Dice dice;
+       Ruler ruler=new Ruler();
+       if (bool){
+           if (stockPos > 0 && stockPos <= greenCarpet.getStock().size() && checkCoordinate(row,col)) {
+               dice=greenCarpet.getDiceFromStock(stockPos);
+               if(serialnumber==9) {
+                   bool = ruler.checkEmptyNeighbors(row, col, player.getScheme());
+                   if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionColour() != null) {
+                       bool = dice.getColour().equals(player.getScheme().getBox(row, col).getRestrictionColour());
+                   } else if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionValue() != null) {
+                       bool = dice.faceToNo().equals(player.getScheme().getBox(row, col).getRestrictionValue());
+                   }
+               }else if(serialnumber==8){
+                   bool=ruler.checkCorrectPlacement(row,col,dice,player.getScheme());
+               }
+               if (bool){
+                   if (serialnumber==8)
+                       player.setSecondTurn(false);
+                   player.getScheme().setBoxes(dice,row,col);
+                   player.useMarkers(greenCarpet,serialnumber);
+               }else
+                   greenCarpet.setDiceInStock(dice);
+           }
+       }
+       return bool;
+    }
+
     //---------------------------------------Returns true if the row and col are in the scheme--------------------------
-    public boolean checkCoordinate(int row,int col){
+    private boolean checkCoordinate(int row,int col){
         if(row >= 0 && row <= 3 && col >= 0 && col <= 4)
             return true;
         return false;

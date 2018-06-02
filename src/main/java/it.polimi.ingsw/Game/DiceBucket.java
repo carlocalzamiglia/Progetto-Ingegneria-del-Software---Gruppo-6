@@ -23,12 +23,9 @@ public class DiceBucket implements Serializable {
             }
         }
     }
-
-
     public void insertDice(Dice dice){
         this.diceArray.add(dice);
     }
-
     public void dump (){
         int i=1;
         for(Dice d: diceArray){

@@ -115,6 +115,15 @@ public class GreenCarpet implements Serializable {
     public int getnPlayers() {
         return nPlayers;
     }
+    public DiceBucket getDiceBucket() {
+        return diceBucket;
+    }
+
+    public void reRollStock(){
+        for(int i=0;i<stock.size();i++){
+            stock.get(i).roll();
+        }
+    }
 
     //--------------------------------------Returns true if the roundpath isn't empty-----------------------------------
     public boolean checkEmptyRoundpath(){
