@@ -23,9 +23,11 @@ public class TestScheme {
         scheme[0].setBoxes(d,1,0);
         scheme[0].dump();*/
 
-        Scheme[] schemes=new Scheme(0).getRndSchemes(3);
-        for(int i=0;i<12;i++)
-            schemes[i].dump();
+        for(int i=0;i<30;i++) {
+            System.out.println("numero: "+i);
+            Scheme scheme = new Scheme(i);
+            scheme.dump();
+        }
     }
 
     @org.junit.jupiter.api.Test

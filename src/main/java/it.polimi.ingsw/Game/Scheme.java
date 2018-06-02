@@ -1,6 +1,14 @@
 package it.polimi.ingsw.Game;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Scheme implements Serializable {
@@ -13,6 +21,83 @@ public class Scheme implements Serializable {
 
     //-----------------------------------------------Constructor--------------------------------------------------------
     public Scheme (int i){
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/src/main/resources/schemes.json"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Gson gson = new GsonBuilder().create();
+        ArrayList<Scheme> schemesFromJson = gson.fromJson(reader, new TypeToken<ArrayList<Scheme>>() {
+        }.getType());
+        if(i<0 || i>24){
+            this.boxes= schemesFromJson.get(0).getBoxes();
+            this.name= schemesFromJson.get(0).getName();
+            this.difficulty= schemesFromJson.get(0).getDifficulty();
+        }
+        else{
+            this.boxes= schemesFromJson.get(i).getBoxes();
+            this.name= schemesFromJson.get(i).getName();
+            this.difficulty= schemesFromJson.get(i).getDifficulty();
+        }
+
+    }
+
+    //-----------------------------------------------Getters and setters------------------------------------------------
+    public String getName() {
+        return name;
+    }
+    public int getDifficulty(){
+        return this.difficulty;
+    }
+    public Box[][] getBoxes() {
+        return boxes;
+    }
+    public Box getBox(int i, int j) {
+        return boxes[i][j];
+    }
+
+
+    //-----------------------------------------------Method that place a dice in the scheme-----------------------------
+    public void setBoxes(Dice dice,int row,int column) {
+        this.boxes[row][column].setAddedDice(dice);
+    }
+
+    //-----------------------------------------------Method that checks if a scheme is empty----------------------------
+    public boolean isEmpty(){
+        boolean status= true;
+        for (int i=0;i<4;i++) {
+            for (int j = 0; j < 5; j++) {
+                if (this.getBox(i, j).getAddedDice() != null)
+                    status= false;
+            }
+        }
+        return status;
+    }
+
+    //-----------------------------------------------Print methods------------------------------------------------------
+    public String toString() {
+        String s=new String();
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j < 5; j++) {
+                s=s.concat(boxes[i][j].toString());
+            }
+            s=s.concat("\n");
+        }
+        s=s.concat(name+" ");
+        for(int i=0;i<difficulty;i++){
+            s=s+"•";
+        }
+        return s;
+    }
+    public void dump(){
+        System.out.println(this);
+    }
+
+
+
+    //-----------------------------------------------old costructor------------------------------------------------------
+    /*public Scheme (int i){
         boxes=new Box[4][5];
         switch (i) {
             case 1:
@@ -619,98 +704,6 @@ public class Scheme implements Serializable {
                 break;
         }
 
-    }
-
-    //-----------------------------------------------Getters and setters------------------------------------------------
-    public String getName() {
-        return name;
-    }
-    public int getDifficulty(){
-        return this.difficulty;
-    }
-    public Box[][] getBoxes() {
-        return boxes;
-    }
-    public Box getBox(int i, int j) {
-        return boxes[i][j];
-    }
-
-    public Scheme[] getRndSchemes(int numPlayer){
-        Random rnd=new Random();
-        Scheme [] schemes=new Scheme[numPlayer*4];
-        int index[]=new int[16];
-        index[0]=rnd.nextInt(12)*2+1;
-        index[2]=rnd.nextInt(12)*2+1;
-        while(index[0]==index[2])
-            index[2]=rnd.nextInt(12)*2+1;
-        index[4]=rnd.nextInt(12)*2+1;
-        while(index[4]==index[0] || index[4]==index[2])
-            index[4]=rnd.nextInt(12)*2+1;
-        index[6]=rnd.nextInt(12)*2+1;
-        while(index[6]==index[0] || index[6]==index[2] || index[6]==index[4])
-            index[6]=rnd.nextInt(12)*2+1;
-        index[8]=rnd.nextInt(12)*2+1;
-        while(index[8]==index[0] || index[8]==index[2] || index[8]==index[4] || index[8]==index[6])
-            index[8]=rnd.nextInt(12)*2+1;
-        index[10]=rnd.nextInt(12)*2+1;
-        while(index[10]==index[0] || index[10]==index[2] || index[10]==index[4] || index[10]==index[6] || index[10]==index[8])
-            index[10]=rnd.nextInt(12)*2+1;
-        index[12]=rnd.nextInt(12)*2+1;
-        while(index[12]==index[0] || index[12]==index[2] || index[12]==index[4] || index[12]==index[6]|| index[12]==index[8]|| index[12]==index[10])
-            index[12]=rnd.nextInt(12)*2+1;
-        index[14]=rnd.nextInt(12)*2+1;
-        while(index[14]==index[0] || index[14]==index[2] || index[14]==index[4] || index[14]==index[6]|| index[14]==index[8]|| index[14]==index[10]|| index[14]==index[12])
-            index[14]=rnd.nextInt(12)*2+1;
-
-
-        index[1]=index[0]+1;
-        index[3]=index[2]+1;
-        index[5]=index[4]+1;
-        index[7]=index[6]+1;
-        index[9]=index[8]+1;
-        index[11]=index[10]+1;
-        index[13]=index[12]+1;
-        index[15]=index[14]+1;
-        for(int i=0;i<numPlayer*4;i++) {
-            schemes[i] = new Scheme(index[i]);
-        }
-        return schemes;
-    }
-
-    //-----------------------------------------------Method that place a dice in the scheme-----------------------------
-    public void setBoxes(Dice dice,int row,int column) {
-        this.boxes[row][column].setAddedDice(dice);
-    }
-
-    //-----------------------------------------------Method that checks if a scheme is empty----------------------------
-    public boolean isEmpty(){
-        boolean status= true;
-        for (int i=0;i<4;i++) {
-            for (int j = 0; j < 5; j++) {
-                if (this.getBox(i, j).getAddedDice() != null)
-                    status= false;
-            }
-        }
-        return status;
-    }
-
-    //-----------------------------------------------Print methods------------------------------------------------------
-    public String toString() {
-        String s=new String();
-        for (int i = 0; i < 4; i++){
-            for (int j = 0; j < 5; j++) {
-                s=s.concat(boxes[i][j].toString());
-            }
-            s=s.concat("\n");
-        }
-        s=s.concat(name+" ");
-        for(int i=0;i<difficulty;i++){
-            s=s+"•";
-        }
-        return s;
-    }
-    public void dump(){
-        System.out.println(this);
-    }
+    }*/
 
 }

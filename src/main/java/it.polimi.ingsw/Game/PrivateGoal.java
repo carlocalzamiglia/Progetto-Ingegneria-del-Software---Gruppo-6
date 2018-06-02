@@ -59,25 +59,7 @@ public class PrivateGoal implements Serializable {
         return serialNumber;
     }
 
-    public PrivateGoal[] getRndPrivateGoals(int numPlayer){
-        Random rnd=new Random();
-        PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
-        int index[]=new int[4];
-        index[0]=rnd.nextInt(4)+1;
-        index[1]=rnd.nextInt(4)+1;
-        index[2]=rnd.nextInt(4)+1;
-        index[3]=rnd.nextInt(4)+1;
-        while(index[0]==index[1] || index[1]==index[2] || index[0]==index[2] || index[0]==index[3] || index[1]==index[3] || index[3]==index[2] ){
-            index[0]=rnd.nextInt(4)+1;
-            index[1]=rnd.nextInt(4)+1;
-            index[2]=rnd.nextInt(4)+1;
-            index[3]=rnd.nextInt(4)+1;
-        }
-        for(int i=0;i<numPlayer;i++) {
-            privateGoals[i] = new PrivateGoal(index[i]);
-        }
-        return privateGoals;
-    }
+
 
     //-----------------------------------------------Print methods------------------------------------------------------
 

@@ -5,6 +5,7 @@ import it.polimi.ingsw.Server.User;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Timer;
 
@@ -89,9 +90,9 @@ public class Game implements Serializable {
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
         greenCarpet.setToolCards(new ToolCards(1),new ToolCards(5),new ToolCards(10));
-        PrivateGoal[] privateGoals=new PrivateGoal(1).getRndPrivateGoals(numUser);
-        Scheme [] schemes=new Scheme(0).getRndSchemes(numUser);
-        Bridge[] bridges=new Bridge(0).getRndBridges(numUser);
+        PrivateGoal[] privateGoals=getRndPrivateGoals(numUser);
+        Scheme [] schemes=getRndSchemes(numUser);
+        Bridge[] bridges=getRndBridges(numUser);
 
         for (int i=0;i<numUser;i++) {
             Player player=new Player(users.get(i).getNickname());
@@ -177,6 +178,88 @@ public class Game implements Serializable {
     }
     public void dump(){
         System.out.println(this);
+    }
+
+
+    //-------------------------------Random methods for the initialization of the match---------------------------------
+    public PrivateGoal[] getRndPrivateGoals(int numPlayer){
+        Random rnd=new Random();
+        PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
+        int index[]=new int[4];
+        index[0]=rnd.nextInt(4)+1;
+        index[1]=rnd.nextInt(4)+1;
+        index[2]=rnd.nextInt(4)+1;
+        index[3]=rnd.nextInt(4)+1;
+        while(index[0]==index[1] || index[1]==index[2] || index[0]==index[2] || index[0]==index[3] || index[1]==index[3] || index[3]==index[2] ){
+            index[0]=rnd.nextInt(4)+1;
+            index[1]=rnd.nextInt(4)+1;
+            index[2]=rnd.nextInt(4)+1;
+            index[3]=rnd.nextInt(4)+1;
+        }
+        for(int i=0;i<numPlayer;i++) {
+            privateGoals[i] = new PrivateGoal(index[i]);
+        }
+        return privateGoals;
+    }
+    public Scheme[] getRndSchemes(int numPlayer){
+        Random rnd=new Random();
+        Scheme [] schemes=new Scheme[numPlayer*4];
+        int index[]=new int[16];
+        index[0]=rnd.nextInt(12)*2+1;
+        index[2]=rnd.nextInt(12)*2+1;
+        while(index[0]==index[2])
+            index[2]=rnd.nextInt(12)*2+1;
+        index[4]=rnd.nextInt(12)*2+1;
+        while(index[4]==index[0] || index[4]==index[2])
+            index[4]=rnd.nextInt(12)*2+1;
+        index[6]=rnd.nextInt(12)*2+1;
+        while(index[6]==index[0] || index[6]==index[2] || index[6]==index[4])
+            index[6]=rnd.nextInt(12)*2+1;
+        index[8]=rnd.nextInt(12)*2+1;
+        while(index[8]==index[0] || index[8]==index[2] || index[8]==index[4] || index[8]==index[6])
+            index[8]=rnd.nextInt(12)*2+1;
+        index[10]=rnd.nextInt(12)*2+1;
+        while(index[10]==index[0] || index[10]==index[2] || index[10]==index[4] || index[10]==index[6] || index[10]==index[8])
+            index[10]=rnd.nextInt(12)*2+1;
+        index[12]=rnd.nextInt(12)*2+1;
+        while(index[12]==index[0] || index[12]==index[2] || index[12]==index[4] || index[12]==index[6]|| index[12]==index[8]|| index[12]==index[10])
+            index[12]=rnd.nextInt(12)*2+1;
+        index[14]=rnd.nextInt(12)*2+1;
+        while(index[14]==index[0] || index[14]==index[2] || index[14]==index[4] || index[14]==index[6]|| index[14]==index[8]|| index[14]==index[10]|| index[14]==index[12])
+            index[14]=rnd.nextInt(12)*2+1;
+
+
+        index[1]=index[0]+1;
+        index[3]=index[2]+1;
+        index[5]=index[4]+1;
+        index[7]=index[6]+1;
+        index[9]=index[8]+1;
+        index[11]=index[10]+1;
+        index[13]=index[12]+1;
+        index[15]=index[14]+1;
+        for(int i=0;i<numPlayer*4;i++) {
+            schemes[i] = new Scheme(index[i]);
+        }
+        return schemes;
+    }
+    public Bridge[] getRndBridges(int numPlayer) {
+        Random rnd = new Random();
+        Bridge[] bridges = new Bridge[numPlayer];
+        int index[] = new int[4];
+        index[0] = rnd.nextInt(4) + 1;
+        index[1] = rnd.nextInt(4) + 1;
+        index[2] = rnd.nextInt(4) + 1;
+        index[3] = rnd.nextInt(4) + 1;
+        while (index[0] == index[1] || index[1] == index[2] || index[0] == index[2] || index[0] == index[3] || index[1] == index[3] || index[3] == index[2]) {
+            index[0] = rnd.nextInt(4) + 1;
+            index[1] = rnd.nextInt(4) + 1;
+            index[2] = rnd.nextInt(4) + 1;
+            index[3] = rnd.nextInt(4) + 1;
+        }
+        for (int i = 0; i < numPlayer; i++) {
+            bridges[i] = new Bridge(index[i]);
+        }
+        return bridges;
     }
 
 
