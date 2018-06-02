@@ -6,13 +6,17 @@ add round for every player
 
 tool cards fix
 
-Scheme add check number between 1 and 4
+Scheme add check number between 1 and 4   //DONE
 
-Check in the choice menu if imput is not 1-2-3
+Check in the choice menu if imput is not 1-2-3 /////////DONE
 
 set an action in the place dice turn to return to main menù
 
-check when coordinates imput are no numbers
+check when coordinates imput are no numbers ///////DONE
+
+implement a method that dumps scoreTable at end of match
+
+implement a method to dump the private goal(start of match)
 
 implement a method that converts serial number of tool cards into "case numbers" to avoid useless cases ?????
 
@@ -22,7 +26,7 @@ synchronize scoreTable with user order      //DONE
 
 block input when is not the turn
 
-IMPORTANT handle the case if you choose an action and you have no option to do that action to return to choice menù.
+IMPORTANT handle the case if you choose an action and you have no option to do that action to return to choice menù. ////DONE
 
 minor fix tool 6 doesn't have to place a dice if i place already a dice in the turn
 
