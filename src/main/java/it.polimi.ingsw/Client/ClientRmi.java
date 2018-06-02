@@ -419,7 +419,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(goon.equals("y")) {
                             sendMessageOut("Inserisci il numero del dado della riserva che vuoi utilizzare");
                             String ndice = inKeyboard.readLine();
-                            dice = toolCardsExecutor.usetool6(player, greenCarpet, stringToInt(ndice));
+                            dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(ndice),6,0);
                             if (dice != null) {
                                 if (ruler.checkAvailableDice(dice, player.getScheme())) {
                                     while (!checkcorrdice) {
