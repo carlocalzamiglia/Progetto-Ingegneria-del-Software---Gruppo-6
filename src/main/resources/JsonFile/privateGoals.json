@@ -1,0 +1,32 @@
+[
+  {
+    "name":"empty",
+    "description":"empty",
+    "serialNumber":0
+  },
+  {
+    "name":"Sfumature Rosse",
+    "description":"Somma dei valori su tutti i dadi rossi",
+    "serialNumber":1
+  },
+  {
+    "name":"Sfumature Gialle",
+    "description":"Somma dei valori su tutti i dadi gialli",
+    "serialNumber":2
+  },
+  {
+    "name":"Sfumature Verdi",
+    "description":"Somma dei valori su tutti i dadi verdi",
+    "serialNumber":3
+  },
+  {
+    "name":"Sfumature Blu",
+    "description":"Somma dei valori su tutti i dadi blu",
+    "serialNumber":4
+  },
+  {
+    "name":"Sfumature Viola",
+    "description":"Somma dei valori su tutti i dadi viola",
+    "serialNumber":5
+  }
+]

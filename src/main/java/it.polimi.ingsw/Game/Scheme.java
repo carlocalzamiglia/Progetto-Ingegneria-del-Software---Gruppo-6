@@ -20,25 +20,25 @@ public class Scheme implements Serializable {
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
-    public Scheme (int i){
+    public Scheme (int serialNumber){
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/src/main/resources/schemes.json"));
+            reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/src/main/resources/JsonFile/schemes.json"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         Gson gson = new GsonBuilder().create();
         ArrayList<Scheme> schemesFromJson = gson.fromJson(reader, new TypeToken<ArrayList<Scheme>>() {
         }.getType());
-        if(i<0 || i>24){
+        if(serialNumber<0 || serialNumber>24){
             this.boxes= schemesFromJson.get(0).getBoxes();
             this.name= schemesFromJson.get(0).getName();
             this.difficulty= schemesFromJson.get(0).getDifficulty();
         }
         else{
-            this.boxes= schemesFromJson.get(i).getBoxes();
-            this.name= schemesFromJson.get(i).getName();
-            this.difficulty= schemesFromJson.get(i).getDifficulty();
+            this.boxes= schemesFromJson.get(serialNumber).getBoxes();
+            this.name= schemesFromJson.get(serialNumber).getName();
+            this.difficulty= schemesFromJson.get(serialNumber).getDifficulty();
         }
 
     }

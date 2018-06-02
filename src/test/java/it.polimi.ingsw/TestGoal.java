@@ -6,19 +6,19 @@ import it.polimi.ingsw.Game.PublicGoal;
 public class TestGoal {
     @org.junit.jupiter.api.Test
     public void tPrivateGoal() {
-        PrivateGoal privateGoals[]=new PrivateGoal[5];
-        for(int i=0;i<5;i++){
-            privateGoals[i]=new PrivateGoal(i+1);
-            privateGoals[i].dump();
+        for(int i=0;i<30;i++) {
+            System.out.println("numero: "+i);
+            PrivateGoal privateGoal=new PrivateGoal(i);
+            privateGoal.dump();
         }
 
     }
     @org.junit.jupiter.api.Test
     public void tPublicGoal() {
-        PublicGoal publicGoals[]=new PublicGoal[10];
-        for(int i=0;i<10;i++){
-            publicGoals[i]=new PublicGoal(i+1);
-            publicGoals[i].dump();
+        for(int i=0;i<30;i++) {
+            System.out.println("numero: "+i);
+            PublicGoal publicGoal = new PublicGoal(i);
+            publicGoal.dump();
         }
     }
 }
