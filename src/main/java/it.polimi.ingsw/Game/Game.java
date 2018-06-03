@@ -52,8 +52,15 @@ public class Game implements Serializable {
     }
     class GameStartonTime extends Thread{
         public void run(){
+            for(User u:users) {
+                try {
+                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra 10 secondi!");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
-                GameStartonTime.sleep(1000);
+                GameStartonTime.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

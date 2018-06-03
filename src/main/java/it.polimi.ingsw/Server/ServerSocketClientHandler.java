@@ -75,7 +75,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             matches.addUser(DB.getUser(user));
 
             newUserMessage(nickname);
-            sendMessageOut("Benvenuto, "+nickname+". Ora puoi giocare!");
+            sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -170,7 +170,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             while(!(message.equals("@SCHEME"))){sleep(300);}
         }while (stringToInt(arrOfMsg[1])<=0 || stringToInt(arrOfMsg[1])>4);
 
-        System.out.println("schema scelto: "+arrOfMsg[1]);
+        sendMessageOut("@ERROR-Hai scelto lo schema "+message+". Ora attendi il tuo turno!");
         return stringToInt(arrOfMsg[1]);
     }
 
@@ -202,6 +202,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         while(true) {
+            sendMessageOut("@ERROR-*************************** E' IL TUO TURNO ***************************\n\n");
             sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
             sendMessageOut("@GC-"+greenCarpet.toString());
@@ -215,6 +216,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 message="";
                 game.setGreenCarpet(greenCarpet);
                 game.setPlayer(player, i);
+                sendMessageOut("@ERROR-\n\n############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################");
                 return game;
             } else if (arrOfMsg[1].equals("2")) { //dice
                 if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
@@ -226,6 +228,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             sendMessageOut("@YOURTURN-false");
                             game.setGreenCarpet(greenCarpet);
                             game.setPlayer(player, i);
+                            sendMessageOut("@ERROR-############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                             return game;
                         }else
                             sendMessageOut("@ERROR-Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
@@ -245,7 +248,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         game.setPlayer(player, i);
                         arrOfMsg[1]="";
                         message="";
-                        sendMessageOut("@ERROR-Il tuo turno è terminato: hai finito le mosse possibili!");
+                        sendMessageOut("@ERROR-############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                         return game;
                     }
                     if(flagTool==2) {
@@ -258,7 +261,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             game.setPlayer(player, i);
                             arrOfMsg[1]="";
                             message="";
-                            sendMessageOut("@ERROR-Il tuo turno è terminato: hai finito le mosse possibili!");
+                            sendMessageOut("@ERROR-############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                             return game;
                         }
                     }

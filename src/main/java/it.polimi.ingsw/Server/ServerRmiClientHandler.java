@@ -29,7 +29,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         DB.getUser(nickname).setRmiClient(client);
         try {
             newUserMessage(nickname);
-            DB.getUser(nickname).getConnectionType().sendMessageOut("Benvenuto, "+nickname+". Ora puoi giocare!");
+            DB.getUser(nickname).getConnectionType().sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -10,7 +10,7 @@ Scheme add check number between 1 and 4   //DONE
 
 Check in the choice menu if imput is not 1-2-3 /////////DONE
 
-set an action in the place dice turn to return to main menù
+set an action in the place dice turn to return to main menù //NO NEED
 
 check when coordinates imput are no numbers ///////DONE
 

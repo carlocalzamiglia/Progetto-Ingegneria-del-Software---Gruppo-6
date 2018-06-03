@@ -38,7 +38,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     //-----------------------------------------launch execute method---------------------------------------------
     public ClientRmi()         throws RemoteException{
         super();
-        System.out.println("ClientSetup avviato");
         try
         {
             execute();
@@ -70,14 +69,12 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     private void connect()     throws RemoteException{
         try
         {
-            System.out.println("Il client tenta di connettersi");
             root=leggiDaFile();
             String[] parts=root.split(":");
             PORT=Integer.parseInt(parts[1]);
             root=parts[0];
             Registry registry = LocateRegistry.getRegistry(root,PORT);
             server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
-            System.out.println("ClientSetup connesso");
         }
         catch(Exception e)
         {
@@ -104,8 +101,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 logged=server.login(username,password);
 
                 if(logged==0 || logged==1) {
-                    System.out.println("Login effettuato correttamente");
-
                     this.nickname=username;
                     server.addRmi(this, username);
                     server.publish(username);
@@ -130,6 +125,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
         //for now we use a while loop always true for send message to the server
         while(10>1){
+            /*
             System.out.println("Cosa vuoi fare?");
             System.out.println("0)manda messaggio");
             System.out.println("1)esci");
@@ -156,8 +152,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
                 default:
                     break;
-            }
 
+            }
+*/
         }
     }
 
@@ -198,7 +195,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             sendMessageOut("Scegli uno schema:\n" + scheme1 + "\n" + scheme2 + "\n" + scheme3 + "\n" + scheme4);
             message = in.nextLine();
         }while (stringToInt(message)<=0 || stringToInt(message)>4);
-        System.out.println(stringToInt(message));
+        sendMessageOut("Hai scelto lo schema "+message+". Ora attendi il tuo turno!");
         return stringToInt(message);
     }
 
@@ -214,6 +211,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         Ruler ruler = new Ruler();
         String value;
         while(true){
+            sendMessageOut("\n\n*************************** E' IL TUO TURNO ***************************");
             sendMessageOut("Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("Ecco qui il tavolo e il tuo schema:\n");
             sendMessageOut(greenCarpet.toString()+"\n");
@@ -223,6 +221,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             if(value.equals("1")){
                 game.setGreenCarpet(greenCarpet);
                 game.setPlayer(player, i);
+                sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                 return game;
             }else if(value.equals("2")){
                 if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
@@ -233,6 +232,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if (usedTool) {
                             game.setGreenCarpet(greenCarpet);
                             game.setPlayer(player, i);
+                            sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                             return game;
                         }
                     }else
@@ -245,7 +245,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 if (flagTool==1) {     //used a toolcard which include dice placement
                     game.setGreenCarpet(greenCarpet);
                     game.setPlayer(player, i);
-                    sendMessageOut("Il tuo turno è terminato: hai finito le mosse possibili!");
+                    sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                     return game;
                 }
                 if(flagTool==2) {
@@ -254,12 +254,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     else{
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
-                        sendMessageOut("Il tuo turno è terminato: hai finito le mosse possibili!");
+                        sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
                         return game;
                     }
                 }
             }
         }
+
     }
 
     private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean usedDice) throws IOException {
