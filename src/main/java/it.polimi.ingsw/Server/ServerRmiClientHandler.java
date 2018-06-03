@@ -1,15 +1,12 @@
 package it.polimi.ingsw.Server;
 
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import it.polimi.ingsw.Client.ClientRmiInt;
 import it.polimi.ingsw.Game.Matches;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Vector;
 
 public class ServerRmiClientHandler extends UnicastRemoteObject implements ServerRmiClientHandlerInt {
     public DBUsers DB ;
