@@ -12,7 +12,7 @@ public class ToolCardsExecutor implements Serializable {
     private boolean checkCost(Player player,GreenCarpet greenCarpet,int selection) {
        boolean bool;
        int cost=0;
-       for(int i =1;i<greenCarpet.getToolCards().length;i++)
+       for(int i =0;i<greenCarpet.getToolCards().length;i++)
            if(greenCarpet.getToolCards()[i].getSerialNumber()==selection) {
                cost = greenCarpet.getToolCards()[i].getCost();
            }
@@ -246,6 +246,7 @@ public class ToolCardsExecutor implements Serializable {
         Dice dice = null;
         Ruler ruler=new Ruler();
         boolean bool=checkCost(player,greenCarpet,serialnumber);
+
         if(bool) {
             if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
                 dice = greenCarpet.getDiceFromStock(stockPos);
@@ -257,9 +258,11 @@ public class ToolCardsExecutor implements Serializable {
                     dice.setFace(ruler.intToString(value));
                 }
                 player.useMarkers(greenCarpet, serialnumber);
+                return dice;
             }
-        }
-        return dice;
+        }else
+            return null;
+        return null;
     }
 
     //----------------------------------tool card 8 and 9---------------------------------------------------------------

@@ -205,7 +205,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             sendMessageOut("@ERROR-\n\n*************************** E' IL TUO TURNO ***************************");
             sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
-            sendMessageOut("@GC-"+greenCarpet.toString());
+            sendMessageOut(greenCarpet.toString());
             sendMessageOut("@ERROR-"+(round+1)+"° ROUND\t\t\t"+turn+"° TURNO\n");
             sendMessageOut("@ERROR-"+player.toString());
             sendMessageOut("@ERROR-1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");

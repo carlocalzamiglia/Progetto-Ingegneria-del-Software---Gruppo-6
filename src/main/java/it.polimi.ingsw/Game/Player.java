@@ -81,7 +81,7 @@ public class Player implements Serializable {
         }
     }
     public boolean checkMarkers(int cost){
-        boolean bool=true;
+        boolean bool;
         if (markers.size()>= cost) {
             bool = true;
         }

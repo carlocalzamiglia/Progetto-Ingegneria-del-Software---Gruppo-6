@@ -26,6 +26,10 @@ synchronize scoreTable with user order      //DONE
 
 block input when is not the turn
 
+update roundpath dump(do not dump empty boxes)
+
+update tool card dump(dump also the cost of the card)
+
 minor fix tool 6 doesn't have to place a dice if i place already a dice in the turn ///DONE
 
 
