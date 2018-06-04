@@ -443,6 +443,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                             exit=true;
                         }
                     }
+                    if(usedDice){
+                        sendMessageOut("Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
+                        exit=true;
+                    }
                     break;
                 case 7:
                     /*

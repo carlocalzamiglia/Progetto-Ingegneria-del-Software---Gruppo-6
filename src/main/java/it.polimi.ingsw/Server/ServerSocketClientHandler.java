@@ -170,7 +170,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             while(!(message.equals("@SCHEME"))){sleep(300);}
         }while (stringToInt(arrOfMsg[1])<=0 || stringToInt(arrOfMsg[1])>4);
 
-        sendMessageOut("@ERROR-Hai scelto lo schema "+message+". Ora attendi il tuo turno!");
+        sendMessageOut("@ERROR-Hai scelto lo schema "+arrOfMsg[1]+". Ora attendi il tuo turno!");
         return stringToInt(arrOfMsg[1]);
     }
 
@@ -202,11 +202,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         while(true) {
-            sendMessageOut("@ERROR-*************************** E' IL TUO TURNO ***************************\n\n");
+            sendMessageOut("@ERROR-\n\n*************************** E' IL TUO TURNO ***************************");
             sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
             sendMessageOut("@GC-"+greenCarpet.toString());
-            sendMessageOut("@PLAYER-"+player.toString());
+            sendMessageOut("@ERROR-"+player.toString());
             sendMessageOut("@ERROR-1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
             sendMessageOut("@CHOOSEACTION");
             while (!(message.equals("@ACTIONCHOSE"))){sleep(300);}
@@ -413,7 +413,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             message="";
                         }
                         if(useddice){
-                            sendMessageOut("@ERROR-è gia stato posizionato un dado, non puoi utilizzare questa carta utensile");
+                            sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
+                            exit=true;
+                            toolok=true;
                         }
                         message="";
                         break;
