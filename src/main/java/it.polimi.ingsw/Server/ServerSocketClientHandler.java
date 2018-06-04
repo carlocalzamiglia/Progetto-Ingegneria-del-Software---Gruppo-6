@@ -195,7 +195,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         System.out.println("SCHEMA RICEVUTO");
     }
 
-    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
+    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme,int turn ,int round) throws IOException, InterruptedException {
         boolean usedDice=false;
         Game game= new Game(0);
         int flagTool=0;
@@ -206,6 +206,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
             sendMessageOut("@GC-"+greenCarpet.toString());
+            sendMessageOut("@ERROR-"+(round+1)+"° ROUND\t\t\t"+turn+"° TURNO\n");
             sendMessageOut("@ERROR-"+player.toString());
             sendMessageOut("@ERROR-1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
             sendMessageOut("@CHOOSEACTION");
@@ -299,13 +300,21 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         boolean toolok=false;
+        boolean flag;
+        int choice;
         boolean exit=false;     //catch the exit message
         boolean tooldice=false; //if the tool cards include dice placement
         sendMessageOut("@YOURTURN-true");
         while(!toolok) {                //run 'till the card is correct and used
-            sendMessageOut("@USETOOL");
-            while (!(message.equals("@TOOLUSED"))){sleep(300);}
-            int choice = stringToInt(arrOfMsg[1]);
+            do {
+                sendMessageOut("@USETOOL");
+                while (!(message.equals("@TOOLUSED"))) { sleep(300); }
+                choice = stringToInt(arrOfMsg[1]);
+                flag=greenCarpet.toolIsIn(choice);
+                if (!flag)
+                    sendMessageOut("@ERROR-La carta utensile scelta non è presente sul tavolo da gioco");
+                message="";
+            }while(!flag);
             if(choice>0 && choice<13) {
                 //rembember to check if the tool chosen is inside the greencarpet.
                 switch (choice) {

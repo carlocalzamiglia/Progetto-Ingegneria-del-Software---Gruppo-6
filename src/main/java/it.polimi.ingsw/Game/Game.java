@@ -88,12 +88,8 @@ public class Game implements Serializable {
     }
 
     public void startGame() throws IOException, InterruptedException {
-        Scanner scanner=new Scanner(System.in);
-        Ruler ruler=new Ruler();
-        ToolCardsExecutor executor=new ToolCardsExecutor();
         isPlaying=true;
         this.greenCarpet=new GreenCarpet(numUser);
-        DiceBucket diceBucket=inventory.getDiceBucket();
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
         greenCarpet.setToolCards(new ToolCards(6),new ToolCards(5),new ToolCards(10));
@@ -106,10 +102,10 @@ public class Game implements Serializable {
             player.setOnline(true);
             player.setPrivateGoal(privateGoals[i]);
 
-            users.get(i).getConnectionType().sendMessageOut("@ERROR-Il tuo obiettivo privato è: "+privateGoals[i]+"\n");
+            users.get(i).getConnectionType().sendMessageOut("Il tuo obiettivo privato è: "+privateGoals[i]+"\n");
 
             int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
-            System.out.println("Schema scelto dal client: "+schemechose);
+           // System.out.println("Schema scelto dal client: "+schemechose);
             player.setBridge(bridges[i]);
             player.setScheme(schemes[(i*4)+schemechose-1]);
             player.setMarkers();
@@ -125,15 +121,17 @@ public class Game implements Serializable {
             greenCarpet.setStock(numUser*2+1);
 
             for (int i = 0; i < numUser; i++) {
+                int turn=1;
                 System.out.println("tocca a: "+users.get(i).getNickname());
-                Game game=users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                Game game=users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i),turn,j);
                 this.greenCarpet=game.greenCarpet;
                 this.player.set(i,game.getPlayer(0));
             }
             for (int i = numUser-1; i >=0; i--) {
+                int turn=2;
                 if (player.get(i).getSecondTurn()) {
                     System.out.println("tocca a: " + users.get(i).getNickname());
-                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i),turn,j);
                     this.greenCarpet = game.greenCarpet;
                     this.player.set(i, game.getPlayer(0));
                 }
@@ -145,9 +143,8 @@ public class Game implements Serializable {
             users.remove(0);
 
         }
-        greenCarpet.dump();
         for(int i=0;i<numUser;i++)
-            player.get(i).dump();
+            users.get(i).getConnectionType().sendMessageOut(greenCarpet.toString()+playersToString(i)+player.get(i).toString());
 
         //------------start calculating------------
         Calculator calculator=new Calculator(player,greenCarpet);
@@ -169,10 +166,10 @@ public class Game implements Serializable {
         }
         System.out.println("E' appena terminata la partita con il seguente risultato:\n");
         for (int i=0;i<numUser;i++) {
-            System.out.println((i + 1) + "°: " + playerscore[i].getNickname() + "Punteggio: " + playerscore[i].getPoints());
+            users.get(i).getConnectionType().sendMessageOut(tabloToString(playerscore));
             for(int j=0; j<users.size();j++)
                 if(users.get(j).getNickname().equals(playerscore[i].getNickname()))
-                    users.get(j).getConnectionType().sendMessageOut("@ERROR-Ti sei posizionato "+(i+1)+"°, complimenti!");
+                    users.get(j).getConnectionType().sendMessageOut("Ti sei posizionato "+(i+1)+"°, complimenti!");
         }
 
     }
@@ -301,7 +298,14 @@ public class Game implements Serializable {
         }
         return s;
     }
-
+    public String tabloToString(Player[] playerscore){
+        String s=new String();
+        for (int i=0;i<playerscore.length;i++){
+            s=s+"CLASSIFICA FINALE \n";
+            s=s+(i + 1) + "°: " + playerscore[i].getNickname() + "\tPunteggio: " + playerscore[i].getPoints()+"\n";
+        }
+        return s;
+    }
     public void setGreenCarpet(GreenCarpet greenCarpet) {
         this.greenCarpet = greenCarpet;
     }

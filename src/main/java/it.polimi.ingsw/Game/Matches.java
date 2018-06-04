@@ -19,6 +19,7 @@ public class Matches implements Serializable {
                 g.addUser(user);
                 return;
             }
+            //if(g.getPlaying() && g==getGame(user.getNickname())){}
 
         }
 

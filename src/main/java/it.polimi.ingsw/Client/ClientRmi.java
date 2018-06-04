@@ -202,7 +202,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //to be implement
     @Override
-    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
+    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme,int turn,int round) throws IOException, InterruptedException {
 
         Game game = new Game(0);
         boolean usedDice=false;
@@ -214,7 +214,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             sendMessageOut("\n\n*************************** E' IL TUO TURNO ***************************");
             sendMessageOut("Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
             sendMessageOut("Ecco qui il tavolo e il tuo schema:\n");
-            sendMessageOut(greenCarpet.toString()+"\n");
+            sendMessageOut(greenCarpet.toString());
+            sendMessageOut((round+1)+"° ROUND\t\t\t"+turn+"° TURNO\n");
             sendMessageOut(player.toString()+"\n");
             sendMessageOut("1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
             value = inKeyboard.readLine();
@@ -260,21 +261,25 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 }
             }
         }
-
     }
 
     private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean usedDice) throws IOException {
         String message;
-        sendMessageOut("Inserisci il numero della carta tool da usare.");
-        message=inKeyboard.readLine();
-        int choice=stringToInt(message);
+        boolean flag;
+        int choice;
+        do {
+            sendMessageOut("Inserisci il numero della carta tool da usare.");
+            message = inKeyboard.readLine();
+            choice = stringToInt(message);
+            flag=greenCarpet.toolIsIn(choice);
+            if(!flag)
+                sendMessageOut("La carta utensile scelta non è presente sul tavolo da gioco");
+        }while (!flag);
         boolean toolok=false;
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
         String goon="a";
         boolean exit=false;
         boolean tooldice=false;
-
-
         if(choice>0 && choice<13) {
             //rembember to check if the tool chosen is inside the greencarpet.
             switch (choice) {
