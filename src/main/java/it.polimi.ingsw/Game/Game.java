@@ -166,13 +166,14 @@ public class Game implements Serializable {
         }
         System.out.println("E' appena terminata la partita con il seguente risultato:\n");
         for (int i=0;i<numUser;i++) {
-            users.get(i).getConnectionType().sendMessageOut(tabloToString(playerscore));
+            users.get(i).getConnectionType().sendMessageOut(tableToString(playerscore));
+        }
+        for (int i=0;i<numUser;i++)
             for(int j=0; j<users.size();j++)
                 if(users.get(j).getNickname().equals(playerscore[i].getNickname()))
                     users.get(j).getConnectionType().sendMessageOut("Ti sei posizionato "+(i+1)+"°, complimenti!");
         }
 
-    }
 
     public ArrayList<User> getUsers() {
         return users;
@@ -298,10 +299,10 @@ public class Game implements Serializable {
         }
         return s;
     }
-    public String tabloToString(Player[] playerscore){
+    public String tableToString(Player[] playerscore){
         String s=new String();
+        s=s+"CLASSIFICA FINALE \n";
         for (int i=0;i<playerscore.length;i++){
-            s=s+"CLASSIFICA FINALE \n";
             s=s+(i + 1) + "°: " + playerscore[i].getNickname() + "\tPunteggio: " + playerscore[i].getPoints()+"\n";
         }
         return s;
