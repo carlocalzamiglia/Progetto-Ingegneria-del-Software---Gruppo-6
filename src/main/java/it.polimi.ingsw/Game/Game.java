@@ -92,7 +92,7 @@ public class Game implements Serializable {
         this.greenCarpet=new GreenCarpet(numUser);
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
-        greenCarpet.setToolCards(new ToolCards(6),new ToolCards(5),new ToolCards(10));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
         PrivateGoal[] privateGoals=getRndPrivateGoals(numUser);
         Scheme [] schemes=getRndSchemes(numUser);
         Bridge[] bridges=getRndBridges(numUser);
@@ -121,19 +121,23 @@ public class Game implements Serializable {
             greenCarpet.setStock(numUser*2+1);
 
             for (int i = 0; i < numUser; i++) {
-                int turn=1;
-                System.out.println("tocca a: "+users.get(i).getNickname());
-                Game game=users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i),turn,j);
-                this.greenCarpet=game.greenCarpet;
-                this.player.set(i,game.getPlayer(0));
-            }
-            for (int i = numUser-1; i >=0; i--) {
-                int turn=2;
-                if (player.get(i).getSecondTurn()) {
+                if(player.get(i).isOnline()) {
+                    int turn = 1;
                     System.out.println("tocca a: " + users.get(i).getNickname());
-                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i),turn,j);
+                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i), turn, j);
                     this.greenCarpet = game.greenCarpet;
                     this.player.set(i, game.getPlayer(0));
+                }
+            }
+            for (int i = numUser-1; i >=0; i--) {
+                if(player.get(i).isOnline()) {
+                    int turn = 2;
+                    if (player.get(i).getSecondTurn()) {
+                        System.out.println("tocca a: " + users.get(i).getNickname());
+                        Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i), turn, j);
+                        this.greenCarpet = game.greenCarpet;
+                        this.player.set(i, game.getPlayer(0));
+                    }
                 }
             }
             greenCarpet.setRoundPath(j+1);
@@ -172,11 +176,18 @@ public class Game implements Serializable {
             for(int j=0; j<users.size();j++)
                 if(users.get(j).getNickname().equals(playerscore[i].getNickname()))
                     users.get(j).getConnectionType().sendMessageOut("Ti sei posizionato "+(i+1)+"°, complimenti!");
-        }
+
+
+    }
+
 
 
     public ArrayList<User> getUsers() {
         return users;
+    }
+
+    public ArrayList<Player> getPlayer() {
+        return player;
     }
 
     @Override

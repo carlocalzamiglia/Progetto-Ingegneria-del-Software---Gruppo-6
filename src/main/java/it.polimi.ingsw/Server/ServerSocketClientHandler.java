@@ -69,10 +69,21 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             DB.getUser(user).setClientHandler(this);
             String nickname = in.nextLine();
             System.out.println(nickname + " loggato con connessione socket");
+            if(check==1) {
+                if(matches.getGame(user)!=null) {
+                    matches.getPlayer(user).setOnline(true);
+                    matches.getUser(user).setClientHandler(this);
+                    matches.getUser(user).setOnline(true);
+                }else
+                    matches.addUser(DB.getUser(user));
+            }
+            if(check==0)
+                matches.addUser(DB.getUser(user));
+
             new HandleDisconnection(nickname, this).start();
             new ListenFromClient(nickname).start();
 
-            matches.addUser(DB.getUser(user));
+
 
             newUserMessage(nickname);
             sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
@@ -126,6 +137,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 }catch(IOException e){
                     DB.getUser(nickname).setOnline(false);
                     DB.getUser(nickname).setClientHandler(null);
+                    matches.getUser(nickname).setOnline(false);
+                    matches.getPlayer(nickname).setOnline(false);
                     System.out.println(nickname + " ha probabilmente perso la connessione.");
                     return false;
                 }

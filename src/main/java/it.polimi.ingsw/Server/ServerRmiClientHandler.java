@@ -40,6 +40,17 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         matches.addUser(DB.getUser(username));
     }
 
+    public boolean reconnectUser(String username, ClientRmiInt client) throws RemoteException{
+        if(matches.getGame(username)!=null){
+            matches.getPlayer(username).setOnline(true);
+            matches.getUser(username).setRmiClient(client);
+            matches.getUser(username).setOnline(true);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
 
     //------------------------------------new user connected message on CLI---------------------------------------------
@@ -82,6 +93,8 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
                 flag=false;
                 DB.getUser(nickname).setOnline(false);
                 DB.getUser(nickname).setRmiClient(null);
+                matches.getUser(nickname).setOnline(false);
+                matches.getPlayer(nickname).setOnline(false);
                 System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
             }
         }else

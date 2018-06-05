@@ -42,5 +42,27 @@ public class Matches implements Serializable {
         return matches.size();
     }
 
+    public User getUser(String nickname){
+        for (Game g:matches) {
+            for(User u:g.getUsers()){
+                if(u.getNickname().equals(nickname))
+                    return u;
+
+            }
+        }
+        return null;
+    }
+
+    public Player getPlayer(String nickname){
+        for (Game g:matches) {
+            for(Player p:g.getPlayer()){
+                if(p.getNickname().equals(nickname))
+                    return p;
+
+            }
+        }
+        return null;
+    }
+
 
 }

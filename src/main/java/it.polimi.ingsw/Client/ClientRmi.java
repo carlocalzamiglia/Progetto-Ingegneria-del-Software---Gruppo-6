@@ -100,12 +100,19 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
                 logged=server.login(username,password);
 
-                if(logged==0 || logged==1) {
+                if(logged==0) {
                     this.nickname=username;
                     server.addRmi(this, username);
                     server.publish(username);
                     server.addToMatches(username);
+                }else if(logged==1){
+                    this.nickname=username;
+                    server.addRmi(this, username);
+                    server.publish(username);
+                    if(!(server.reconnectUser(username, this)))
+                        server.addToMatches(username);
                 }
+
                 else if(logged==3)
                     System.out.println("L'utente selezionato è già connesso. Deve esserci un errore!");
                 else if(logged==2)
