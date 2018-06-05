@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import it.polimi.ingsw.Client.ClientRmiInt;
 
 public interface ServerRmiClientHandlerInt extends Remote {
