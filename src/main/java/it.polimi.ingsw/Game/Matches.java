@@ -12,7 +12,7 @@ public class Matches implements Serializable {
     public Matches(){
         matches=new ArrayList<>();
     }
-    public void addUser(User user) throws IOException {
+    public synchronized void addUser(User user) throws IOException {
 
         for (Game g:matches) {
             if (!g.getPlaying() && g.getPlaying()!=null) {

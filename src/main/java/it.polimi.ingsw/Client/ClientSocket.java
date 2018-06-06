@@ -1,5 +1,7 @@
 package it.polimi.ingsw.Client;
 
+import it.polimi.ingsw.ServertoClientHandler.ClientInterface;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -16,6 +18,7 @@ public class ClientSocket {
     private PrintWriter outVideo;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+    ClientInterface clientInt;
 
 
 
@@ -26,7 +29,8 @@ public class ClientSocket {
     private String row;
     private String col;
     //---------------------------------------------------launch execute-------------------------------------------------
-    public ClientSocket() {
+    public ClientSocket(ClientInterface clientInt) {
+        this.clientInt=clientInt;
         try
         {
             execute();
@@ -92,14 +96,14 @@ public class ClientSocket {
         }
         catch(Exception e)
         {
-            System.out.println("Exception: "+e);
+            clientInt.showError("Exception: "+e);
             e.printStackTrace();
 
             // Always close it:
             try {
                 socket.close();
             } catch(IOException ex) {
-                System.err.println("Socket not closed");
+                clientInt.showError("Socket not closed");
             }
         }
     }
@@ -114,13 +118,10 @@ public class ClientSocket {
             while(logged.equals("2") || logged.equals("3"))
             {
                 //legge nickname dal client
-                outVideo.println("Inserire nickname:");
-                String nickname=inKeyboard.readLine();
 
-                //legge password dal client
-                outVideo.println("Inserire password:");
-                String password=inKeyboard.readLine();
-
+                String[] login=clientInt.loginMessages();
+                String nickname=login[0];
+                String password=login[1];
 
                 //pulisce l'uscita sul socket
                 outSocket.flush();
@@ -131,9 +132,7 @@ public class ClientSocket {
                 //manda al socket il nickname
                 outSocket.println(password);
                 outSocket.flush();
-
                 //legge il valore se true o false all'ingresso del socket
-                //logged=Boolean.valueOf(inSocket.readLine()).booleanValue();
                 logged=inSocket.readLine();
 
                 if(logged.equals("1")||logged.equals("0")) {
@@ -142,22 +141,20 @@ public class ClientSocket {
                     this.name=nickname;
                 }
                 else if(logged.equals("2"))
-                    outVideo.println("Password di " + nickname + " errata");
+                    clientInt.showError("Password di " + nickname + " errata");
                 else if(logged.equals("3"))
-                    outVideo.println("L'utente selezionato è già connesso. Deve esserci un errore!");
+                    clientInt.showError("L'utente selezionato è già connesso. Deve esserci un errore!");
             }
         }
         catch(Exception e)
         {
-            System.out.println("Exception: "+e);
-            e.printStackTrace();
-
+            clientInt.showError("Exception: "+e);
             try {
                 socket.close();
             }
             catch(IOException ex)
             {
-                System.err.println("Socket not closed");
+                clientInt.showError("Socket not closed");
             }
         }
     }
@@ -204,157 +201,92 @@ public class ClientSocket {
 
                     String msg = (String) in.readObject();
                     String [] arrOfStr = msg.split("-");
+                    if(arrOfStr[0].equals("@ALIVE")){}
 
-                    // print the message
-                    if(arrOfStr[0].equals("@ALIVE")) {
-                        //System.out.println("Hanno appena controllato che sia ancora online. Affermativo!");
-                    }
-
-                    else if(arrOfStr[0].equals("@SCHEME")) {
-                        String scheme;
-                        System.out.println(arrOfStr[1]);
-                        scheme=inKeyboard.readLine();
+                     else if(arrOfStr[0].equals("@SCHEME")) {
+                        int scheme=clientInt.schemeMessages(arrOfStr[1]);
                         sendMessage("@SCHEME-"+scheme);
 
+                    }
+
+                    else if(arrOfStr[0].equals("@PRINTALL")) {
+                        clientInt.printCarpetFirst(arrOfStr[1], arrOfStr[2]);
                     }
 
                     else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
                         if(arrOfStr[1].equals("true"))
                             yourturn=true;
-                        else
+                        else {
+                            clientInt.endTurn();
                             yourturn=false;
+                        }
                     }
                     else if(arrOfStr[0].equals("@USETOOL")){
-                        outVideo.println("Inserisci il numero della carta tool da usare.");
-                        String tool = inKeyboard.readLine();
+                        int tool = clientInt.chooseToolMessages();
                         sendMessage("@TOOLUSED-"+tool);
                     }
 
                     else if(arrOfStr[0].equals("@PLACEDICE")){          //choose and place dice
                         if(yourturn==true) {
-                            outVideo.println("Scegli dado dalla riserva.");
-                            dicepos = inKeyboard.readLine();
-                            outVideo.println("Scegli la riga");
-                            row = inKeyboard.readLine();
-                            outVideo.println("Scegli la colonna");
-                            col = inKeyboard.readLine();
-                            sendMessage("@DICEPLACED-" + dicepos + "-" + row + "-" + col);
+                            int[] coordinates;
+                            int dicepos=clientInt.chooseDice();
+                            coordinates=clientInt.chooseCoordinates();
+                            sendMessage("@DICEPLACED-" + dicepos + "-" + coordinates[0] + "-" + coordinates[1]);
                         }
-                    }else if(arrOfStr[0].equals("@CHOOSEACTION")){
-                        outVideo.println("scegli azione");
-                        String action = inKeyboard.readLine();
-                        sendMessage("@ACTIONCHOSE-"+action);
+                    }
 
-                    }else if(arrOfStr[0].equals("@ERROR")){
-                        outVideo.println(arrOfStr[1]);
-                    }else if(arrOfStr[0].equals("@TOOL")){
-                        String choose="a";
+                    else if(arrOfStr[0].equals("@SCHEMEUPDATE")){
+                        clientInt.schemeUpdated(arrOfStr[1]);
+                    }
+
+                    else if(arrOfStr[0].equals("@CHOOSEACTION")){
+                        String action = clientInt.handleTurnMenu();
+                        sendMessage("@ACTIONCHOSE-"+action);
+                    }
+
+                    else if(arrOfStr[0].equals("@ERROR")){
+                        clientInt.showError(arrOfStr[1]);
+                    }
+
+                    else if(arrOfStr[0].equals("@TOOL")){
+                        String choose;
                         if(!(arrOfStr[1].equals("61"))) {       //avoids a double check.
-                            while ((!(choose.equals("y"))) && (!(choose.equals("n")))) {
-                                outVideo.println("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                                choose = inKeyboard.readLine();
-                            }
+                            choose=clientInt.goOnTool();
                         }else
                             choose="y";
                         //--------------------USE TOOL CARDS------------------------
                         if(choose.equals("y")) {
                             if (arrOfStr[1].equals("1")) {
-                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                                String row = inKeyboard.readLine();
-                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                                String col = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova riga");
-                                String newrow = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova colonna");
-                                String newcol = inKeyboard.readLine();
-                                sendMessage("@TOOLUSED1-" + row + "-" + col + "-" + newrow + "-" + newcol);
+                                int[] coordinates;
+                                coordinates=clientInt.tool23Messages();
+                                sendMessage("@TOOLUSED1-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3]);
                             }
                             if (arrOfStr[1].equals("2")) {
-                                outVideo.println("PRIMO DADO:\n");
-                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                                String row = inKeyboard.readLine();
-                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                                String col = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova riga");
-                                String newrow = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova colonna");
-                                String newcol = inKeyboard.readLine();
-                                outVideo.println("SECONDO DADO:\n");
-                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                                String row2 = inKeyboard.readLine();
-                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                                String col2 = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova riga");
-                                String newrow2 = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova colonna");
-                                String newcol2 = inKeyboard.readLine();
-                                sendMessage("@TOOLUSED2-" + row + "-" + col + "-" + newrow + "-" + newcol + "-" + row2 + "-" + col2 + "-" + newrow2 + "-" + newcol2);
+                                int[] coordinates;
+                                coordinates=clientInt.tool4Messages();
+                                sendMessage("@TOOLUSED2-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3] + "-" + coordinates[4] + "-" + coordinates[5] + "-" + coordinates[6] + "-" + coordinates[7]);
                             }
                             if (arrOfStr[1].equals("3")) {
-                                outVideo.println("INSERISCI IL NUMERO DI DADI CHE VUOI SPOSTARE (1 o 2):\n");
-                                String ndice = inKeyboard.readLine();
-                                outVideo.println("Inserisci il numero del round da cui prendere il dado\n");
-                                String round = inKeyboard.readLine();
-                                outVideo.println("Inserisci la posizione del dado nel round (numero di riga)\n");
-                                String dice = inKeyboard.readLine();
-
-                                outVideo.println("PRIMO DADO:\n");
-                                outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                                String row = inKeyboard.readLine();
-                                outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                                String col = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova riga");
-                                String newrow = inKeyboard.readLine();
-                                outVideo.println("Inserisci la nuova colonna");
-                                String newcol = inKeyboard.readLine();
-                                if (ndice.equals("2")) {
-                                    outVideo.println("SECONDO DADO:\n");
-                                    outVideo.println("Inserisci la riga del dado che vuoi scegliere");
-                                    String row2 = inKeyboard.readLine();
-                                    outVideo.println("Inserisci la colonna del dado che vuoi scegliere");
-                                    String col2 = inKeyboard.readLine();
-                                    outVideo.println("Inserisci la nuova riga");
-                                    String newrow2 = inKeyboard.readLine();
-                                    outVideo.println("Inserisci la nuova colonna");
-                                    String newcol2 = inKeyboard.readLine();
-                                    sendMessage("@TOOLUSED3-" + ndice + "-" + row + "-" + col + "-" + newrow + "-" + newcol + "-" + row2 + "-" + col2 + "-" + newrow2 + "-" + newcol2 + "-" + round + "-" + dice);
-                                } else
-                                    sendMessage("@TOOLUSED3-" + ndice + "-" + row + "-" + col + "-" + newrow + "-" + newcol + "-" + round + "-" + dice);
+                                int[] coordinates12 = clientInt.tool12Messages();
+                                sendMessage("@TOOLUSED3-" + coordinates12[8] + "-" + coordinates12[0] + "-" + coordinates12[1] + "-" + coordinates12[2] + "-" + coordinates12[3] + "-" + coordinates12[4] + "-" + coordinates12[5] + "-" + coordinates12[6] + "-" + coordinates12[7] + "-" + coordinates12[9] + "-" + coordinates12[10]);
                             }
                             if(arrOfStr[1].equals("4")){
-                                outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                                String vdice=inKeyboard.readLine();
-                                outVideo.println("Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
-                                String dicechose=inKeyboard.readLine();
-                                while(!(dicechose.equals("c")) && !(dicechose.equals("d"))){
-                                    outVideo.println("Scelta errata. Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
-                                    dicechose=inKeyboard.readLine();
-                                }
-                                if(dicechose.equals("c"))
-                                    sendMessage("@TOOLUSED4-"+vdice+"-1");
-                                else
-                                    sendMessage("@TOOLUSED4-"+vdice+"-2");
+                                int vdice=clientInt.chooseDice();
+                                int dicechose=clientInt.tool1Messages();
+                                sendMessage("@TOOLUSED4-"+vdice+"-"+dicechose);
                             }
                             if(arrOfStr[1].equals("6")){
-                                outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                                String ndice=inKeyboard.readLine();
+                                int ndice = clientInt.chooseDice();
                                 sendMessage("@TOOLUSED6-"+ndice);
                             }
                             if(arrOfStr[1].equals("61")){
-                                outVideo.println("Il dado è stato nuovamente lanciato. E' uscito: "+arrOfStr[2]+". Sei pregato di indicare dove piazzarlo.\nInserisci la riga.\n");
-                                String row=inKeyboard.readLine();
-                                outVideo.println("Ora inserisci la colonna.");
-                                String col=inKeyboard.readLine();
-                                sendMessage("@TOOLUSED61-"+row+"-"+col);
+                                int[] coordinates = clientInt.tool6Messages(arrOfStr[1]);
+                                sendMessage("@TOOLUSED61-"+coordinates[0]+"-"+coordinates[1]);
                             }
                             if(arrOfStr[1].equals("5")){
-                                outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                                String vdice=inKeyboard.readLine();
-                                outVideo.println("Inserisci il round da cui vuoi prelevare il dado da scambiare");
-                                String round=inKeyboard.readLine();
-                                outVideo.println("Inserisci la posizione del dado nel round (numero di riga)");
-                                String dicepos = inKeyboard.readLine();
-                                sendMessage("@TOOLUSED5-"+vdice+"-"+round+"-"+dicepos);
+                                int vdice = clientInt.chooseDice();
+                                int[] dicepos = clientInt.chooseFromPath();
+                                sendMessage("@TOOLUSED5-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
                             }
                         }else
                             sendMessage("@TOOLEXIT");

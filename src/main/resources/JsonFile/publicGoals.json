@@ -6,25 +6,25 @@
     "serialNumber":0
   },
   {
-    "name":"Colori diversi - Riga",
+    "name":"Colori diversi _ Riga",
     "description":"Righe senza colori ripetuti",
     "points":"6",
     "serialNumber":1
   },
   {
-    "name":"Colori diversi - Colonna",
+    "name":"Colori diversi _ Colonna",
     "description":"Colonne senza colori ripetuti",
     "points":"5",
     "serialNumber":2
   },
   {
-    "name":"Sfumature diverse - Riga",
+    "name":"Sfumature diverse _ Riga",
     "description":"Righe senza sfumature ripetute",
     "points":"5",
     "serialNumber":3
   },
   {
-    "name":"Sfumature diverse - Colonna",
+    "name":"Sfumature diverse _ Colonna",
     "description":"Colonne senza sfumature ripetute",
     "points":"4",
     "serialNumber":4

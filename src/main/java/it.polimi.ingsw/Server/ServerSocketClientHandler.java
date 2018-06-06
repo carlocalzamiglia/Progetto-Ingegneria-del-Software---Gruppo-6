@@ -2,6 +2,12 @@ package it.polimi.ingsw.Server;
 
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+
+
 import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Matches;
@@ -31,7 +37,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     //private ObjectInputStream ins;
     String message = "";
     String [] arrOfMsg;
-
+    Gson gson = new GsonBuilder().create();
 
 
     //-------------------------------------------------constructor------------------------------------------------------
@@ -137,8 +143,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 }catch(IOException e){
                     DB.getUser(nickname).setOnline(false);
                     DB.getUser(nickname).setClientHandler(null);
-                    matches.getUser(nickname).setOnline(false);
-                    matches.getPlayer(nickname).setOnline(false);
+                    if(matches.getGame(nickname).getPlaying()) {
+                        matches.getUser(nickname).setOnline(false);
+                        matches.getPlayer(nickname).setOnline(false);
+                    }
                     System.out.println(nickname + " ha probabilmente perso la connessione.");
                     return false;
                 }
@@ -177,92 +185,58 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
 
     //********************************************* all game methods ***************************************+
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
-        do {
-            message="";
-            sendMessageOut("@SCHEME-Scegli uno schema:\n" + scheme1 + "\n" + scheme2 + "\n" + scheme3 + "\n" + scheme4);
-            while(!(message.equals("@SCHEME"))){sleep(300);}
-        }while (stringToInt(arrOfMsg[1])<=0 || stringToInt(arrOfMsg[1])>4);
-
-        sendMessageOut("@ERROR-Hai scelto lo schema "+arrOfMsg[1]+". Ora attendi il tuo turno!");
-        return stringToInt(arrOfMsg[1]);
+        message="";
+        sendMessageOut("@SCHEME-"+scheme1+"\n"+scheme2+"\n"+scheme3+"\n"+scheme4+"\n");
+        while(!(message.equals("@SCHEME"))){sleep(300);}
+        return Integer.parseInt(arrOfMsg[1]);
     }
 
-    public void test() throws IOException, InterruptedException {
-        Boolean checkdice = false;
-        Random random = new Random();
-        Ruler ruler = new Ruler();
-        Scheme scheme = new Scheme(9);
-        sendMessageOut("@SCHEME-"+scheme.toString());
-        while(!(message.equals("@SCHEME"))){}
-        Dice dice = new Dice(Colour.ANSI_RED);
-        while (checkdice==false) {
-            dice.roll();
-            checkdice = ruler.checkCorrectPlacement(0, 1, dice, scheme);
-            if (checkdice == true)
-                scheme.setBoxes(dice, 0, 1);
-            else
-                sendMessageOut("NO");
-        }
-        sendMessageOut("@SCHEME-"+scheme.toString());
-        while(!(message.equals("@SCHEME"))){}
-        System.out.println("SCHEMA RICEVUTO");
-    }
-
-    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme,int turn ,int round) throws IOException, InterruptedException {
+    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         boolean usedDice=false;
         Game game= new Game(0);
         int flagTool=0;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
+        String greencarpetjson = gson.toJson(greenCarpet);
+        String playerjson = gson.toJson(player);
+        sendMessageOut("@PRINTALL-"+greencarpetjson+"-"+playerjson);
         while(true) {
-            sendMessageOut("@ERROR-\n\n*************************** E' IL TUO TURNO ***************************");
-            sendMessageOut("@ERROR-Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
-            sendMessageOut("@ERROR-Ecco qui il tavolo e il tuo schema:\n");
-            sendMessageOut(greenCarpet.toString());
-            sendMessageOut("@ERROR-"+(round+1)+"° ROUND\t\t\t"+turn+"° TURNO\n");
-            sendMessageOut("@ERROR-"+player.toString());
-            sendMessageOut("@ERROR-1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
             sendMessageOut("@CHOOSEACTION");
             while (!(message.equals("@ACTIONCHOSE"))){sleep(300);}
             if (arrOfMsg[1].equals("1")) {//pass
-                System.out.println("E' stato scelto il passo");
                 arrOfMsg[1]="";
                 message="";
                 game.setGreenCarpet(greenCarpet);
                 game.setPlayer(player, i);
-                sendMessageOut("@ERROR-\n\n############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################");
+                sendMessageOut("@YOURTURN-false");
                 return game;
             } else if (arrOfMsg[1].equals("2")) { //dice
                 if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
-                    System.out.println("E' stato scelto il dado");
                     if (!usedDice) {
                         placedice(greenCarpet, player, i);
                         usedDice = true;
                         if (usedTool) {
-                            sendMessageOut("@YOURTURN-false");
                             game.setGreenCarpet(greenCarpet);
                             game.setPlayer(player, i);
-                            sendMessageOut("@ERROR-############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                            sendMessageOut("@YOURTURN-false");
                             return game;
-                        }else
-                            sendMessageOut("@ERROR-Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
-                    }
+                        }
+                    }else
+                        sendMessageOut("@ERROR-Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
                 }else
                     sendMessageOut("@ERROR-Non è possibile inserire alcun dado. Passa il turno o utilizza una carta tool.");
                 arrOfMsg[1]="";
                 message="";
             } else if (arrOfMsg[1].equals("3")) {   //tool
                 if(!usedTool) {
-                    System.out.println("E' stata scelta la tool");
                     flagTool = placeTool(greenCarpet, player, i, usedDice);
                     //IF METHOD RETURN TRUE I USED A "PLACE DICE" TOOL AND I RETURN.
                     if (flagTool==1) {     //used a toolcard which include dice placement
-                        sendMessageOut("@YOURTURN-false");
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
                         arrOfMsg[1]="";
                         message="";
-                        sendMessageOut("@ERROR-############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                        sendMessageOut("@YOURTURN-false");
                         return game;
                     }
                     if(flagTool==2) {
@@ -270,12 +244,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             usedTool = true;
                             arrOfMsg[1] = "";
                         }else{
-                            sendMessageOut("@YOURTURN-false");
                             game.setGreenCarpet(greenCarpet);
                             game.setPlayer(player, i);
                             arrOfMsg[1]="";
                             message="";
-                            sendMessageOut("@ERROR-############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                            sendMessageOut("@YOURTURN-false");
                             return game;
                         }
                     }
@@ -289,7 +262,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
 
     private void placedice( GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
         Boolean checkdice = false;
-        Random random = new Random();
         Ruler ruler = new Ruler();
         while (!checkdice) {
             sendMessageOut("@YOURTURN-true");
@@ -306,7 +278,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             message="";
         }
         player.getScheme().setBoxes(greenCarpet.getDiceFromStock(stringToInt(arrOfMsg[1])), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
-        sendMessageOut("Ecco lo schema aggiornato:\n"+player.getScheme().toString());
+        String schemeupd = gson.toJson(player.getScheme());
+        sendMessageOut("@SCHEMEUPDATE-"+schemeupd);
     }
 
 
@@ -325,7 +298,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 choice = stringToInt(arrOfMsg[1]);
                 flag=greenCarpet.toolIsIn(choice);
                 if (!flag)
-                    sendMessageOut("@ERROR-La carta utensile scelta non è presente sul tavolo da gioco");
+                    sendMessageOut("@ERROR-La carta utensile scelta non è presente sul tavolo da gioco.");
                 message="";
             }while(!flag);
             if(choice>0 && choice<13) {
@@ -409,7 +382,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                 if(dice!=null) {
                                     if (ruler.checkAvailableDice(dice, player.getScheme())) {
                                         while (!checkcorrdice) {
-                                            sendMessageOut("@TOOL-61-" + dice);
+                                            String dicejson = gson.toJson(dice);
+                                            sendMessageOut("@TOOL-61-" + dicejson);
                                             while (!(message.equals("@TOOLUSED61"))) {
                                                 sleep(200);
                                             }
@@ -481,10 +455,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             sendMessageOut("@TOOL-3");
                             while (!(message.equals("@TOOLUSED3")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
                             if(!(message.equals("@TOOLEXIT")))
-                                if (arrOfMsg[1].equals("2"))
-                                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]), stringToInt(arrOfMsg[9]), stringToInt(arrOfMsg[10]), stringToInt(arrOfMsg[11]));
-                                else
-                                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), 0, 0, 0, 0, stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]));
+                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]), stringToInt(arrOfMsg[9]), stringToInt(arrOfMsg[10]), stringToInt(arrOfMsg[11]));
                             else {
                                 exit = true;
                                 toolok = true;

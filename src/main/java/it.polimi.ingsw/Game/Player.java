@@ -71,7 +71,6 @@ public class Player implements Serializable {
         int cost =0;
         for(int j=0; j<greenCarpet.getToolCards().length;j++) {
             if (greenCarpet.getToolCards()[j].getSerialNumber() == serialnumber) {
-                System.out.println("ora si paga");
                 for (int i = 0; i < greenCarpet.getToolCards()[j].getCost(); i++)
                     markers.remove(0);
                 if (greenCarpet.getToolCards()[j].getCost() == 1)

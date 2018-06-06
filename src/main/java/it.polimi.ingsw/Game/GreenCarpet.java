@@ -11,6 +11,8 @@ public class GreenCarpet implements Serializable {
     private ToolCards[] toolCards;
     private int nPlayers;
     private DiceBucket diceBucket;
+    private int turn;
+    private int round;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
@@ -123,6 +125,22 @@ public class GreenCarpet implements Serializable {
         for(int i=0;i<stock.size();i++){
             stock.get(i).roll();
         }
+    }
+
+    public void setRound(int round) {
+        this.round = round;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }
+
+    public int getRound() {
+        return round;
+    }
+
+    public int getTurn() {
+        return turn;
     }
 
     //--------------------------------------Returns true if the roundpath isn't empty-----------------------------------

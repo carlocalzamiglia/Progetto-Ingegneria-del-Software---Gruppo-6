@@ -28,8 +28,10 @@ public class Scheme implements Serializable {
             e.printStackTrace();
         }
         Gson gson = new GsonBuilder().create();
-        ArrayList<Scheme> schemesFromJson = gson.fromJson(reader, new TypeToken<ArrayList<Scheme>>() {
-        }.getType());
+        ArrayList<Scheme> schemesFromJson = gson.fromJson(reader, new TypeToken<ArrayList<Scheme>>() {}.getType());
+
+
+
         if(serialNumber<0 || serialNumber>24){
             this.boxes= schemesFromJson.get(0).getBoxes();
             this.name= schemesFromJson.get(0).getName();

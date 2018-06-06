@@ -92,7 +92,7 @@ public class Game implements Serializable {
         this.greenCarpet=new GreenCarpet(numUser);
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
-        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(4));
         PrivateGoal[] privateGoals=getRndPrivateGoals(numUser);
         Scheme [] schemes=getRndSchemes(numUser);
         Bridge[] bridges=getRndBridges(numUser);
@@ -114,6 +114,7 @@ public class Game implements Serializable {
         }
 
         for(int j=0;j<10;j++) {
+            greenCarpet.setRound(j);
             for(int i=0;i<numUser;i++){
                 player.get(i).setSecondTurn(true);
             }
@@ -122,19 +123,19 @@ public class Game implements Serializable {
 
             for (int i = 0; i < numUser; i++) {
                 if(player.get(i).isOnline()) {
-                    int turn = 1;
+                    greenCarpet.setTurn(1);
                     System.out.println("tocca a: " + users.get(i).getNickname());
-                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i), turn, j);
+                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
                     this.greenCarpet = game.greenCarpet;
                     this.player.set(i, game.getPlayer(0));
                 }
             }
             for (int i = numUser-1; i >=0; i--) {
                 if(player.get(i).isOnline()) {
-                    int turn = 2;
+                    greenCarpet.setTurn(2);
                     if (player.get(i).getSecondTurn()) {
                         System.out.println("tocca a: " + users.get(i).getNickname());
-                        Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i), turn, j);
+                        Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
                         this.greenCarpet = game.greenCarpet;
                         this.player.set(i, game.getPlayer(0));
                     }

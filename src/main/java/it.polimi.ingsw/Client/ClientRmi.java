@@ -1,6 +1,8 @@
 package it.polimi.ingsw.Client;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Matches;
@@ -12,6 +14,7 @@ import it.polimi.ingsw.Game.Colour;
 import it.polimi.ingsw.Game.ToolCardsExecutor;
 
 import it.polimi.ingsw.Server.ServerRmiClientHandlerInt;
+import it.polimi.ingsw.ServertoClientHandler.ClientInterface;
 import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
 import java.io.*;
@@ -34,10 +37,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     private String nickname;
     private String root;
     private int PORT;
+    ClientInterface clientInt;
+    Gson gson = new GsonBuilder().create();
 
     //-----------------------------------------launch execute method---------------------------------------------
-    public ClientRmi()         throws RemoteException{
+    public ClientRmi(ClientInterface clientInt)         throws RemoteException{
         super();
+        this.clientInt=clientInt;
         try
         {
             execute();
@@ -85,21 +91,16 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //------------------------------------login part. If it is all right adds to DBUser---------------------------------
     private void login()        throws RemoteException{
+        String logindata[] = new String[2];
         try
         {
             int logged=3;
 
             while(logged!=0 && logged !=1)
             {
-
-                System.out.println("Inserire nickname:");
-                String username=inKeyboard.readLine();
-
-                System.out.println("Inserire password:");
-                String password=inKeyboard.readLine();
-
-                logged=server.login(username,password);
-
+                logindata = clientInt.loginMessages();
+                String username=logindata[0];
+                logged=server.login(username, logindata[1]);
                 if(logged==0) {
                     this.nickname=username;
                     server.addRmi(this, username);
@@ -114,15 +115,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 }
 
                 else if(logged==3)
-                    System.out.println("L'utente selezionato è già connesso. Deve esserci un errore!");
+                    clientInt.showError("L'utente selezionato è già connesso.");
                 else if(logged==2)
-                    System.out.println("Password di " + username + " errata");
+                    clientInt.showError("Password di " + username + " errata");
             }
         }
         catch(Exception e)
         {
-            System.out.println("Exception: "+e);
-            e.printStackTrace();
+            clientInt.showError("Exception: "+e);
         }
     }
 
@@ -189,71 +189,56 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //---------------------------------------print a message on the CLI-------------------------------------------------
     public void sendMessageOut(String message) throws RemoteException{
-        System.out.println(message);
+        clientInt.showError(message);
     }
 
 
     //******************************************game methods***********************************************+
     @Override
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
-        Scanner in = new Scanner(System.in);
-        String message;
-        do {
-            sendMessageOut("Scegli uno schema:\n" + scheme1 + "\n" + scheme2 + "\n" + scheme3 + "\n" + scheme4);
-            message = in.nextLine();
-        }while (stringToInt(message)<=0 || stringToInt(message)>4);
-        sendMessageOut("Hai scelto lo schema "+message+". Ora attendi il tuo turno!");
-        return stringToInt(message);
+        return clientInt.schemeMessages(scheme1+"\n"+scheme2+"\n"+scheme3+"\n"+scheme4+"\n");
     }
 
 
-    //to be implement
     @Override
-    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme,int turn,int round) throws IOException, InterruptedException {
-
+    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException {
         Game game = new Game(0);
         boolean usedDice=false;
         int flagTool=0;
         boolean usedTool=false;
         Ruler ruler = new Ruler();
         String value;
+        String greencarpetjson=gson.toJson(greenCarpet);
+        String playerjson=gson.toJson(player);
+        clientInt.printCarpetFirst(greencarpetjson, playerjson);
         while(true){
-            sendMessageOut("\n\n*************************** E' IL TUO TURNO ***************************");
-            sendMessageOut("Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
-            sendMessageOut("Ecco qui il tavolo e il tuo schema:\n");
-            sendMessageOut(greenCarpet.toString());
-            sendMessageOut((round+1)+"° ROUND\t\t\t"+turn+"° TURNO\n");
-            sendMessageOut(player.toString()+"\n");
-            sendMessageOut("1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
-            value = inKeyboard.readLine();
+            value=clientInt.handleTurnMenu();
             if(value.equals("1")){
                 game.setGreenCarpet(greenCarpet);
                 game.setPlayer(player, i);
-                sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                clientInt.endTurn();
                 return game;
-            }else if(value.equals("2")){
+            }else if(value.equals("2")){//DICE
                 if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
-                    System.out.println("E' stato scelto il dado");
                     if (!usedDice) {
                         placedice(greenCarpet, player, i);
                         usedDice = true;
                         if (usedTool) {
                             game.setGreenCarpet(greenCarpet);
                             game.setPlayer(player, i);
-                            sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                            clientInt.endTurn();
                             return game;
                         }
                     }else
-                        sendMessageOut("Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
+                        clientInt.showError("Hai già piazzato un dado per questo turno. Puoi passare o utilizzare una carta tool (che non preveda il piazzamento di un dado).");
                 }else
-                    sendMessageOut("Non è possibile inserire alcun dado. Passa il turno o utilizza una carta tool.");
+                    clientInt.showError("Non è possibile inserire alcun dado. Passa il turno o utilizza una carta tool.");
             }else if(value.equals("3")){
-                System.out.println("E' stata scelta la tool");
                 flagTool = placeTool(greenCarpet, player, i, usedDice);
                 if (flagTool==1) {     //used a toolcard which include dice placement
                     game.setGreenCarpet(greenCarpet);
                     game.setPlayer(player, i);
-                    sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                    clientInt.endTurn();
                     return game;
                 }
                 if(flagTool==2) {
@@ -262,7 +247,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     else{
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
-                        sendMessageOut("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+                        clientInt.endTurn();
                         return game;
                     }
                 }
@@ -275,16 +260,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         boolean flag;
         int choice;
         do {
-            sendMessageOut("Inserisci il numero della carta tool da usare.");
-            message = inKeyboard.readLine();
-            choice = stringToInt(message);
+            choice=clientInt.chooseToolMessages();
             flag=greenCarpet.toolIsIn(choice);
             if(!flag)
-                sendMessageOut("La carta utensile scelta non è presente sul tavolo da gioco");
+                clientInt.showError("La carta utensile scelta non è presente sul tavolo da gioco");
         }while (!flag);
         boolean toolok=false;
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
-        String goon="a";
+        String goon;
         boolean exit=false;
         boolean tooldice=false;
         if(choice>0 && choice<13) {
@@ -292,48 +275,26 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             switch (choice) {
                 case 1:     //no placement
                     while(!toolok) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")){
-                            sendMessageOut("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                            String vdice=inKeyboard.readLine();
-                            sendMessageOut("Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
-                            String dicechose=inKeyboard.readLine();
-                            while(!(dicechose.equals("c")) && !(dicechose.equals("d"))){
-                                outVideo.println("Scelta errata. Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
-                                dicechose=inKeyboard.readLine();
-                            }
-                            if(dicechose.equals("c")) //increase
-                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(vdice), 1);
-                            else //decrease
-                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(vdice), 2);
+                            int vdice=clientInt.chooseDice();
+                            int selection=clientInt.tool1Messages();
+                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, vdice, selection);
                         }else {
                             exit = true;
                             toolok = true;
                         }
                     }
                     break;
+
+
                 case 2:
                     while (!toolok) {        //used to have a correct use of the tool
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            sendMessageOut("Inserisci la riga del dado che vuoi scegliere");
-                            String row = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la colonna del dado che vuoi scegliere");
-                            String col = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova riga");
-                            String newrow = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova colonna");
-                            String newcol = inKeyboard.readLine();
-
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(row), stringToInt(col), stringToInt(newrow), stringToInt(newcol));
+                            int[] coordinates;
+                            coordinates=clientInt.tool23Messages();
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates[0], coordinates[1], coordinates[2], coordinates[3]);
                         }else {
                             exit = true;
                             toolok = true;
@@ -341,22 +302,12 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 3:
-                    while (!toolok) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                    while (!toolok) {        //used to have a correct use of the tool
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            sendMessageOut("Inserisci la riga del dado che vuoi scegliere");
-                            String row = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la colonna del dado che vuoi scegliere");
-                            String col = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova riga");
-                            String newrow = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova colonna");
-                            String newcol = inKeyboard.readLine();
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(row), stringToInt(col), stringToInt(newrow), stringToInt(newcol));
+                            int[] coordinates;
+                            coordinates=clientInt.tool23Messages();
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates[0], coordinates[1], coordinates[2], coordinates[3]);
                         }else {
                             exit = true;
                             toolok = true;
@@ -365,31 +316,11 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
                 case 4:
                     while (!toolok) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            sendMessageOut("PRIMO DADO:\n");
-                            sendMessageOut("Inserisci la riga del dado che vuoi scegliere");
-                            String row = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la colonna del dado che vuoi scegliere");
-                            String col = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova riga");
-                            String newrow = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova colonna");
-                            String newcol = inKeyboard.readLine();
-                            sendMessageOut("SECONDO DADO:\n");
-                            sendMessageOut("Inserisci la riga del dado che vuoi scegliere");
-                            String row2 = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la colonna del dado che vuoi scegliere");
-                            String col2 = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova riga");
-                            String newrow2 = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova colonna");
-                            String newcol2 = inKeyboard.readLine();
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(row), stringToInt(col), stringToInt(newrow), stringToInt(newcol), stringToInt(row2), stringToInt(col2), stringToInt(newrow2), stringToInt(newcol2));
+                            int[] coordinates;
+                            coordinates=clientInt.tool4Messages();
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0]);
                         }else{
                             toolok=true;
                             exit=true;
@@ -398,19 +329,11 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
                 case 5:
                     while(!toolok) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            sendMessageOut("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                            String vdice = inKeyboard.readLine();
-                            sendMessageOut("Inserisci il round da cui vuoi prelevare il dado da scambiare");
-                            String round = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la posizione del dado nel round (numero di riga)");
-                            String dicepos = inKeyboard.readLine();
-                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(vdice), stringToInt(round), stringToInt(dicepos));
+                            int vdice = clientInt.chooseDice();
+                            int[] dicepos = clientInt.chooseFromPath();
+                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, vdice, dicepos[0], dicepos[1]);
                         }else{
                             toolok=true;
                             exit=true;
@@ -423,40 +346,34 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     Dice dice=null;
                     String row="";
                     String col="";
+                    int[] coordinates = new int[2];
                     while(!toolok && !usedDice) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            sendMessageOut("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                            String ndice = inKeyboard.readLine();
-                            dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(ndice),6,0);
+                            int ndice = clientInt.chooseDice();
+                            dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice,6,0);
                             if (dice != null) {
                                 if (ruler.checkAvailableDice(dice, player.getScheme())) {
+                                    String dicejson=gson.toJson(dice);
                                     while (!checkcorrdice) {
-                                        sendMessageOut("Il dado è stato nuovamente lanciato. E' uscito: " + dice + ". Sei pregato di indicare dove piazzarlo.\nInserisci la riga.\n");
-                                        row = inKeyboard.readLine();
-                                        sendMessageOut("Ora inserisci la colonna.");
-                                        col = inKeyboard.readLine();
-                                        checkcorrdice = ruler.checkCorrectPlacement(stringToInt(row), stringToInt(col), dice, player.getScheme());
+                                        coordinates=clientInt.tool6Messages(dicejson);
+                                        checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
                                     }
-                                    player.getScheme().setBoxes(dice, stringToInt(row), stringToInt(col));
+                                    player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
                                     tooldice=true;
                                 }
                                 else
                                     greenCarpet.setDiceInStock(dice);
                                 toolok = true;
                             } else
-                                sendMessageOut("C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+                                clientInt.showError("C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
                         }else{
                             toolok=true;
                             exit=true;
                         }
                     }
                     if(usedDice){
-                        sendMessageOut("Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
+                        clientInt.showError("Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
                         exit=true;
                     }
                     break;
@@ -483,15 +400,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
                 case 10:
                     while(!toolok) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            outVideo.println("Inserisci il numero del dado della riserva che vuoi utilizzare");
-                            String ndice = inKeyboard.readLine();
-                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(ndice), 0);
+                            int ndice = clientInt.chooseDice();
+                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, ndice, 0);
                         }else{
                             toolok=true;
                             exit=true;
@@ -509,47 +421,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
                 case 12:
                     while (!toolok) {
-                        goon="a";
-                        while(!goon.equals("y") && !goon.equals("n")) {
-                            sendMessageOut("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-                            goon = inKeyboard.readLine();
-                        }
+                        goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
-                            String row2 = "";
-                            String col2 = "";
-                            String newrow2 = "";
-                            String newcol2 = "";
-                            sendMessageOut("INSERISCI IL NUMERO DI DADI CHE VUOI SPOSTARE (1 o 2):\n");
-                            String ndice = inKeyboard.readLine();
-                            sendMessageOut("Inserisci il numero del round da cui prendere il dado\n");
-                            String round = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la posizione del dado nel round (numero di riga)\n");
-                            String dicepos = inKeyboard.readLine();
-
-                            sendMessageOut("PRIMO DADO:\n");
-                            sendMessageOut("Inserisci la riga del dado che vuoi scegliere");
-                            String row1 = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la colonna del dado che vuoi scegliere");
-                            String col1 = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova riga");
-                            String newrow1 = inKeyboard.readLine();
-                            sendMessageOut("Inserisci la nuova colonna");
-                            String newcol1 = inKeyboard.readLine();
-                            if (ndice.equals("2")) {
-                                sendMessageOut("SECONDO DADO:\n");
-                                sendMessageOut("Inserisci la riga del dado che vuoi scegliere");
-                                row2 = inKeyboard.readLine();
-                                sendMessageOut("Inserisci la colonna del dado che vuoi scegliere");
-                                col2 = inKeyboard.readLine();
-                                sendMessageOut("Inserisci la nuova riga");
-                                newrow2 = inKeyboard.readLine();
-                                sendMessageOut("Inserisci la nuova colonna");
-                                newcol2 = inKeyboard.readLine();
-                            }
-                            if (ndice.equals("2"))
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(ndice), stringToInt(row1), stringToInt(col1), stringToInt(newrow1), stringToInt(newcol1), stringToInt(row2), stringToInt(col2), stringToInt(newrow2), stringToInt(newcol2), stringToInt(round), stringToInt(dicepos));
-                            else
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(ndice), stringToInt(row1), stringToInt(col1), stringToInt(newrow1), stringToInt(newcol1), 0, 0, 0, 0, stringToInt(round), stringToInt(dicepos));
+                            int[] coordinates12 = clientInt.tool12Messages();
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,choice, coordinates12[8], coordinates12[0], coordinates12[1], coordinates12[2], coordinates12[3], coordinates12[4], coordinates12[5], coordinates12[6], coordinates12[7], coordinates12[9], coordinates12[10]);
                         }else{
                             toolok=true;
                             exit=true;
@@ -559,7 +434,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
             }
         }else{
-            sendMessageOut("Hai inserito un valore sbagliato!");
+            clientInt.showError("Hai inserito un valore sbagliato!");
         }
 
         if(exit)
@@ -572,30 +447,24 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
 
-    private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
+    private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException {   //i is player's number for "getplayer"
         Boolean checkdice = false;
-        Random random = new Random();
         Ruler ruler = new Ruler();
-        String value="";
-        String row="";
-        String col="";
+        int[] dicecoord = new int[3];
         while (!checkdice) {
-            sendMessageOut("Inserisci il numero del dado della riserva che vuoi piazzare.");
-            value=inKeyboard.readLine();
-            sendMessageOut("Inserisci la riga dove vuoi piazzare il dado.");
-            row=inKeyboard.readLine();
-            sendMessageOut("Inserisci la colonna dove vuoi piazzare il dado.");
-            col=inKeyboard.readLine();
-            Dice dice = greenCarpet.checkDiceFromStock(stringToInt(value));
+            dicecoord=clientInt.placeDiceMessages();
+            Dice dice = greenCarpet.checkDiceFromStock(dicecoord[0]);
             if(dice!=null) {
-                checkdice = ruler.checkCorrectPlacement(stringToInt(row), stringToInt(col), dice, player.getScheme());
+                checkdice = ruler.checkCorrectPlacement(dicecoord[1], dicecoord[2], dice, player.getScheme());
                 if (!checkdice)
-                    sendMessageOut("Il dado non può essere inserito");
+                    clientInt.showError("Il dado non può essere inserito");
             }else
-                sendMessageOut("Hai scelto un dado non valido");
+                clientInt.showError("Hai scelto un dado non valido");
+
         }
-        player.getScheme().setBoxes(greenCarpet.getDiceFromStock(stringToInt(value)), stringToInt(row), stringToInt(col));
-        sendMessageOut("Ecco lo schema aggiornato:\n"+player.getScheme().toString());
+        player.getScheme().setBoxes(greenCarpet.getDiceFromStock(dicecoord[0]), dicecoord[1], dicecoord[2]);
+        String schemejson = gson.toJson(player.getScheme());
+        clientInt.schemeUpdated(schemejson);
     }
 
 

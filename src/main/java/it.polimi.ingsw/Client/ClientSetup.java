@@ -7,7 +7,7 @@ public class ClientSetup {
 
     //-----------------------------------------launch RMI or Socket client----------------------------------------------
     public static void main(String[] args) throws RemoteException {
-
+        CLI cli = new CLI();
         System.out.println("scegli tipo di connessione:");
         System.out.println(("1)Socket\n2)Rmi"));
 
@@ -22,10 +22,10 @@ public class ClientSetup {
         }
 
         if(choice.equals("1")) {
-            new ClientSocket();
+            new ClientSocket(cli);
         }
         else if(choice.equals("2"))
-            new ClientRmi();
+            new ClientRmi(cli);
 
     }
 }
