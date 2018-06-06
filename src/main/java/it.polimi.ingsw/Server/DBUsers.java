@@ -6,14 +6,20 @@ import java.util.ArrayList;
 
 public class DBUsers implements Serializable {
     private ArrayList<User> users;
+    private static boolean synch;
 
     //--------------------------------------------constructor-----------------------------------------------------------
     public DBUsers(){
         users=new ArrayList<>();
+        synch=false;
     }
 
     //-------------------------------------------check user and password------------------------------------------------
-    public int login(String nickname, String password){
+    public synchronized int login(String nickname, String password) throws InterruptedException {
+        while(synch){
+            wait();
+        }
+        synch=true;
         //just a temporary user
         User temp=new User(nickname,password);
         for (User u: users) {
@@ -21,16 +27,22 @@ public class DBUsers implements Serializable {
             if (u.getNickname().equals(nickname)) {
                 //user already online
                 if (u.isOnline()) {
+                    synch=false;
+                    notify();
                     return 3;
                 }
                 //user not online
                 else {
                     //wrong password
                     if (!u.getPassword().equals(password)) {
+                        synch=false;
+                        notify();
                         return 2;
                     }//login correct
                     else {
                         u.setOnline(true);
+                        synch=false;
+                        notify();
                         return 1;
                     }
                 }
@@ -40,6 +52,8 @@ public class DBUsers implements Serializable {
         }
         //new nickname
         users.add(temp);
+        synch=false;
+        notify();
         return 0;
     }
 
@@ -69,7 +83,6 @@ public class DBUsers implements Serializable {
                 u.getNickname().toString();
                 return u;
             }
-        System.out.println("bo");
         return null;
     }
 

@@ -19,7 +19,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
 
     //---------------------------------------check if login is all right------------------------------------------------
     @Override
-    public int login(String nickname, String password) throws RemoteException {
+    public int login(String nickname, String password) throws RemoteException, InterruptedException {
         return DB.login(nickname,password) ;
     }
 
@@ -36,7 +36,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         new HandleDisconnection(nickname, this).start();
     }
 
-    public void addToMatches(String username) throws IOException {
+    public void addToMatches(String username) throws IOException, InterruptedException {
         matches.addUser(DB.getUser(username));
     }
 
@@ -95,7 +95,8 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
                 DB.getUser(nickname).setRmiClient(null);
                 if(matches.getGame(nickname).getPlaying()) {
                     matches.getUser(nickname).setOnline(false);
-                    matches.getPlayer(nickname).setOnline(false);
+                    if(matches.getPlayer(nickname)!=null)
+                        matches.getPlayer(nickname).setOnline(false);
                 }
                 System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
             }

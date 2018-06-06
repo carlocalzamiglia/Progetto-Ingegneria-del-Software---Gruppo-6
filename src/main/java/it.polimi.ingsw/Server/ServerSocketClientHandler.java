@@ -80,21 +80,22 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     matches.getPlayer(user).setOnline(true);
                     matches.getUser(user).setClientHandler(this);
                     matches.getUser(user).setOnline(true);
-                }else
+                }else {
                     matches.addUser(DB.getUser(user));
+                }
             }
-            if(check==0)
+            if(check==0){
                 matches.addUser(DB.getUser(user));
+            }
 
-            new HandleDisconnection(nickname, this).start();
-            new ListenFromClient(nickname).start();
-
-
-
+            new HandleDisconnection(user, this).start();
+            new ListenFromClient(user).start();
             newUserMessage(nickname);
             sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
         } catch (IOException e) {
             System.err.println(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -114,7 +115,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     ins = new ObjectInputStream(socket.getInputStream());
                     // read the message form the input datastream
                     String msg = (String) ins.readObject();
-                    System.out.println(msg);
                     arrOfMsg = msg.split("-");
                     message=arrOfMsg[0];
                     System.out.println("il protocollo è: "+message);
@@ -145,7 +145,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     DB.getUser(nickname).setClientHandler(null);
                     if(matches.getGame(nickname).getPlaying()) {
                         matches.getUser(nickname).setOnline(false);
-                        matches.getPlayer(nickname).setOnline(false);
+                        if(matches.getPlayer(nickname)!=null)
+                            matches.getPlayer(nickname).setOnline(false);
                     }
                     System.out.println(nickname + " ha probabilmente perso la connessione.");
                     return false;
@@ -157,7 +158,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     }
 
     //-----------------------------------------new client connected message---------------------------------------------
-    private synchronized void newUserMessage(String nickname) throws IOException {
+    public void newUserMessage(String nickname) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
                 if (DB.getUser(i).getConnectionType() != null)

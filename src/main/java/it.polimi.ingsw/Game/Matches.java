@@ -12,15 +12,14 @@ public class Matches implements Serializable {
     public Matches(){
         matches=new ArrayList<>();
     }
-    public synchronized void addUser(User user) throws IOException {
-
-        for (Game g:matches) {
-            if (!g.getPlaying() && g.getPlaying()!=null) {
-                g.addUser(user);
-                return;
+    public void addUser(User user) throws IOException, InterruptedException {
+        if(!matches.isEmpty()){
+            for (Game g:matches) {
+                if (!g.getPlaying() && g.getPlaying() != null) {
+                    g.addUser(user);
+                    return;
+                }
             }
-            //if(g.getPlaying() && g==getGame(user.getNickname())){}
-
         }
 
         Game tmp=new Game(matches.size());
@@ -28,11 +27,14 @@ public class Matches implements Serializable {
         matches.add(tmp);
     }
     public Game getGame(String nickname){
-        for (Game g:matches) {
-            for(User u:g.getUsers()){
-                if(u.getNickname().equals(nickname))
-                    return g;
 
+        if(!matches.isEmpty()){
+            for (Game g:matches) {
+                for(User u:g.getUsers()){
+                    if(u.getNickname().equals(nickname)) {
+                        return g;
+                    }
+                }
             }
         }
         return null;
