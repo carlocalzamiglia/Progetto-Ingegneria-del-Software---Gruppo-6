@@ -296,9 +296,10 @@ public class ClientSocket {
                     }
                 }
                 catch(IOException e) {
-                    break;
+                    clientInt.showError("IOExeption generata");
                 }
                 catch(ClassNotFoundException e2) {
+                    clientInt.showError("ClassNotFoundExption generata");
                 }
             }
         }
