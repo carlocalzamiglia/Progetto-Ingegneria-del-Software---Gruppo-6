@@ -294,7 +294,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(goon.equals("y")) {
                             int[] coordinates;
                             coordinates=clientInt.tool23Messages();
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates[0], coordinates[1], coordinates[2], coordinates[3]);
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates);
                         }else {
                             exit = true;
                             toolok = true;
@@ -307,7 +307,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(goon.equals("y")) {
                             int[] coordinates;
                             coordinates=clientInt.tool23Messages();
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates[0], coordinates[1], coordinates[2], coordinates[3]);
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates);
                         }else {
                             exit = true;
                             toolok = true;
@@ -320,7 +320,15 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(goon.equals("y")) {
                             int[] coordinates;
                             coordinates=clientInt.tool4Messages();
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0], coordinates[0]);
+                            int[] coord1dice= new int[4];
+                            int[] coord2dice= new int[4];
+                            for (int k=0;k<coordinates.length;k++) {
+                                if (k<4)
+                                    coord1dice[k] = coordinates[k];
+                                else
+                                    coord2dice[k % 4] = coordinates[k];
+                            }
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord1dice,coord2dice);
                         }else{
                             toolok=true;
                             exit=true;
@@ -333,7 +341,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(goon.equals("y")) {
                             int vdice = clientInt.chooseDice();
                             int[] dicepos = clientInt.chooseFromPath();
-                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, vdice, dicepos[0], dicepos[1]);
+                            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, vdice, dicepos);
                         }else{
                             toolok=true;
                             exit=true;
@@ -344,8 +352,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     Ruler ruler = new Ruler();
                     boolean checkcorrdice=false;
                     Dice dice=null;
-                    String row="";
-                    String col="";
                     int[] coordinates = new int[2];
                     while(!toolok && !usedDice) {
                         goon=clientInt.goOnTool();
@@ -424,7 +430,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         goon=clientInt.goOnTool();
                         if(goon.equals("y")) {
                             int[] coordinates12 = clientInt.tool12Messages();
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,choice, coordinates12[8], coordinates12[0], coordinates12[1], coordinates12[2], coordinates12[3], coordinates12[4], coordinates12[5], coordinates12[6], coordinates12[7], coordinates12[9], coordinates12[10]);
+                            int numOfDices=coordinates12[8];
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,choice, numOfDices, coordinates12);
                         }else{
                             toolok=true;
                             exit=true;
@@ -436,7 +443,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }else{
             clientInt.showError("Hai inserito un valore sbagliato!");
         }
-
+        String schemejson = gson.toJson(player.getScheme());
+        clientInt.schemeUpdated(schemejson);
         if(exit)
             return 3;
         if(tooldice)

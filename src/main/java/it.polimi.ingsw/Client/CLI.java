@@ -213,10 +213,9 @@ public class CLI implements ClientInterface {
 
     @Override
     public int[] tool12Messages() throws IOException {
-        int[] allcoordinates = new int[10];
+        int[] allcoordinates = new int[11];
         int[] round= chooseFromPath();
-        for(int i=0; i<9; i++)
-            allcoordinates[i]=0;
+        int[] tmp;
         int choice;
         try{
             do{
@@ -228,9 +227,13 @@ public class CLI implements ClientInterface {
             return tool12Messages();
         }
         if(choice==1){
-            allcoordinates=tool23Messages();
+            tmp=tool23Messages();
+            for (int k=4;k<8;k++)
+                allcoordinates[k]=0;
         }else
-            allcoordinates=tool4Messages();
+            tmp =tool4Messages();
+        for (int k=0;k<tmp.length;k++)
+            allcoordinates[k]=tmp[k];
         allcoordinates[8]=choice;
         allcoordinates[9]=round[0];
         allcoordinates[10]=round[1];

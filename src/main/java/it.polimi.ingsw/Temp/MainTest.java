@@ -40,7 +40,7 @@ public class MainTest {
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,2);
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,3);
         player1.dump();
-        toolCardsExecutor.useMovementCard(player1,greenCarpet,1,0,2,1,3);
+        //toolCardsExecutor.useMovementCard(player1,greenCarpet,1,0,2,1,3);
 
         player1.dump();
 

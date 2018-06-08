@@ -61,8 +61,10 @@ public class ToolCardsExecutor implements Serializable {
     }
 
     //---------------------------------------Tool card 5----------------------------------------------------------------
-    public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int round,int dicePos){
+    public boolean changeDiceCard (Player player,GreenCarpet greenCarpet,int serialnumber,int stockPos,int[] roundPathCoord){
        boolean bool=checkCost(player,greenCarpet,serialnumber);
+       int round=roundPathCoord[0];
+       int dicePos=roundPathCoord[1];
        Dice dice;
        if (bool){
            if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
@@ -94,8 +96,12 @@ public class ToolCardsExecutor implements Serializable {
     }
 
     //---------------------------------------Tool Card 2 and 3----------------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int row,int col,int newRow,int newCol) {
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int[] coordinates) {
         boolean bool = checkCost(player,greenCarpet,serialnumber);
+        int row=coordinates[0];
+        int col=coordinates[1];
+        int newRow=coordinates[2];
+        int newCol=coordinates[3];
         Dice dice;
         Ruler ruler = new Ruler();
         if (bool) {
@@ -138,8 +144,16 @@ public class ToolCardsExecutor implements Serializable {
     }
 
     //---------------------------------------Tool card 4----------------------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2) {
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int[] coord1Dice, int[] coord2Dice) {
         boolean bool = checkCost(player,greenCarpet,serialnumber);
+        int row1=coord1Dice[0];
+        int col1=coord1Dice[1];
+        int newRow1=coord1Dice[2];
+        int newCol1=coord1Dice[3];
+        int row2=coord2Dice[0];
+        int col2=coord2Dice[1];
+        int newRow2=coord2Dice[2];
+        int newCol2=coord2Dice[3];
         Ruler ruler = new Ruler();
         if (bool) {
             if (ruler.schemeCount(player.getScheme()) >= 2) {
@@ -201,8 +215,19 @@ public class ToolCardsExecutor implements Serializable {
     }
 
     //---------------------------------------Tool card 12---------------------------------------------------------------
-    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int numdice,int row1,int col1,int newRow1,int newCol1,int row2,int col2,int newRow2,int newCol2,int round, int dicePos) {
+    public boolean useMovementCard(Player player,GreenCarpet greenCarpet,int serialnumber,int numdice,int[] allcoordinates) {
         boolean bool = checkCost(player,greenCarpet,serialnumber);
+        int[] coord1dice= new int[4];
+        int[] coord2dice= new int[4];
+        for (int k=0;k<allcoordinates.length;k++) {
+            if (k<4)
+             coord1dice[k] = allcoordinates[k];
+            else if (k<8)
+                coord2dice[k % 4] = allcoordinates[k];
+        }
+        int round=allcoordinates[9];
+        int dicePos=allcoordinates[10];
+
         Dice dice= new Dice(null);
         if (dicePos>0 && dicePos<=greenCarpet.getnPlayers()*2+1 && round >0 && round <=10)
             dice=greenCarpet.getDiceFromRoundPath(dicePos,round);
@@ -215,17 +240,17 @@ public class ToolCardsExecutor implements Serializable {
         if (bool) {
             switch (numdice){
                 case 1:
-                   Dice dice11=player.getScheme().getBox(row1,col1).getAddedDice();
+                   Dice dice11=player.getScheme().getBox(coord1dice[0],coord1dice[1]).getAddedDice();
                    if (dice11.getColour().equals(dice.getColour()))
-                        bool=useMovementCard(player,greenCarpet,serialnumber,row1,col1,newRow1,newCol1);
+                        bool=useMovementCard(player,greenCarpet,serialnumber,coord1dice);
                    else
                        bool=false;
                     break;
                 case 2:
-                    Dice dice1 = player.getScheme().getBox(row1, col1).getAddedDice();
-                    Dice dice2 = player.getScheme().getBox(row2, col2).getAddedDice();
+                    Dice dice1 = player.getScheme().getBox(coord1dice[0],coord1dice[1]).getAddedDice();
+                    Dice dice2 = player.getScheme().getBox(coord2dice[0], coord2dice[1]).getAddedDice();
                     if(dice1.getColour().equals(dice.getColour())&& dice2.getColour().equals(dice.getColour())){
-                        bool=useMovementCard(player,greenCarpet,serialnumber,row1,col1,newRow1,newCol1,row2,col2,newRow2,newCol2);
+                        bool=useMovementCard(player,greenCarpet,serialnumber,coord1dice,coord2dice);
                     }
                     else
                         bool=false;

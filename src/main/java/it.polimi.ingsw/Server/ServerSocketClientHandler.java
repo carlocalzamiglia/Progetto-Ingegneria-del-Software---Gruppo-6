@@ -322,8 +322,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         while (!toolok) {        //used to have a correct use of the tool
                             sendMessageOut("@TOOL-1");
                             while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
-                            if(!(message.equals("@TOOLEXIT")))
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]));
+                            if(!(message.equals("@TOOLEXIT"))) {
+                                int[] coord=new int[4];
+                                for (int k=1; k<5;k++)
+                                    coord[k-1]=stringToInt(arrOfMsg[k]);
+                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord);
+                            }
                             else {
                                 exit = true;
                                 toolok = true;
@@ -335,8 +339,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         while (!toolok) {
                             sendMessageOut("@TOOL-1");
                             while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
-                            if(!(message.equals("@TOOLEXIT")))
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]));
+                            if(!(message.equals("@TOOLEXIT"))) {
+                                int[] coord=new int[4];
+                                for (int k=1; k<5;k++)
+                                    coord[k-1]=stringToInt(arrOfMsg[k]);
+                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord);
+                            }
                             else {
                                 exit = true;
                                 toolok = true;
@@ -348,8 +356,17 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         while (!toolok) {
                             sendMessageOut("@TOOL-2");
                             while (!(message.equals("@TOOLUSED2")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
-                            if(!(message.equals("@TOOLEXIT")))
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]));
+                            if(!(message.equals("@TOOLEXIT"))) {
+                                int[] coord1dice= new int[4];
+                                int[] coord2dice= new int[4];
+                                for (int k=0;k<arrOfMsg.length;k++) {
+                                    if (k<4)
+                                        coord1dice[k] = stringToInt(arrOfMsg[k+1]);
+                                    else if (k<8)
+                                        coord2dice[k % 4] = stringToInt(arrOfMsg[k+1]);
+                                }
+                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord1dice, coord2dice);
+                            }
                             else {
                                 exit = true;
                                 toolok = true;
@@ -361,8 +378,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         while(!toolok) {
                             sendMessageOut("@TOOL-5");
                             while (!(message.equals("@TOOLUSED5")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
-                            if(!message.equals("@TOOLEXIT"))
-                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+                            if(!message.equals("@TOOLEXIT")) {
+                                int[] dicePos= new int[2];
+                                dicePos[0]=stringToInt(arrOfMsg[2]);
+                                dicePos[1]=stringToInt(arrOfMsg[3]);
+                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]),dicePos);
+                            }
                             else {
                                 exit = true;
                                 toolok = true;
@@ -455,8 +476,19 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         while (!toolok) {
                             sendMessageOut("@TOOL-3");
                             while (!(message.equals("@TOOLUSED3")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
-                            if(!(message.equals("@TOOLEXIT")))
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), stringToInt(arrOfMsg[4]), stringToInt(arrOfMsg[5]), stringToInt(arrOfMsg[6]), stringToInt(arrOfMsg[7]), stringToInt(arrOfMsg[8]), stringToInt(arrOfMsg[9]), stringToInt(arrOfMsg[10]), stringToInt(arrOfMsg[11]));
+                            if(!(message.equals("@TOOLEXIT"))) {
+                                int numOfDices = stringToInt(arrOfMsg[1]);
+                                int[] allcoordinates = new int[11];
+                                for (int k = 0; k < 11; k++) {
+                                    if (k < 8)
+                                        allcoordinates[k] = stringToInt(arrOfMsg[k + 2]);
+                                    else if (k == 8)
+                                        allcoordinates[k] = 0;
+                                    else
+                                        allcoordinates[k] = stringToInt(arrOfMsg[k + 1]);
+                                }
+                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, numOfDices, allcoordinates);
+                            }
                             else {
                                 exit = true;
                                 toolok = true;
@@ -470,6 +502,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 message="";
             }
         }
+        String schemejson = gson.toJson(player.getScheme());
+        sendMessageOut("@SCHEMEUPDATE-"+schemejson);
         if(exit)
             return 3;
         else
