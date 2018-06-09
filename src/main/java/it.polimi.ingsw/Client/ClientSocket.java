@@ -14,10 +14,6 @@ public class ClientSocket {
     private Socket socket;
     private BufferedReader inSocket;
     private PrintWriter outSocket;
-    private BufferedReader inKeyboard;
-    private PrintWriter outVideo;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
     ClientInterface clientInt;
 
 
@@ -25,40 +21,31 @@ public class ClientSocket {
 
     //GAME VARIABLES
     private boolean yourturn;
-    private String dicepos;
-    private String row;
-    private String col;
+
     //---------------------------------------------------launch execute-------------------------------------------------
-    public ClientSocket(ClientInterface clientInt) {
+    public ClientSocket(ClientInterface clientInt){
         this.clientInt=clientInt;
+
         try
         {
-            execute();
+            execute("null", "null");
         }
         catch(Exception e)
         {
             System.out.println("Exception: "+e);
             e.printStackTrace();
         }
-        finally
-        {
-            // Always close it:
-            try {
-                socket.close();
-            } catch(IOException e) {
-                System.err.println("Socket not closed");
-            }
-        }
     }
 
     //--------------------------------------launch connect, then login and then play------------------------------------
-    private void execute()
+    private void execute(String nick, String pass)
     {
+        String[] logindata;
         try
         {
             connect();
-            login();
-            play();
+            logindata = login(nick, pass);
+            play(logindata);
             //chiudi();
         }
         catch(Exception e)
@@ -80,6 +67,8 @@ public class ClientSocket {
     //----------------------------------------create the connection with server-----------------------------------------
     private void connect()
     {
+        BufferedReader inKeyboard;
+        PrintWriter outVideo;
         try
         {
             root=leggiDaFile();
@@ -109,8 +98,11 @@ public class ClientSocket {
     }
 
     //---------------------------------------------------login part-----------------------------------------------------
-    private void login()
+    private String[] login(String nick, String pass)
     {
+        String[] login = new String [2];
+        String nickname = new String();
+        String password = new String();
         try
         {
             String logged ="2";
@@ -119,9 +111,14 @@ public class ClientSocket {
             {
                 //legge nickname dal client
 
-                String[] login=clientInt.loginMessages();
-                String nickname=login[0];
-                String password=login[1];
+                if(nick.equals("null")) {
+                    login = clientInt.loginMessages();
+                    nickname = login[0];
+                    password = login[1];
+                }else {
+                    nickname = nick;
+                    password = pass;
+                }
 
                 //pulisce l'uscita sul socket
                 outSocket.flush();
@@ -157,13 +154,16 @@ public class ClientSocket {
                 clientInt.showError("Socket not closed");
             }
         }
+        login[0]=nickname;
+        login[1]=password;
+        return login;
     }
 
     //----------------------------------------------------game part-----------------------------------------------------
-    private void play() throws IOException {
+    private void play(String[] logindata) throws IOException {
         //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
         //this is for the client part
-        new ListenFromServer().start();
+        new ListenFromServer(this, logindata).start();
         while(10>1){
            /* outVideo.println("Cosa vuoi fare?");
             outVideo.println("0)manda messaggio");
@@ -192,18 +192,22 @@ public class ClientSocket {
 
     //---------------------------------------------class for server messages--------------------------------------------
     class ListenFromServer extends Thread {
+        ClientSocket clientSocket;
+        String[] logindata;
+        public ListenFromServer(ClientSocket clientSocket, String[] logindata){
+            this.clientSocket=clientSocket;
+            this.logindata = logindata;
+        }
         public void run() {
             while(true) {
                 try {
-                    in = new ObjectInputStream(socket.getInputStream());
+                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                     // read the message form the input datastream
                     //---------------------HERE THE IMPLEMENTATION OF THE PROTOCOL------------------------------
-
                     String msg = (String) in.readObject();
                     String [] arrOfStr = msg.split("-");
-                    if(arrOfStr[0].equals("@ALIVE")){}
 
-                     else if(arrOfStr[0].equals("@SCHEME")) {
+                    if(arrOfStr[0].equals("@SCHEME")) {
                         int scheme=clientInt.schemeMessages(arrOfStr[1]);
                         sendMessage("@SCHEME-"+scheme);
 
@@ -296,7 +300,11 @@ public class ClientSocket {
                     }
                 }
                 catch(IOException e) {
-                    clientInt.showError("IOExeption generata");
+                    clientInt.showError("Ops, c'è stato un problema di connessione con il socket. Riconnessione imminente.");
+                    try {
+                        sendMessage("@RECONNECT");
+                    } catch (IOException e1) {}
+                    clientSocket.execute(logindata[0], logindata[1]);
                 }
                 catch(ClassNotFoundException e2) {
                     clientInt.showError("ClassNotFoundExption generata");
@@ -307,9 +315,10 @@ public class ClientSocket {
 
     //---------------------------------------------send message to server-----------------------------------------------
     public void sendMessage(String message) throws IOException {
-        out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(message);
     }
+
 
     //-----------------------------------------get connection properties from file--------------------------------------
     private String leggiDaFile() throws IOException {

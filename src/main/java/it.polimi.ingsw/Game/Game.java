@@ -55,8 +55,8 @@ public class Game implements Serializable {
             for(User u:users) {
                 try {
                     u.getConnectionType().sendMessageOut("\nLa partita inizierà fra 10 secondi!");
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException | NullPointerException e) {
+                    u.setOnline(false);
                 }
             }
             try {
@@ -98,19 +98,25 @@ public class Game implements Serializable {
         Bridge[] bridges=getRndBridges(numUser);
 
         for (int i=0;i<numUser;i++) {
-            Player player=new Player(users.get(i).getNickname());
-            player.setOnline(true);
-            player.setPrivateGoal(privateGoals[i]);
+                Player player=new Player(users.get(i).getNickname());
+                player.setOnline(users.get(i).isOnline());
+                player.setPrivateGoal(privateGoals[i]);
 
-            users.get(i).getConnectionType().sendMessageOut("Il tuo obiettivo privato è: "+privateGoals[i]+"\n");
+                try {
+                    users.get(i).getConnectionType().sendMessageOut("Il tuo obiettivo privato è: " + privateGoals[i] + "\n");
+                    int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+                    if(schemechose!=0) {
+                        player.setBridge(bridges[i]);
+                        player.setScheme(schemes[(i * 4) + schemechose - 1]);
+                        player.setMarkers();
+                    }
+                }catch (IOException | NullPointerException e){
+                    users.get(i).setOnline(false);
+                    player.setOnline(false);
+                }
 
-            int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
-           // System.out.println("Schema scelto dal client: "+schemechose);
-            player.setBridge(bridges[i]);
-            player.setScheme(schemes[(i*4)+schemechose-1]);
-            player.setMarkers();
 
-            this.player.add(player);
+                this.player.add(player);
         }
 
         for(int j=0;j<10;j++) {
@@ -123,21 +129,49 @@ public class Game implements Serializable {
 
             for (int i = 0; i < numUser; i++) {
                 if(player.get(i).isOnline()) {
-                    greenCarpet.setTurn(1);
-                    System.out.println("tocca a: " + users.get(i).getNickname());
-                    Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
-                    this.greenCarpet = game.greenCarpet;
-                    this.player.set(i, game.getPlayer(0));
+                    try {
+                        if(player.get(i).getScheme()==null){
+                            int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+                            if(schemechose!=0) {
+                                player.get(i).setBridge(bridges[i]);
+                                player.get(i).setScheme(schemes[(i * 4) + schemechose - 1]);
+                                player.get(i).setMarkers();
+                            }
+                        }
+                        greenCarpet.setTurn(1);
+                        System.out.println("tocca a: " + users.get(i).getNickname());
+                        Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                        if(game!=null) {
+                            this.greenCarpet = game.greenCarpet;
+                            this.player.set(i, game.getPlayer(0));
+                        }
+                    }catch(IOException | NullPointerException e){
+                        users.get(i).setOnline(false);
+                        player.get(i).setOnline(false);
+                    }
                 }
             }
             for (int i = numUser-1; i >=0; i--) {
                 if(player.get(i).isOnline()) {
-                    greenCarpet.setTurn(2);
-                    if (player.get(i).getSecondTurn()) {
-                        System.out.println("tocca a: " + users.get(i).getNickname());
-                        Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
-                        this.greenCarpet = game.greenCarpet;
-                        this.player.set(i, game.getPlayer(0));
+                    try {
+                        if(player.get(i).getScheme()==null){
+                            int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+                            if(schemechose!=0) {
+                                player.get(i).setBridge(bridges[i]);
+                                player.get(i).setScheme(schemes[(i * 4) + schemechose - 1]);
+                                player.get(i).setMarkers();
+                            }
+                        }
+                        greenCarpet.setTurn(2);
+                        if (player.get(i).getSecondTurn()) {
+                            System.out.println("tocca a: " + users.get(i).getNickname());
+                            Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                            this.greenCarpet = game.greenCarpet;
+                            this.player.set(i, game.getPlayer(0));
+                        }
+                    }catch(IOException | NullPointerException e){
+                        users.get(i).setOnline(false);
+                        player.get(i).setOnline(false);
                     }
                 }
             }
@@ -149,7 +183,9 @@ public class Game implements Serializable {
 
         }
         for(int i=0;i<numUser;i++)
-            users.get(i).getConnectionType().sendMessageOut(greenCarpet.toString()+playersToString(i)+player.get(i).toString());
+            try {
+                users.get(i).getConnectionType().sendMessageOut(greenCarpet.toString() + playersToString(i) + player.get(i).toString());
+            }catch(IOException | NullPointerException e){}
 
         //------------start calculating------------
         Calculator calculator=new Calculator(player,greenCarpet);
@@ -171,12 +207,16 @@ public class Game implements Serializable {
         }
         System.out.println("E' appena terminata la partita con il seguente risultato:\n");
         for (int i=0;i<numUser;i++) {
-            users.get(i).getConnectionType().sendMessageOut(tableToString(playerscore));
+            try {
+                users.get(i).getConnectionType().sendMessageOut(tableToString(playerscore));
+            }catch(NullPointerException |IOException e){}
         }
         for (int i=0;i<numUser;i++)
             for(int j=0; j<users.size();j++)
                 if(users.get(j).getNickname().equals(playerscore[i].getNickname()))
-                    users.get(j).getConnectionType().sendMessageOut("Ti sei posizionato "+(i+1)+"°, complimenti!");
+                    try {
+                        users.get(j).getConnectionType().sendMessageOut("Ti sei posizionato " + (i + 1) + "°, complimenti!");
+                    }catch(NullPointerException |IOException e){}
 
 
     }
@@ -302,7 +342,8 @@ public class Game implements Serializable {
             for(int play=0; play<player.size();play++){
                 if(play!=user) {
                     for (int col = 0; col < 5; col++) {
-                        s = s.concat(player.get(play).getScheme().getBox(row, col).toString());
+                        if(player.get(play).getScheme()!=null)
+                            s = s.concat(player.get(play).getScheme().getBox(row, col).toString());
                     }
                     s = s.concat("\t\t");
                 }

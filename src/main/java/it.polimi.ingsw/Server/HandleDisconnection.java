@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 public class HandleDisconnection extends Thread{
     boolean alive=true;
     ServerRmiClientHandlerInt serverRmi;
-    ServerSocketClientHandler serverSocket;
+    //ServerSocketClientHandler serverSocket;
     final String nickname;
     int i=0;
 
@@ -14,29 +14,30 @@ public class HandleDisconnection extends Thread{
     public HandleDisconnection(String nickname, ServerRmiClientHandlerInt serverRmi) throws RemoteException {
         this.nickname=nickname;
         this.serverRmi=serverRmi;
-        this.serverSocket=null;
+        //this.serverSocket=null;
     }
 
     //---------------------------------------------constructor for Socket-----------------------------------------------
+    /*
     public HandleDisconnection(String nickname, ServerSocketClientHandler serverSocket) throws RemoteException {
         this.nickname=nickname;
         this.serverSocket=serverSocket;
         this.serverRmi=null;
-    }
+    }*/
 
     //----------------------------------------check if client is alive yet----------------------------------------------
     public void run() {
         while(alive){
             try {
                 sleep(10000);
-                if(serverSocket==null) {
+                //if(serverSocket==null) {
                     alive = serverRmi.clientAlive(nickname);
-                }else {
-                    alive = serverSocket.clientAlive(nickname);
+                //}else {
+                //    alive = serverSocket.clientAlive(nickname);
                     //serverSocket.test();
-                }
+                //}
 
-            } catch (InterruptedException | RemoteException | ClassNotFoundException e) {
+            } catch (InterruptedException | RemoteException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();

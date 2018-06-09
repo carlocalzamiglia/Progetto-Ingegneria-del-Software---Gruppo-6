@@ -74,7 +74,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             out.flush();
             DB.getUser(user).setClientHandler(this);
             String nickname = in.nextLine();
-            System.out.println(nickname + " loggato con connessione socket");
             if(check==1) {
                 if(matches.getGame(user)!=null) {
                     matches.getPlayer(user).setOnline(true);
@@ -88,8 +87,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 matches.addUser(DB.getUser(user));
             }
 
-            new HandleDisconnection(user, this).start();
+            //new HandleDisconnection(user, this).start();
             new ListenFromClient(user).start();
+            System.out.println(nickname + " loggato con connessione socket");
             newUserMessage(nickname);
             sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
         } catch (IOException e) {
@@ -122,8 +122,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         DB.getUser(nickname).setOnline(false);
                         DB.getUser(nickname).setClientHandler(null);
                         System.out.println(nickname+ " si è appena disconnesso.");
+                    }else if(message.equals("@RECONNECT")){
+                        clientAlive(this.nickname);
                     }
                 } catch (IOException e) {
+                    clientAlive(this.nickname);
                     break;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -135,36 +138,37 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     }
 
     //-----------------------------------------check if client is online yet--------------------------------------------
-    public boolean clientAlive(String nickname) throws ClassNotFoundException, InterruptedException {
-        if (DB.getUser(nickname).isOnline()) {
-                try {
-                    sendMessageOut("@ALIVE");
-                    return true;
-                }catch(IOException e){
-                    DB.getUser(nickname).setOnline(false);
-                    DB.getUser(nickname).setClientHandler(null);
-                    if(matches.getGame(nickname).getPlaying()) {
-                        matches.getUser(nickname).setOnline(false);
-                        if(matches.getPlayer(nickname)!=null)
-                            matches.getPlayer(nickname).setOnline(false);
-                    }
-                    System.out.println(nickname + " ha probabilmente perso la connessione.");
-                    return false;
-                }
-        } else {
-            return false;
+    public void clientAlive(String nickname) {
+        //if (DB.getUser(nickname).isOnline()) {
+         //       try {
+         //           sendMessageOut("@ALIVE");
+         //           return true;
+         //       }catch(IOException e){
+        DB.getUser(nickname).setOnline(false);
+        DB.getUser(nickname).setClientHandler(null);
+        if(matches.getGame(nickname).getPlaying()) {
+            matches.getUser(nickname).setOnline(false);
+            if(matches.getPlayer(nickname)!=null)
+                matches.getPlayer(nickname).setOnline(false);
         }
+        System.out.println(nickname + " ha probabilmente perso la connessione.");
+        message="@DEAD";
+        return;
+          //      }
+        //} else {
+        //    return false;
+       // }
 
     }
 
     //-----------------------------------------new client connected message---------------------------------------------
-    public void newUserMessage(String nickname) throws IOException {
+    public void newUserMessage(String nickname) throws IOException, InterruptedException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
-                if (DB.getUser(i).getConnectionType() != null)
-                    DB.getUser(i).getConnectionType().sendMessageOut(nickname+" ha appena effettuato il login ed è pronto a giocare.");
-                else if (DB.getUser(i).getConnectionType() != null)
-                    DB.getUser(i).getConnectionType().sendMessageOut(nickname+" ha appena effettuato il login ed è pronto a giocare.");
+                if (DB.getUser(i).getConnectionType() != null) {
+                    sleep(1000);
+                    DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                }
             }
         }
     }
@@ -188,7 +192,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
         message="";
         sendMessageOut("@SCHEME-"+scheme1+"\n"+scheme2+"\n"+scheme3+"\n"+scheme4+"\n");
-        while(!(message.equals("@SCHEME"))){sleep(300);}
+        while(!(message.equals("@SCHEME")) && !message.equals("@DEAD")){sleep(300);}
+        if(message.equals("@DEAD"))
+            return 0;
         return Integer.parseInt(arrOfMsg[1]);
     }
 
@@ -203,7 +209,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         sendMessageOut("@PRINTALL-"+greencarpetjson+"-"+playerjson);
         while(true) {
             sendMessageOut("@CHOOSEACTION");
-            while (!(message.equals("@ACTIONCHOSE"))){sleep(300);}
+            while (!(message.equals("@ACTIONCHOSE")) && !message.equals("@DEAD")){sleep(300);}
+            if(message.equals("@DEAD"))
+                return null;
+
             if (arrOfMsg[1].equals("1")) {//pass
                 arrOfMsg[1]="";
                 message="";
@@ -232,6 +241,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                 if(!usedTool) {
                     flagTool = placeTool(greenCarpet, player, i, usedDice);
                     //IF METHOD RETURN TRUE I USED A "PLACE DICE" TOOL AND I RETURN.
+                    if(flagTool==0)
+                        return null;
                     if (flagTool==1) {     //used a toolcard which include dice placement
                         game.setGreenCarpet(greenCarpet);
                         game.setPlayer(player, i);
@@ -267,7 +278,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         while (!checkdice) {
             sendMessageOut("@YOURTURN-true");
             sendMessageOut("@PLACEDICE");
-            while (!(message.equals("@DICEPLACED"))){sleep(300);}
+            while (!(message.equals("@DICEPLACED")) && !message.equals("@DEAD")){sleep(300);}
+            if(message.equals("@DEAD"))
+                return;
             Dice dice = greenCarpet.checkDiceFromStock(stringToInt(arrOfMsg[1]));
             if(dice!=null) {
                 checkdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), dice, player.getScheme());
@@ -295,7 +308,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         while(!toolok) {                //run 'till the card is correct and used
             do {
                 sendMessageOut("@USETOOL");
-                while (!(message.equals("@TOOLUSED"))) { sleep(300); }
+                while (!(message.equals("@TOOLUSED")) && !message.equals("@DEAD")) { sleep(300); }
+                if(message.equals("@DEAD"))
+                    return 0;
                 choice = stringToInt(arrOfMsg[1]);
                 flag=greenCarpet.toolIsIn(choice);
                 if (!flag)
@@ -308,7 +323,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 1:     //no placement
                         while(!toolok) {
                                 sendMessageOut("@TOOL-4");
-                                while (!(message.equals("@TOOLUSED4")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                                while (!(message.equals("@TOOLUSED4")) && !(message.equals("@TOOLEXIT"))  && !message.equals("@DEAD")){sleep(200);}
+                                if(message.equals("@DEAD"))
+                                    return 0;
                                 if(!(message.equals("@TOOLEXIT"))) {
                                     toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
                                 }else {
@@ -321,7 +338,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 2:
                         while (!toolok) {        //used to have a correct use of the tool
                             sendMessageOut("@TOOL-1");
-                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) {sleep(300);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!(message.equals("@TOOLEXIT"))) {
                                 int[] coord=new int[4];
                                 for (int k=1; k<5;k++)
@@ -338,7 +357,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 3:
                         while (!toolok) {
                             sendMessageOut("@TOOL-1");
-                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) {sleep(300);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!(message.equals("@TOOLEXIT"))) {
                                 int[] coord=new int[4];
                                 for (int k=1; k<5;k++)
@@ -355,7 +376,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 4:
                         while (!toolok) {
                             sendMessageOut("@TOOL-2");
-                            while (!(message.equals("@TOOLUSED2")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            while (!(message.equals("@TOOLUSED2")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) {sleep(300);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!(message.equals("@TOOLEXIT"))) {
                                 int[] coord1dice= new int[4];
                                 int[] coord2dice= new int[4];
@@ -377,7 +400,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 5:
                         while(!toolok) {
                             sendMessageOut("@TOOL-5");
-                            while (!(message.equals("@TOOLUSED5")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                            while (!(message.equals("@TOOLUSED5")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")){sleep(200);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!message.equals("@TOOLEXIT")) {
                                 int[] dicePos= new int[2];
                                 dicePos[0]=stringToInt(arrOfMsg[2]);
@@ -398,7 +423,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         Dice dice=null;
                         while(!toolok && !useddice) {
                             sendMessageOut("@TOOL-6");
-                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")){sleep(200);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!message.equals("@TOOLEXIT")) {
                                 dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]),6,0);
                                 if(dice!=null) {
@@ -406,9 +433,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                         while (!checkcorrdice) {
                                             String dicejson = gson.toJson(dice);
                                             sendMessageOut("@TOOL-61-" + dicejson);
-                                            while (!(message.equals("@TOOLUSED61"))) {
+                                            while (!(message.equals("@TOOLUSED61")) && !message.equals("@DEAD")) {
                                                 sleep(200);
                                             }
+                                            if(message.equals("@DEAD"))
+                                                return 0;
                                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
                                             message = "";
                                         }
@@ -439,23 +468,31 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         break;
                     case 7:
                         sendMessageOut("@TOOL-7");
-                        while (!(message.equals("@TOOLUSED-7")) && !(message.equals("@TOOLEXIT"))) ;
+                        while (!(message.equals("@TOOLUSED-7")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
+                        if(message.equals("@DEAD"))
+                            return 0;
                         break;
                     case 8:
                         sendMessageOut("@TOOL-manca");
-                        while (!(message.equals("@TOOLUSED-9")) && !(message.equals("@TOOLEXIT"))) ;
+                        while (!(message.equals("@TOOLUSED-9")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
+                        if(message.equals("@DEAD"))
+                            return 0;
                         break;
                     case 9:
                         if (!useddice) {
                             sendMessageOut("@TOOL-1");
-                            while (!(message.equals("@TOOLUSED-1")) && !(message.equals("@TOOLEXIT"))) ;
+                            while (!(message.equals("@TOOLUSED-1")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
+                            if(message.equals("@DEAD"))
+                                return 0;
                         } else
                             sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
                         break;
                     case 10:
                         while(!toolok) {
                             sendMessageOut("@TOOL-6");
-                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT"))){sleep(200);}
+                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")){sleep(200);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!(message.equals("@TOOLEXIT")))
                                 toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), 0);
                             else {
@@ -468,14 +505,18 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                     case 11:
                         if (!useddice) {
                             sendMessageOut("@TOOL-8");
-                            while (!(message.equals("@TOOLUSED-8")) && !(message.equals("@TOOLEXIT"))) ;
+                            while (!(message.equals("@TOOLUSED-8")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
+                            if(message.equals("@DEAD"))
+                                return 0;
                         } else
                             sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
                         break;
                     case 12:
                         while (!toolok) {
                             sendMessageOut("@TOOL-3");
-                            while (!(message.equals("@TOOLUSED3")) && !(message.equals("@TOOLEXIT"))) {sleep(300);}
+                            while (!(message.equals("@TOOLUSED3")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) {sleep(300);}
+                            if(message.equals("@DEAD"))
+                                return 0;
                             if(!(message.equals("@TOOLEXIT"))) {
                                 int numOfDices = stringToInt(arrOfMsg[1]);
                                 int[] allcoordinates = new int[11];

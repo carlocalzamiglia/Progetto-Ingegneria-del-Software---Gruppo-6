@@ -1,12 +1,13 @@
 package it.polimi.ingsw.Client;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class ClientSetup {
 
     //-----------------------------------------launch RMI or Socket client----------------------------------------------
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws IOException {
         CLI cli = new CLI();
         System.out.println("scegli tipo di connessione:");
         System.out.println(("1)Socket\n2)Rmi"));

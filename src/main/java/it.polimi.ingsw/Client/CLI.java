@@ -68,8 +68,13 @@ public class CLI implements ClientInterface {
 
     @Override
     public String handleTurnMenu() throws IOException {
+        String value = new String();
         System.out.println("1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
-        String value = in.readLine();
+            value = in.readLine();
+        while(!value.equals("1")&& !value.equals("2")&& !value.equals("3")){
+            showError("Hai inserito un valore errato");
+            value=in.readLine();
+        }
         return value;
     }
 
