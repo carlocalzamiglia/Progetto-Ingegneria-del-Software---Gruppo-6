@@ -297,10 +297,10 @@ public class ToolCardsExecutor implements Serializable {
        Ruler ruler=new Ruler();
        if (bool){
            if (stockPos > 0 && stockPos <= greenCarpet.getStock().size() && checkCoordinate(row,col)) {
-               dice=greenCarpet.getDiceFromStock(stockPos);
-               if(serialnumber==9) {
-                   if(player.getScheme().isEmpty())
-                       bool=ruler.checkCorrectPlacement(row,col,dice,player.getScheme());
+               dice = greenCarpet.checkDiceFromStock(stockPos);
+               if (serialnumber == 9) {
+                   if (player.getScheme().isEmpty())
+                       bool = ruler.checkCorrectPlacement(row, col, dice, player.getScheme());
                    else {
                        bool = ruler.checkEmptyNeighbors(row, col, player.getScheme());
                        if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionColour() != null) {
@@ -309,17 +309,18 @@ public class ToolCardsExecutor implements Serializable {
                            bool = dice.faceToNo().equals(player.getScheme().getBox(row, col).getRestrictionValue());
                        }
                    }
-               }else if(serialnumber==8){
-                   bool=ruler.checkCorrectPlacement(row,col,dice,player.getScheme());
+               } else if (serialnumber == 8) {
+                   bool = ruler.checkCorrectPlacement(row, col, dice, player.getScheme());
                }
-               if (bool){
-                   if (serialnumber==8)
+               if (bool) {
+                   if (serialnumber == 8)
                        player.setSecondTurn(false);
-                   player.getScheme().setBoxes(dice,row,col);
-                   player.useMarkers(greenCarpet,serialnumber);
-               }else
-                   greenCarpet.setDiceInStock(dice);
-           }
+                   dice = greenCarpet.getDiceFromStock(stockPos);
+                   player.getScheme().setBoxes(dice, row, col);
+                   player.useMarkers(greenCarpet, serialnumber);
+               }
+           }else
+             return false;
        }
        return bool;
     }
