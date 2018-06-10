@@ -384,10 +384,20 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 7:
-                    /*
-                    sendMessageOut("@TOOL-7");
-                    while (!(message.equals("@TOOLUSED-7")) && !(message.equals("@TOOLEXIT"))) ;
-                    */
+                    while(!toolok) {
+                        if(greenCarpet.getTurn()==2 && !usedDice) {
+                            goon = clientInt.goOnTool();
+                            if (goon.equals("y")) {
+                                toolok=toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
+                            } else {
+                                toolok = true;
+                                exit = true;
+                            }
+                        }else{
+                            toolok=true;
+                            exit=true;
+                        }
+                    }
                     break;
                 case 8:
                     /*

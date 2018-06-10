@@ -1,16 +1,20 @@
 package it.polimi.ingsw.Client;
 
-import it.polimi.ingsw.Game.Dice;
+import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Game.GreenCarpet;
-import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.Matches;
+import it.polimi.ingsw.Game.Ruler;
 import it.polimi.ingsw.Game.Scheme;
+import it.polimi.ingsw.Game.Player;
+import it.polimi.ingsw.Game.Dice;
+import it.polimi.ingsw.Game.Colour;
+import it.polimi.ingsw.Game.ToolCardsExecutor;
 import it.polimi.ingsw.ServertoClientHandler.ClientInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+
 
 
 import com.google.gson.Gson;
@@ -168,6 +172,23 @@ public class CLI implements ClientInterface {
     }
 
     @Override
+    public int chooseValue() throws IOException {
+        int dice;
+        try{
+            System.out.println("Scegli il valore da assegnare al dado.");
+            dice = Integer.parseInt(in.readLine());
+            while (dice<1 || dice>6) {
+                System.out.println("Hai inserito un valore errato. Scegli il valore da assegnare al dado.");
+                dice = Integer.parseInt(in.readLine());
+            }
+        }catch (NumberFormatException e){
+            System.out.println("Inserisci un valore corretto!");
+            return chooseValue();
+        }
+        return dice;
+    }
+
+    @Override
     public int tool1Messages() throws IOException {
         String dicechose;
         System.out.println("Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
@@ -250,5 +271,20 @@ public class CLI implements ClientInterface {
         Dice dice = gson.fromJson(dicejson, Dice.class);
         System.out.println("Il dado è stato nuovamente lanciato. E' uscito: "+dice+". Sei pregato di indicare dove piazzarlo\n");
         return chooseCoordinates();
+    }
+
+    @Override
+    public int[] tool11Messages(String dicejson) throws IOException {
+
+
+        int[] coordinates = new int[3];
+        int[] tmp;
+        Dice dice = gson.fromJson(dicejson, Dice.class);
+        System.out.println("Il colore del dado estratto è: "+dice+". Sei pregato di scegliere il valore.\n");
+        coordinates[2]=chooseValue();
+        tmp=chooseCoordinates();
+        coordinates[0]=tmp[0];
+        coordinates[1]=tmp[1];
+        return coordinates;
     }
 }

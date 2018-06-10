@@ -284,13 +284,25 @@ public class ClientSocket {
                                 sendMessage("@TOOLUSED6-"+ndice);
                             }
                             if(arrOfStr[1].equals("61")){
-                                int[] coordinates = clientInt.tool6Messages(arrOfStr[1]);
+                                int[] coordinates = clientInt.tool6Messages(arrOfStr[2]);
                                 sendMessage("@TOOLUSED61-"+coordinates[0]+"-"+coordinates[1]);
                             }
                             if(arrOfStr[1].equals("5")){
                                 int vdice = clientInt.chooseDice();
                                 int[] dicepos = clientInt.chooseFromPath();
                                 sendMessage("@TOOLUSED5-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
+                            }
+                            if(arrOfStr[1].equals("7")){
+                                sendMessage("@TOOLUSED7-1");
+                            }
+                            if(arrOfStr[1].equals("8")){
+                                int vdice=clientInt.chooseDice();
+                                int[] dicepos=clientInt.chooseCoordinates();
+                                sendMessage("@TOOLUSED8-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
+                            }
+                            if(arrOfStr[1].equals("91")){
+                                int[] value = clientInt.tool11Messages(arrOfStr[2]);
+                                sendMessage("@TOOLUSED91-"+value[0]+"-"+value[1]+"-"+value[2]);
                             }
                         }else
                             sendMessage("@TOOLEXIT");

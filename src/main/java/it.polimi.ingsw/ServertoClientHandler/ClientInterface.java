@@ -1,5 +1,6 @@
 package it.polimi.ingsw.ServertoClientHandler;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import it.polimi.ingsw.Game.Dice;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Player;
@@ -34,11 +35,14 @@ public interface ClientInterface {
 
     int[] chooseFromPath() throws IOException;
 
+    int chooseValue() throws IOException;
+
     //ALL TOOL METHODS
     int tool1Messages() throws IOException;
     int[] tool23Messages() throws IOException;
     int[] tool4Messages() throws IOException;
     int[] tool12Messages() throws IOException;
     int[] tool6Messages(String dice) throws IOException;
+    int[] tool11Messages(String dice) throws IOException;
 
 }

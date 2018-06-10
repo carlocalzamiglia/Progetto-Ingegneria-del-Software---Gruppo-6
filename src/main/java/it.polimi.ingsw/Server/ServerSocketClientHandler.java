@@ -467,25 +467,73 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                         message="";
                         break;
                     case 7:
-                        sendMessageOut("@TOOL-7");
-                        while (!(message.equals("@TOOLUSED-7")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
-                        if(message.equals("@DEAD"))
-                            return 0;
+                        while(!toolok) {
+                            if(greenCarpet.getTurn()==2 && !useddice) {
+                                sendMessageOut("@TOOL-7");
+                                while (!(message.equals("@TOOLUSED7")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) {
+                                    sleep(200);
+                                }
+                                if (message.equals("@DEAD"))
+                                    return 0;
+                                if (!message.equals("@TOOLEXIT")) {
+                                    toolok=toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
+                                } else {
+                                    exit = true;
+                                    toolok = true;
+                                }
+                                message = "";
+                            }else{
+                                sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.");
+                                toolok=true;
+                                exit=true;
+                            }
+                            message="";
+                        }
+                        message="";
                         break;
                     case 8:
-                        sendMessageOut("@TOOL-manca");
-                        while (!(message.equals("@TOOLUSED-9")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
-                        if(message.equals("@DEAD"))
-                            return 0;
+                        while(!toolok) {
+                            if(greenCarpet.getTurn()==1 && useddice) {
+                                sendMessageOut("@TOOL-8");
+                                while (!(message.equals("@TOOLUSED8")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")){sleep(200) ;}
+                                if (message.equals("@DEAD"))
+                                    return 0;
+                                if(!message.equals("@TOOLEXIT")){
+                                    toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+                                }else{
+                                    toolok=true;
+                                    exit=true;
+                                }
+
+                            }else {
+                                sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.");
+                                toolok=true;
+                                exit=true;
+                            }
+                            message="";
+                        }
+                        message="";
                         break;
                     case 9:
                         if (!useddice) {
-                            sendMessageOut("@TOOL-1");
-                            while (!(message.equals("@TOOLUSED-1")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
-                            if(message.equals("@DEAD"))
-                                return 0;
+                            while(!toolok) {
+                                sendMessageOut("@TOOL-8");
+                                while (!(message.equals("@TOOLUSED8")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")){ sleep(200);}
+                                if (message.equals("@DEAD"))
+                                    return 0;
+                                if(!message.equals("@TOOLEXIT")){
+                                    toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+                                }else{
+                                    toolok=true;
+                                    exit=true;
+                                }
+                                message="";
+                            }
+
                         } else
                             sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                        message="";
+                        tooldice=true;
                         break;
                     case 10:
                         while(!toolok) {
@@ -501,15 +549,64 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             }
                             message="";
                         }
+                        message="";
                         break;
                     case 11:
-                        if (!useddice) {
-                            sendMessageOut("@TOOL-8");
-                            while (!(message.equals("@TOOLUSED-8")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")) ;
+                        ruler = new Ruler();
+                        checkcorrdice=false;
+                        dice=null;
+                        while(!toolok && !useddice) {
+                            sendMessageOut("@TOOL-6");
+                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")){sleep(200);}
                             if(message.equals("@DEAD"))
                                 return 0;
-                        } else
-                            sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                            if(!message.equals("@TOOLEXIT")) {
+                                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, 0);
+                                if(dice!=null) {
+                                    while (!checkcorrdice) {
+                                        dice.setFace("");
+                                        String dicejson = gson.toJson(dice);
+                                        sendMessageOut("@TOOL-91-" + dicejson);
+                                        while (!(message.equals("@TOOLUSED91")) && !message.equals("@DEAD")) {
+                                            sleep(200);
+                                        }
+                                        if(message.equals("@DEAD"))
+                                            return 0;
+                                        dice.setFace(ruler.intToString(stringToInt(arrOfMsg[3])));
+                                        if(ruler.checkAvailableDice(dice, player.getScheme())) {
+                                            checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
+                                            if(checkcorrdice) {
+                                                player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
+                                                tooldice = true;
+                                            }
+                                        }
+                                        else {
+                                            checkcorrdice = true;
+                                            greenCarpet.setDiceInStock(dice);
+                                        }
+                                        message = "";
+                                    }
+
+
+                                    toolok = true;
+                                }else{
+                                    sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+                                    toolok=true;
+                                    exit=true;
+                                }
+                            }
+                            else {
+                                exit = true;
+                                toolok = true;
+                            }
+                            message="";
+                        }
+                        if(useddice){
+                            sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
+                            exit=true;
+                            toolok=true;
+                        }
+                        message="";
                         break;
                     case 12:
                         while (!toolok) {
