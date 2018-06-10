@@ -299,11 +299,15 @@ public class ToolCardsExecutor implements Serializable {
            if (stockPos > 0 && stockPos <= greenCarpet.getStock().size() && checkCoordinate(row,col)) {
                dice=greenCarpet.getDiceFromStock(stockPos);
                if(serialnumber==9) {
-                   bool = ruler.checkEmptyNeighbors(row, col, player.getScheme());
-                   if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionColour() != null) {
-                       bool = dice.getColour().equals(player.getScheme().getBox(row, col).getRestrictionColour());
-                   } else if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionValue() != null) {
-                       bool = dice.faceToNo().equals(player.getScheme().getBox(row, col).getRestrictionValue());
+                   if(player.getScheme().isEmpty())
+                       bool=ruler.checkCorrectPlacement(row,col,dice,player.getScheme());
+                   else {
+                       bool = ruler.checkEmptyNeighbors(row, col, player.getScheme());
+                       if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionColour() != null) {
+                           bool = dice.getColour().equals(player.getScheme().getBox(row, col).getRestrictionColour());
+                       } else if (bool && player.getScheme().getBox(row, col).getAddedDice() != null && player.getScheme().getBox(row, col).getRestrictionValue() != null) {
+                           bool = dice.faceToNo().equals(player.getScheme().getBox(row, col).getRestrictionValue());
+                       }
                    }
                }else if(serialnumber==8){
                    bool=ruler.checkCorrectPlacement(row,col,dice,player.getScheme());
