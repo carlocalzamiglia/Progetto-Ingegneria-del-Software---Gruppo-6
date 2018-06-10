@@ -506,7 +506,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                 }
 
                             }else {
-                                sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.");
+                                sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.  Ricordati di piazzare un dado prima di utilizzarla!");
                                 toolok=true;
                                 exit=true;
                             }

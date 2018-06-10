@@ -400,19 +400,39 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 8:
-                    /*
-                    sendMessageOut("@TOOL-manca");
-                    while (!(message.equals("@TOOLUSED-9")) && !(message.equals("@TOOLEXIT"))) ;
+                    while(!toolok) {
+                        if(greenCarpet.getTurn()==1 && usedDice){
+                            goon=clientInt.goOnTool();
+                            if(goon.equals("y")){
+                                int vdice=clientInt.chooseDice();
+                                int[] dicepos=clientInt.chooseCoordinates();
+                                toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
+                            }else{
+                                toolok = true;
+                                exit = true;
+                            }
+                        }else {
+                            sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile. Ricordati di piazzare un dado prima di utilizzarla!");
+                            toolok=true;
+                            exit=true;
+                        }
+                    }
                     break;
-                    */
                 case 9:
-                    /*
-                    if (!useddice) {
-                        sendMessageOut("@TOOL-1");
-                        while (!(message.equals("@TOOLUSED-1")) && !(message.equals("@TOOLEXIT"))) ;
-                    } else
+                    if(!usedDice) {
+                        while (!toolok) {
+                            goon = clientInt.goOnTool();
+                            if (goon.equals("y")) {
+                                int vdice = clientInt.chooseDice();
+                                int[] dicepos = clientInt.chooseCoordinates();
+                                toolok = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
+                            } else {
+                                toolok = true;
+                                exit = true;
+                            }
+                        }
+                    }else
                         sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                    */
                     break;
                 case 10:
                     while(!toolok) {
@@ -427,13 +447,42 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 11:
-                    /*
-                    if (!useddice) {
-                        sendMessageOut("@TOOL-8");
-                        while (!(message.equals("@TOOLUSED-8")) && !(message.equals("@TOOLEXIT"))) ;
-                    } else
-                        sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                    */
+                    ruler = new Ruler();
+                    checkcorrdice=false;
+                    while(!toolok && !usedDice){
+                        goon=clientInt.goOnTool();
+                        if(goon.equals("y")){
+                            int ndice = clientInt.chooseDice();
+                            dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice, choice, 0);
+                            if(dice!=null) {
+                                while (!checkcorrdice) {
+                                    dice.setFace("");
+                                    String dicejson = gson.toJson(dice);
+                                    int[] value = clientInt.tool11Messages(dicejson);
+                                    dice.setFace(ruler.intToString(value[2]));
+                                    if(ruler.checkAvailableDice(dice, player.getScheme())) {
+                                        checkcorrdice = ruler.checkCorrectPlacement(value[0], value[1], dice, player.getScheme());
+                                        if(checkcorrdice) {
+                                            player.getScheme().setBoxes(dice, value[0], value[1]);
+                                            tooldice = true;
+                                        }
+                                    }
+                                    else {
+                                        checkcorrdice = true;
+                                        greenCarpet.setDiceInStock(dice);
+                                    }
+                                }
+                                toolok = true;
+                            }else{
+                                sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+                                toolok=true;
+                                exit=true;
+                            }
+                        }else{
+                            toolok = true;
+                            exit = true;
+                        }
+                    }
                     break;
                 case 12:
                     while (!toolok) {
