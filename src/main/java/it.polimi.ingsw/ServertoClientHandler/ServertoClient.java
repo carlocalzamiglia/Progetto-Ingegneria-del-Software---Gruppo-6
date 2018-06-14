@@ -12,5 +12,5 @@ public interface ServertoClient {
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException;
     public void sendMessageOut(String message) throws RemoteException, IOException;
     public boolean aliveMessage() throws RemoteException;
-    public Game handleturn(GreenCarpet greenCarpet, Player player, int i, String playersscheme) throws IOException, InterruptedException, RemoteException;
+    public Game endTurn(GreenCarpet greenCarpet, Player player, int i) throws InterruptedException, IOException;
 }

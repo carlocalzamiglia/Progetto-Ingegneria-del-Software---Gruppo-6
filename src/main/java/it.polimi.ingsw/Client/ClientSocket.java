@@ -85,14 +85,14 @@ public class ClientSocket {
         }
         catch(Exception e)
         {
-            clientInt.showError("Exception: "+e);
+            clientInt.showMessage("Exception: "+e);
             e.printStackTrace();
 
             // Always close it:
             try {
                 socket.close();
             } catch(IOException ex) {
-                clientInt.showError("Socket not closed");
+                clientInt.showMessage("Socket not closed");
             }
         }
     }
@@ -138,20 +138,20 @@ public class ClientSocket {
                     this.name=nickname;
                 }
                 else if(logged.equals("2"))
-                    clientInt.showError("Password di " + nickname + " errata");
+                    clientInt.showMessage("Password di " + nickname + " errata");
                 else if(logged.equals("3"))
-                    clientInt.showError("L'utente selezionato è già connesso. Deve esserci un errore!");
+                    clientInt.showMessage("L'utente selezionato è già connesso. Deve esserci un errore!");
             }
         }
         catch(Exception e)
         {
-            clientInt.showError("Exception: "+e);
+            clientInt.showMessage("Exception: "+e);
             try {
                 socket.close();
             }
             catch(IOException ex)
             {
-                clientInt.showError("Socket not closed");
+                clientInt.showMessage("Socket not closed");
             }
         }
         login[0]=nickname;
@@ -191,13 +191,67 @@ public class ClientSocket {
     }
 
     //---------------------------------------------class for server messages--------------------------------------------
+    class TimerThreadSocket extends Thread  {
+        int time;
+        ListenFromServer listenFromServer;
+        String[] logindata;
+        ClientSocket clientSocket;
+        //constructor
+
+        public TimerThreadSocket(int time,ListenFromServer listenFromServer) {
+            this.time = time;
+            this.listenFromServer=listenFromServer;
+            this.logindata=listenFromServer.getLogindata();
+            this.clientSocket=listenFromServer.getClientSocket();
+
+        }
+        @Override
+        public void run() {
+            try {
+                while (time < 20) {
+                    sleep(1000);
+                    time++;
+                }
+                try {
+                    clientInt.timerOut(true);
+                    sleep(300);
+                    sendMessage("@TIMEROUT");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                clientInt.endTurn();
+                listenFromServer.interrupt();
+                ListenFromServer newListen = new ListenFromServer(clientSocket, logindata);
+                newListen.start();
+                return;
+            }catch (InterruptedException e){return;}
+
+        }
+        public int getTime() {
+            return time;
+        }
+        public void setTime(){
+            time=20;
+        }
+    }
+
+
     class ListenFromServer extends Thread {
         ClientSocket clientSocket;
         String[] logindata;
+        TimerThreadSocket timerThreadSocket;
         public ListenFromServer(ClientSocket clientSocket, String[] logindata){
             this.clientSocket=clientSocket;
             this.logindata = logindata;
         }
+        public String[] getLogindata(){
+            return this.logindata;
+        }
+
+        public ClientSocket getClientSocket() {
+            return clientSocket;
+        }
+
         public void run() {
             while(true) {
                 try {
@@ -208,8 +262,15 @@ public class ClientSocket {
                     String [] arrOfStr = msg.split("-");
 
                     if(arrOfStr[0].equals("@SCHEME")) {
-                        int scheme=clientInt.schemeMessages(arrOfStr[1]);
-                        sendMessage("@SCHEME-"+scheme);
+                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(0,this);
+                        timerThreadSocket.start();
+                        int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4]);
+                        if (scheme==99)
+                            return;
+                        else {
+                            sendMessage("@SCHEME-" + scheme);
+                            timerThreadSocket.interrupt();
+                        }
 
                     }
 
@@ -218,44 +279,66 @@ public class ClientSocket {
                     }
 
                     else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
-                        if(arrOfStr[1].equals("true"))
-                            yourturn=true;
+                        if(arrOfStr[1].equals("true")) {
+                            clientInt.timerOut(false);
+                            timerThreadSocket = new TimerThreadSocket(0, this);
+                            timerThreadSocket.start();
+                            yourturn = true;
+                        }
                         else {
+                            timerThreadSocket.interrupt();
                             clientInt.endTurn();
                             yourturn=false;
                         }
                     }
                     else if(arrOfStr[0].equals("@USETOOL")){
                         int tool = clientInt.chooseToolMessages();
-                        sendMessage("@TOOLUSED-"+tool);
+                        if (tool!=0)
+                             sendMessage("@TOOLUSED-"+tool);
+                        else
+                            return;
                     }
 
                     else if(arrOfStr[0].equals("@PLACEDICE")){          //choose and place dice
                         if(yourturn==true) {
                             int[] coordinates;
                             int dicepos=clientInt.chooseDice();
-                            coordinates=clientInt.chooseCoordinates();
-                            sendMessage("@DICEPLACED-" + dicepos + "-" + coordinates[0] + "-" + coordinates[1]);
+                            if(dicepos!=99) {
+                                coordinates = clientInt.chooseCoordinates();
+                                if (coordinates[0]!=99)
+                                     sendMessage("@DICEPLACED-" + dicepos + "-" + coordinates[0] + "-" + coordinates[1]);
+                                else
+                                    return;
+                            }else
+                                return;
                         }
                     }
 
-                    else if(arrOfStr[0].equals("@SCHEMEUPDATE")){
-                        clientInt.schemeUpdated(arrOfStr[1]);
+                    else if(arrOfStr[0].equals("@AFTERTOOLUPDATE")){
+                        clientInt.printTool(arrOfStr[1], arrOfStr[2]);
                     }
 
                     else if(arrOfStr[0].equals("@CHOOSEACTION")){
                         String action = clientInt.handleTurnMenu();
-                        sendMessage("@ACTIONCHOSE-"+action);
+                        if (!action.equals("4"))
+                           sendMessage("@ACTIONCHOSE-"+action);
+                        else return;
                     }
 
                     else if(arrOfStr[0].equals("@ERROR")){
-                        clientInt.showError(arrOfStr[1]);
+                        clientInt.showMessage(arrOfStr[1]);
                     }
 
                     else if(arrOfStr[0].equals("@TOOL")){
                         String choose;
-                        if(!(arrOfStr[1].equals("61"))) {       //avoids a double check.
+                        if(!(arrOfStr[1].equals("61")) && !(arrOfStr[1].equals("91"))) {       //avoids a double check.
                             choose=clientInt.goOnTool();
+                            if (choose.equals("0")){
+                                arrOfStr[0]="";
+                                arrOfStr[1]="";
+                                msg="";
+                                return;
+                            }
                         }else
                             choose="y";
                         //--------------------USE TOOL CARDS------------------------
@@ -263,33 +346,52 @@ public class ClientSocket {
                             if (arrOfStr[1].equals("1")) {
                                 int[] coordinates;
                                 coordinates=clientInt.tool23Messages();
-                                sendMessage("@TOOLUSED1-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3]);
+                                if (coordinates[0]!=99)
+                                    sendMessage("@TOOLUSED1-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3]);
+                                else
+                                    return;
                             }
                             if (arrOfStr[1].equals("2")) {
                                 int[] coordinates;
                                 coordinates=clientInt.tool4Messages();
+                                if (coordinates[0]==99)
+                                    return;
                                 sendMessage("@TOOLUSED2-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3] + "-" + coordinates[4] + "-" + coordinates[5] + "-" + coordinates[6] + "-" + coordinates[7]);
                             }
                             if (arrOfStr[1].equals("3")) {
                                 int[] coordinates12 = clientInt.tool12Messages();
+                                if (coordinates12[0]==99)
+                                    return;
                                 sendMessage("@TOOLUSED3-" + coordinates12[8] + "-" + coordinates12[0] + "-" + coordinates12[1] + "-" + coordinates12[2] + "-" + coordinates12[3] + "-" + coordinates12[4] + "-" + coordinates12[5] + "-" + coordinates12[6] + "-" + coordinates12[7] + "-" + coordinates12[9] + "-" + coordinates12[10]);
                             }
                             if(arrOfStr[1].equals("4")){
                                 int vdice=clientInt.chooseDice();
+                                if (vdice==99)
+                                    return;
                                 int dicechose=clientInt.tool1Messages();
+                                if (dicechose==99)
+                                    return;
                                 sendMessage("@TOOLUSED4-"+vdice+"-"+dicechose);
                             }
                             if(arrOfStr[1].equals("6")){
                                 int ndice = clientInt.chooseDice();
+                                if (ndice==99)
+                                    return;
                                 sendMessage("@TOOLUSED6-"+ndice);
                             }
                             if(arrOfStr[1].equals("61")){
                                 int[] coordinates = clientInt.tool6Messages(arrOfStr[2]);
+                                if (coordinates[0]==99)
+                                    return;
                                 sendMessage("@TOOLUSED61-"+coordinates[0]+"-"+coordinates[1]);
                             }
                             if(arrOfStr[1].equals("5")){
                                 int vdice = clientInt.chooseDice();
+                                if (vdice==99)
+                                    return;
                                 int[] dicepos = clientInt.chooseFromPath();
+                                if (dicepos[0]==99)
+                                    return;
                                 sendMessage("@TOOLUSED5-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
                             }
                             if(arrOfStr[1].equals("7")){
@@ -297,11 +399,18 @@ public class ClientSocket {
                             }
                             if(arrOfStr[1].equals("8")){
                                 int vdice=clientInt.chooseDice();
+                                if (vdice==99)
+                                    return;
                                 int[] dicepos=clientInt.chooseCoordinates();
-                                sendMessage("@TOOLUSED8-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
+                                if (dicepos[0]!=99)
+                                     sendMessage("@TOOLUSED8-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
+                                else
+                                    return;
                             }
                             if(arrOfStr[1].equals("91")){
                                 int[] value = clientInt.tool11Messages(arrOfStr[2]);
+                                if (value[0]==99)
+                                    return;
                                 sendMessage("@TOOLUSED91-"+value[0]+"-"+value[1]+"-"+value[2]);
                             }
                         }else
@@ -312,14 +421,16 @@ public class ClientSocket {
                     }
                 }
                 catch(IOException e) {
-                    clientInt.showError("Ops, c'è stato un problema di connessione con il socket. Riconnessione imminente.");
+                    clientInt.showMessage("Ops, c'è stato un problema di connessione con il socket. Riconnessione imminente.");
                     try {
                         sendMessage("@RECONNECT");
                     } catch (IOException e1) {}
                     clientSocket.execute(logindata[0], logindata[1]);
                 }
                 catch(ClassNotFoundException e2) {
-                    clientInt.showError("ClassNotFoundExption generata");
+                    clientInt.showMessage("ClassNotFoundExption generata");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }

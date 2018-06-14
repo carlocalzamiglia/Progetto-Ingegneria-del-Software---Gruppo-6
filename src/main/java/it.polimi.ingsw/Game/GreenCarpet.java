@@ -13,6 +13,7 @@ public class GreenCarpet implements Serializable {
     private DiceBucket diceBucket;
     private int turn;
     private int round;
+    private ArrayList<Player> player;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
@@ -89,6 +90,15 @@ public class GreenCarpet implements Serializable {
         }
 
     }
+
+    public void setPlayer(ArrayList<Player> player) {
+        this.player = player;
+    }
+
+    public ArrayList<Player> getPlayer() {
+        return player;
+    }
+
     public void changeDiceFromRoundPath(int i, int round, Dice dice){
         Dice d=roundPath[i-1][round-1];
         roundPath[i-1][round-1]=dice;
@@ -199,6 +209,52 @@ public class GreenCarpet implements Serializable {
        }
     public void dump(){
         System.out.println(this);
+    }
+
+    public String stockToString(){
+        String s = new String();
+        s = s + "--RISERVA--\n";
+        for (int i = 0; i < stock.size(); i++)
+            s = s + (i + 1) + ")" + stock.get(i).toString() + " ";
+        s = s + "\n";
+        return s;
+    }
+
+    public String toolcardToString(){
+        String s = new String();
+        s = s + "--CARTE UTENSILI--\n";
+        for (int i = 0; i < 3; i++) {
+            s = s + toolCards[i];
+        }
+        return s;
+    }
+
+    public String playersToString(int user){
+        String s = new String();
+        for(int i=0; i<player.size(); i++){
+            if(i!=user) {
+                if (user == (player.size() - 1) && i == (player.size() - 2))
+                    s = s.concat(player.get(i).getNickname());
+                else if(i == player.size() - 1)
+                    s = s.concat(player.get(i).getNickname());
+                else
+                    s=s.concat(player.get(i).getNickname()+", ");
+            }
+        }
+        s=s.concat("\n");
+        for(int row=0; row<4; row++){
+            for(int play=0; play<player.size();play++){
+                if(play!=user) {
+                    for (int col = 0; col < 5; col++) {
+                        if(player.get(play).getScheme()!=null)
+                            s = s.concat(player.get(play).getScheme().getBox(row, col).toString());
+                    }
+                    s = s.concat("\t\t");
+                }
+            }
+            s=s.concat("\n");
+        }
+        return s;
     }
 
 }

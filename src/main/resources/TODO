@@ -1,10 +1,10 @@
-RMI messages part
+RMI messages part //DONE
 
 Other players scheme        //DONE
 
-add round for every player
+add round for every player      //DONE
 
-tool cards fix
+tool cards fix          //DONE
 
 Scheme add check number between 1 and 4   //DONE
 
@@ -14,21 +14,19 @@ set an action in the place dice turn to return to main menù //NO NEED
 
 check when coordinates imput are no numbers ///////DONE
 
-implement a method that dumps scoreTable at end of match
+implement a method that dumps scoreTable at end of match        //DONE
 
 implement a method to dump the private goal(start of match) ///DONE
-
-implement a method that converts serial number of tool cards into "case numbers" to avoid useless cases ?????
 
 check dump in client side ///DONE
 
 synchronize scoreTable with user order      //DONE
 
-block input when is not the turn
+block input when is not the turn        //IMPOSSIBLE
 
 update roundpath dump(do not dump empty boxes)
 
-update tool card dump(dump also the cost of the card)
+update tool card dump(dump also the cost of the card)       //DONE
 
 set an error dump when toolcardExecutor returns false
 
@@ -38,4 +36,4 @@ minor fix tool 6 doesn't have to place a dice if i place already a dice in the t
 Try/Catch usetoolcard!!!!
 
 
-Fix scegliazione!!!!!!!
+Fix scegliazione!!!!!!!     //DONE

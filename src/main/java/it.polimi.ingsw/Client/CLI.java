@@ -21,79 +21,140 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import static java.lang.Thread.sleep;
+
 public class CLI implements ClientInterface {
     Gson gson = new GsonBuilder().create();
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    boolean c = false;
     @Override
     public String[] loginMessages() throws IOException {
         String[] logindata = new String[2];
         System.out.println("Inserire nickname:");
         logindata[0]=in.readLine();
-
+        while(logindata[0].length()==0) {logindata[0]=in.readLine();}
+        char s = logindata[0].charAt(0);
+        while (s == ' ') {
+            System.out.println("Nickname non valido. Inserire nickname:");
+            logindata[0] = in.readLine();
+            while(logindata[0].length()==0) {logindata[0]=in.readLine();}
+            s = logindata[0].charAt(0);
+        }
         System.out.println("Inserire password:");
         logindata[1]=in.readLine();
+        while(logindata[1].length()==0) {logindata[1]=in.readLine();}
+        s = logindata[1].charAt(0);
+        while (s == ' ') {
+            System.out.println("Nickname non valido. Inserire nickname:");
+            logindata[1] = in.readLine();
+            while(logindata[1].length()==0) {logindata[1]=in.readLine();}
+            s = logindata[1].charAt(0);
+        }
         return logindata;
     }
 
     @Override
-    public void showError(String message) {
-        System.out.println("ERRORE: "+message);
+    public void showMessage(String message) {
+        System.out.println(message);
     }
 
     @Override
-    public int schemeMessages(String schemes) throws IOException {
+    public int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4) throws IOException, InterruptedException {
         String message;
+        Scheme scheme1class=gson.fromJson(scheme1, Scheme.class);
+        Scheme scheme2class=gson.fromJson(scheme2, Scheme.class);
+        Scheme scheme3class=gson.fromJson(scheme3, Scheme.class);
+        Scheme scheme4class=gson.fromJson(scheme4, Scheme.class);
+
         try {
             do {
-                System.out.println("Scegli uno schema:\n" + schemes);
-                message = in.readLine();
+                System.out.println("Scegli uno schema:\n" + scheme1class.toString() + "\n" + scheme2class.toString() + "\n" + scheme3class.toString() + "\n" + scheme4class.toString() + "\n");
+                while(!in.ready() && !c) {sleep(200);}
+                if (!c)
+                  message = in.readLine();
+                else
+                    message="1";
+                if(Integer.parseInt(message) <= 0 || Integer.parseInt(message) > 4)
+                    this.showMessage("Hai inserito un valore errato!");
             } while (Integer.parseInt(message) <= 0 || Integer.parseInt(message) > 4);
         }catch (NumberFormatException e){
-            this.showError("Hai inserito un valore errato!");
-            return schemeMessages(schemes);
+            this.showMessage("Hai inserito un valore errato!");
+            return schemeMessages(scheme1, scheme2, scheme3, scheme4);
+        }
+        if (c) {
+            int i=99;
+            return i;
         }
         System.out.println("Hai scelto lo schema "+message+". Ora attendi il tuo turno!");
         return Integer.parseInt(message);
     }
 
+
+    //---------------------------------------PRINT METHODS--------------------------------------------------------------
     @Override
     public void printCarpetFirst(String greenCarpetjson, String playerjson) {
         System.out.println("\n\n*************************** E' IL TUO TURNO ***************************");
-        //System.out.println("Ecco lo schema degli altri giocatori, nell'ordine: "+ playersscheme);
-
+        System.out.println("Hai 90 secondi per terminare il tuo turno. Altrimenti il gioco passerà in automatico.");
+        int i=0;
         GreenCarpet greenCarpet=gson.fromJson(greenCarpetjson, GreenCarpet.class);
         Player player=gson.fromJson(playerjson, Player.class);
-
+        for(Player p: greenCarpet.getPlayer())
+            if(p.getNickname().equals(player.getNickname()))
+                i = greenCarpet.getPlayer().indexOf(p);
+        System.out.println("Ecco lo schema degli altri giocatori:\n");
+        System.out.println(greenCarpet.playersToString(i));
         System.out.println("Ecco qui il tavolo e il tuo schema:\n");
         System.out.println(greenCarpet.toString());
         System.out.println((greenCarpet.getRound()+1)+"° ROUND\t\t\t"+greenCarpet.getTurn()+"° TURNO\n");
         System.out.println(player.toString()+"\n");
     }
 
+
+
     @Override
-    public String handleTurnMenu() throws IOException {
+    public void printTool(String greenCarpetjson, String playerjson) {
+        GreenCarpet greenCarpet=gson.fromJson(greenCarpetjson, GreenCarpet.class);
+        Player player=gson.fromJson(playerjson, Player.class);
+        System.out.println(greenCarpet.stockToString()+"\n"+player.toString());
+    }
+
+
+
+    @Override
+    public String handleTurnMenu() throws IOException, InterruptedException {
         String value = new String();
         System.out.println("1)passa il turno\n2)inserisci dado\n3)usa carta utensile\n");
+        while(!in.ready() && !c) {sleep(200);}
+        if(!c)
             value = in.readLine();
+        else
+            value="1";
         while(!value.equals("1")&& !value.equals("2")&& !value.equals("3")){
-            showError("Hai inserito un valore errato");
+            showMessage("Hai inserito un valore errato");
             value=in.readLine();
         }
+        if(c)
+            value="4";
         return value;
     }
 
     @Override
     public void endTurn() {
-        System.out.println("############################### IL TUO TURNO E' TERMINATO. ATTENDI. ###############################\n\n");
+        System.out.println("############################### ATTENDI IL TUO TURNO... ###############################\n\n");
     }
 
     @Override
-    public int[] placeDiceMessages() throws IOException {
+    public int[] placeDiceMessages() throws IOException, InterruptedException {
         int[] dicecoord = new int[3];
         int[] coordinates;
         dicecoord[0] = chooseDice();
+        if (dicecoord[0]==99)
+            return dicecoord;
         System.out.println("Inserire le coordinate di piazzamento.");
         coordinates=chooseCoordinates();
+        if (coordinates[0]==99){
+            return coordinates;
+        }
         dicecoord[1] = coordinates[0];
         dicecoord[2] = coordinates[1];
         return dicecoord;
@@ -106,11 +167,15 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int chooseToolMessages() throws IOException {
+    public int chooseToolMessages() throws IOException, InterruptedException {
         int tool = 0;
         try{
             System.out.println("Inserisci il numero della carta tool da usare.");
-            tool=Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+            if (!c)
+                tool=Integer.parseInt(in.readLine());
+            else
+                tool=0;
         }catch (NumberFormatException e){
             System.out.println("Inserisci un valore corretto!");
             return chooseToolMessages();
@@ -119,21 +184,32 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public String goOnTool() throws IOException {
+    public String goOnTool() throws IOException, InterruptedException {
         String goon="a";
         while(!goon.equals("y") && !goon.equals("n")) {
             System.out.println("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-            goon = in.readLine();
+            while(!in.ready() && !c) {sleep(200);}
+            if (!c)
+                goon = in.readLine();
+            else
+                goon="y";
         }
+        if (c)
+            goon="0";
         return goon;
     }
 
     @Override
-    public int chooseDice() throws IOException {
-        int dice;
+    public int chooseDice() throws IOException, InterruptedException {
+        int dice=99;
         try{
             System.out.println("Scegli il dado dalla riserva.");
-            dice=Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+            if (!c)
+                dice = Integer.parseInt(in.readLine());
+            else {
+                dice = 99;
+            }
         }catch (NumberFormatException e){
             System.out.println("Inserisci un valore corretto!");
             return chooseDice();
@@ -142,13 +218,26 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int[] chooseCoordinates() throws IOException {
+    public int[] chooseCoordinates() throws IOException, InterruptedException {
         int[] coordinates = new int[2];
         try {
             System.out.println("Inserisci la riga.");
-            coordinates[0] = Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+            if (!c) {
+                coordinates[0] = Integer.parseInt(in.readLine());
+            }else{
+                coordinates[0]=99;
+            return coordinates;
+            }
+
             System.out.println("Inserisci la colonna.");
-            coordinates[1] = Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+            if(!c)
+                coordinates[1] = Integer.parseInt(in.readLine());
+            else {
+                coordinates[0] = 99;
+                return coordinates;
+            }
         }catch(NumberFormatException e){
             System.out.println("Inserisci un valore corretto!");
             return chooseCoordinates();
@@ -157,29 +246,47 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int[] chooseFromPath() throws IOException {
+    public int[] chooseFromPath() throws IOException, InterruptedException {
         int[] coordinates = new int[2];
         try {
             System.out.println("Inserisci il numero del round.");
-            coordinates[0] = Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+                if(!c)
+                    coordinates[0] = Integer.parseInt(in.readLine());
+                else
+                    coordinates[0]=99;
             System.out.println("Inserisci la posizione del dado nel round (numero di riga).");
-            coordinates[1] = Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+            if(!c)
+                coordinates[1] = Integer.parseInt(in.readLine());
+            else
+                coordinates[0]=99;
         }catch(NumberFormatException e){
             System.out.println("Inserisci un valore corretto!");
-            return chooseCoordinates();
+            return chooseFromPath();
         }
         return coordinates;
     }
 
     @Override
-    public int chooseValue() throws IOException {
+    public int chooseValue() throws IOException, InterruptedException {
         int dice;
         try{
             System.out.println("Scegli il valore da assegnare al dado.");
-            dice = Integer.parseInt(in.readLine());
+            while(!in.ready() && !c) {sleep(200);}
+            if(!c)
+                dice = Integer.parseInt(in.readLine());
+            else {
+                return 99;
+            }
+
             while (dice<1 || dice>6) {
                 System.out.println("Hai inserito un valore errato. Scegli il valore da assegnare al dado.");
-                dice = Integer.parseInt(in.readLine());
+                while(!in.ready() && !c) {sleep(200);}
+                if (!c)
+                    dice = Integer.parseInt(in.readLine());
+                else
+                    return 99;
             }
         }catch (NumberFormatException e){
             System.out.println("Inserisci un valore corretto!");
@@ -189,13 +296,22 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int tool1Messages() throws IOException {
+    public int tool1Messages() throws IOException, InterruptedException {
         String dicechose;
         System.out.println("Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
-        dicechose=in.readLine();
+        while(!in.ready() && !c) {sleep(200);}
+        if(!c)
+            dicechose=in.readLine();
+        else
+            return 99;
         while(!(dicechose.equals("c")) && !(dicechose.equals("d"))){
             System.out.println("Scelta errata. Inserisci 'c' se vuoi incrementarlo, 'd' se vuoi decrementarlo");
-            dicechose=in.readLine();
+            while(!in.ready() && !c) {sleep(200);}
+                if(!c)
+                    dicechose=in.readLine();
+                else{
+                    return 99;
+                }
         }
         if(dicechose.equals("c"))
             return 1;
@@ -204,49 +320,76 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int[] tool23Messages() throws IOException {
+    public int[] tool23Messages() throws IOException, InterruptedException {
         int[] allcoordinates = new int[4];
         int[] coordinates;
         System.out.println("Inserire le coordinate del dado da spostare.");
         coordinates=chooseCoordinates();
-        allcoordinates[0]=coordinates[0];
-        allcoordinates[1]=coordinates[1];
+        if (coordinates[0]!=99) {
+            allcoordinates[0] = coordinates[0];
+            allcoordinates[1] = coordinates[1];
+        }else {
+            allcoordinates[0] = 99;
+            return allcoordinates;
+        }
         System.out.println("Inserire le nuove coordinate del dado.");
         coordinates=chooseCoordinates();
-        allcoordinates[2]=coordinates[0];
-        allcoordinates[3]=coordinates[1];
+        if (coordinates[0]!=99) {
+            allcoordinates[2] = coordinates[0];
+            allcoordinates[3] = coordinates[1];
+        }else{
+            allcoordinates[0]=99;
+            return allcoordinates;
+        }
         return allcoordinates;
     }
 
     @Override
-    public int[] tool4Messages() throws IOException {
+    public int[] tool4Messages() throws IOException, InterruptedException {
         int[] allcoordinates = new int[8];
         int[] coordinates;
         System.out.println("PRIMO DADO:\n");
         coordinates=tool23Messages();
-        allcoordinates[0]=coordinates[0];
-        allcoordinates[1]=coordinates[1];
-        allcoordinates[2]=coordinates[2];
-        allcoordinates[3]=coordinates[3];
+        if (coordinates[0]!=99) {
+            allcoordinates[0] = coordinates[0];
+            allcoordinates[1] = coordinates[1];
+            allcoordinates[2] = coordinates[2];
+            allcoordinates[3] = coordinates[3];
+        }
+        else{
+            allcoordinates[0]=99;
+            return allcoordinates;
+        }
         System.out.println("SECONDO DADO:\n");
         coordinates=tool23Messages();
-        allcoordinates[4]=coordinates[0];
-        allcoordinates[5]=coordinates[1];
-        allcoordinates[6]=coordinates[2];
-        allcoordinates[7]=coordinates[3];
+        if (coordinates[0]!=99) {
+            allcoordinates[4] = coordinates[0];
+            allcoordinates[5] = coordinates[1];
+            allcoordinates[6] = coordinates[2];
+            allcoordinates[7] = coordinates[3];
+        }else
+            allcoordinates[0]=99;
         return allcoordinates;
     }
 
     @Override
-    public int[] tool12Messages() throws IOException {
+    public int[] tool12Messages() throws IOException, InterruptedException {
         int[] allcoordinates = new int[11];
         int[] round= chooseFromPath();
+        if (round[0]==99)
+            return round;
         int[] tmp;
         int choice;
         try{
             do{
                 System.out.println("Inserisci il numero di dadi da spostare (1 o 2).");
-                choice=Integer.parseInt(in.readLine());
+                while(!in.ready() && !c) {sleep(200);}
+                if(!c)
+                    choice=Integer.parseInt(in.readLine());
+                else{
+                    allcoordinates[0]=99;
+                    return allcoordinates;
+                }
             }while(choice!=1 && choice!=2);
         }catch (NumberFormatException e){
             System.out.println("Errore nell'inserimento.");
@@ -254,10 +397,16 @@ public class CLI implements ClientInterface {
         }
         if(choice==1){
             tmp=tool23Messages();
+            if (tmp[0]==99) {
+                allcoordinates[0] = 99;
+                return allcoordinates;
+            }
             for (int k=4;k<8;k++)
                 allcoordinates[k]=0;
         }else
             tmp =tool4Messages();
+        if (tmp[0]==99)
+            return tmp;
         for (int k=0;k<tmp.length;k++)
             allcoordinates[k]=tmp[k];
         allcoordinates[8]=choice;
@@ -267,24 +416,33 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int[] tool6Messages(String dicejson) throws IOException {
+    public int[] tool6Messages(String dicejson) throws IOException, InterruptedException {
         Dice dice = gson.fromJson(dicejson, Dice.class);
         System.out.println("Il dado è stato nuovamente lanciato. E' uscito: "+dice+". Sei pregato di indicare dove piazzarlo\n");
         return chooseCoordinates();
     }
 
     @Override
-    public int[] tool11Messages(String dicejson) throws IOException {
-
-
+    public int[] tool11Messages(String dicejson) throws IOException, InterruptedException {
         int[] coordinates = new int[3];
         int[] tmp;
         Dice dice = gson.fromJson(dicejson, Dice.class);
         System.out.println("Il colore del dado estratto è: "+dice+". Sei pregato di scegliere il valore.\n");
         coordinates[2]=chooseValue();
+        if (coordinates[2]==99) {
+            coordinates[0] = 99;
+            return coordinates;
+        }
         tmp=chooseCoordinates();
+        if (tmp[0]==99){
+            return tmp;
+        }
         coordinates[0]=tmp[0];
         coordinates[1]=tmp[1];
         return coordinates;
+    }
+
+    public void timerOut(boolean end){
+        c=end;
     }
 }

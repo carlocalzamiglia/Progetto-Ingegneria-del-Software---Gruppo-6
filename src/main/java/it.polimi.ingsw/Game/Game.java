@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
-import java.util.Timer;
+
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class Game implements Serializable {
     private ArrayList<User> users;
@@ -104,7 +107,8 @@ public class Game implements Serializable {
 
                 try {
                     users.get(i).getConnectionType().sendMessageOut("Il tuo obiettivo privato è: " + privateGoals[i] + "\n");
-                    int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+                    String[] schemesjson = getJsonSchemes(schemes[(i*4)],schemes[(i*4)+1],schemes[(i*4)+2],schemes[(i*4)+3]);
+                    int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0],schemesjson[1],schemesjson[2],schemesjson[3]);
                     if(schemechose!=0) {
                         player.setBridge(bridges[i]);
                         player.setScheme(schemes[(i * 4) + schemechose - 1]);
@@ -121,6 +125,7 @@ public class Game implements Serializable {
 
         for(int j=0;j<10;j++) {
             greenCarpet.setRound(j);
+            greenCarpet.setPlayer(player);
             for(int i=0;i<numUser;i++){
                 player.get(i).setSecondTurn(true);
             }
@@ -131,7 +136,8 @@ public class Game implements Serializable {
                 if(player.get(i).isOnline()) {
                     try {
                         if(player.get(i).getScheme()==null){
-                            int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+                            String[] schemesjson = getJsonSchemes(schemes[(i*4)],schemes[(i*4)+1],schemes[(i*4)+2],schemes[(i*4)+3]);
+                            int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0],schemesjson[1],schemesjson[2],schemesjson[3]);
                             if(schemechose!=0) {
                                 player.get(i).setBridge(bridges[i]);
                                 player.get(i).setScheme(schemes[(i * 4) + schemechose - 1]);
@@ -140,7 +146,7 @@ public class Game implements Serializable {
                         }
                         greenCarpet.setTurn(1);
                         System.out.println("tocca a: " + users.get(i).getNickname());
-                        Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                        Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i);
                         if(game!=null) {
                             this.greenCarpet = game.greenCarpet;
                             this.player.set(i, game.getPlayer(0));
@@ -150,12 +156,14 @@ public class Game implements Serializable {
                         player.get(i).setOnline(false);
                     }
                 }
+                greenCarpet.setPlayer(player);
             }
             for (int i = numUser-1; i >=0; i--) {
                 if(player.get(i).isOnline()) {
                     try {
                         if(player.get(i).getScheme()==null){
-                            int schemechose = users.get(i).getConnectionType().chooseScheme(schemes[(i*4)].toString(),schemes[(i*4)+1].toString(),schemes[(i*4)+2].toString(),schemes[(i*4)+3].toString());
+                            String[] schemesjson = getJsonSchemes(schemes[(i*4)],schemes[(i*4)+1],schemes[(i*4)+2],schemes[(i*4)+3]);
+                            int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0],schemesjson[1],schemesjson[2],schemesjson[3]);
                             if(schemechose!=0) {
                                 player.get(i).setBridge(bridges[i]);
                                 player.get(i).setScheme(schemes[(i * 4) + schemechose - 1]);
@@ -165,7 +173,7 @@ public class Game implements Serializable {
                         greenCarpet.setTurn(2);
                         if (player.get(i).getSecondTurn()) {
                             System.out.println("tocca a: " + users.get(i).getNickname());
-                            Game game = users.get(i).getConnectionType().handleturn(this.getGreenCarpet(), this.getPlayer(i), i, playersToString(i));
+                            Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i);
                             this.greenCarpet = game.greenCarpet;
                             this.player.set(i, game.getPlayer(0));
                         }
@@ -174,6 +182,7 @@ public class Game implements Serializable {
                         player.get(i).setOnline(false);
                     }
                 }
+                greenCarpet.setPlayer(player);
             }
             greenCarpet.setRoundPath(j+1);
             player.add(player.get(0));
@@ -182,10 +191,6 @@ public class Game implements Serializable {
             users.remove(0);
 
         }
-        for(int i=0;i<numUser;i++)
-            try {
-                users.get(i).getConnectionType().sendMessageOut(greenCarpet.toString() + playersToString(i) + player.get(i).toString());
-            }catch(IOException | NullPointerException e){}
 
         //------------start calculating------------
         Calculator calculator=new Calculator(player,greenCarpet);
@@ -221,6 +226,15 @@ public class Game implements Serializable {
 
     }
 
+    private String[] getJsonSchemes(Scheme scheme, Scheme scheme1, Scheme scheme2, Scheme scheme3) {
+        Gson gson = new GsonBuilder().create();
+        String[] schemesjson = new String[4];
+        schemesjson[0] = gson.toJson(scheme);
+        schemesjson[1] = gson.toJson(scheme1);
+        schemesjson[2] = gson.toJson(scheme2);
+        schemesjson[3] = gson.toJson(scheme3);
+        return schemesjson;
+    }
 
 
     public ArrayList<User> getUsers() {
@@ -325,33 +339,6 @@ public class Game implements Serializable {
     }
 
 
-    public String playersToString(int user){
-        String s = new String();
-        for(int i=0; i<player.size(); i++){
-            if(i!=user) {
-                if (user == (player.size() - 1) && i == (player.size() - 2))
-                    s = s.concat(player.get(i).getNickname());
-                else if(i == player.size() - 1)
-                    s = s.concat(player.get(i).getNickname());
-                else
-                    s=s.concat(player.get(i).getNickname()+", ");
-            }
-        }
-        s=s.concat("\n");
-        for(int row=0; row<4; row++){
-            for(int play=0; play<player.size();play++){
-                if(play!=user) {
-                    for (int col = 0; col < 5; col++) {
-                        if(player.get(play).getScheme()!=null)
-                            s = s.concat(player.get(play).getScheme().getBox(row, col).toString());
-                    }
-                    s = s.concat("\t\t");
-                }
-            }
-            s=s.concat("\n");
-        }
-        return s;
-    }
     public String tableToString(Player[] playerscore){
         String s=new String();
         s=s+"CLASSIFICA FINALE \n";

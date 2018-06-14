@@ -11,38 +11,43 @@ import java.io.IOException;
 public interface ClientInterface {
     String[] loginMessages() throws IOException;
 
-    void showError(String message);
+    void showMessage(String message);
 
-    int schemeMessages(String schemes) throws IOException;
+    int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4) throws IOException, InterruptedException;
 
     void printCarpetFirst(String greenCarpetjson, String playerjson);
 
-    String handleTurnMenu() throws IOException;
+    void printTool(String greenCarpetjson, String playerJson);
+
+    String handleTurnMenu() throws IOException, InterruptedException;
 
     void endTurn();
 
-    int[] placeDiceMessages() throws IOException;
+    int[] placeDiceMessages() throws IOException, InterruptedException;
 
     void schemeUpdated(String scheme);
 
-    int chooseToolMessages() throws IOException;
+    int chooseToolMessages() throws IOException, InterruptedException;
 
-    String goOnTool() throws IOException;
+    String goOnTool() throws IOException, InterruptedException;
 
-    int chooseDice() throws IOException;
+    int chooseDice() throws IOException, InterruptedException;
 
-    int[] chooseCoordinates() throws IOException;
+    int[] chooseCoordinates() throws IOException, InterruptedException;
 
-    int[] chooseFromPath() throws IOException;
+    int[] chooseFromPath() throws IOException, InterruptedException;
 
-    int chooseValue() throws IOException;
+    int chooseValue() throws IOException, InterruptedException;
 
     //ALL TOOL METHODS
-    int tool1Messages() throws IOException;
-    int[] tool23Messages() throws IOException;
-    int[] tool4Messages() throws IOException;
-    int[] tool12Messages() throws IOException;
-    int[] tool6Messages(String dice) throws IOException;
-    int[] tool11Messages(String dice) throws IOException;
+    int tool1Messages() throws IOException, InterruptedException;
+    int[] tool23Messages() throws IOException, InterruptedException;
+    int[] tool4Messages() throws IOException, InterruptedException;
+    int[] tool12Messages() throws IOException, InterruptedException;
+    int[] tool6Messages(String dice) throws IOException, InterruptedException;
+    int[] tool11Messages(String dice) throws IOException, InterruptedException;
+
+
+    void timerOut(boolean end);
 
 }
