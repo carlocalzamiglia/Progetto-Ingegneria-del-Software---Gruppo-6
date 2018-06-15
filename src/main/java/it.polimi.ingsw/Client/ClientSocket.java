@@ -73,7 +73,12 @@ public class ClientSocket {
         {
             root=leggiDaFile();
             String[] parts=root.split(":");
-            PORT=Integer.parseInt(parts[1]);
+            try {
+                PORT = Integer.parseInt(parts[1]);
+            }catch (NumberFormatException e){
+                clientInt.showMessage("Hai inserito un valore non numerico per la porta. Eseguo la disconessione.");
+                System.exit(0);
+            }
             root=parts[0];
             socket = new Socket(root, PORT);
             //canali di comunicazione
@@ -196,6 +201,7 @@ public class ClientSocket {
         ListenFromServer listenFromServer;
         String[] logindata;
         ClientSocket clientSocket;
+        int i;
         //constructor
 
         public TimerThreadSocket(int time,ListenFromServer listenFromServer) {
@@ -208,9 +214,10 @@ public class ClientSocket {
         @Override
         public void run() {
             try {
-                while (time < 20) {
+                i=0;
+                while (i < time) {
                     sleep(1000);
-                    time++;
+                    i++;
                 }
                 try {
                     clientInt.timerOut(true);
@@ -228,10 +235,10 @@ public class ClientSocket {
 
         }
         public int getTime() {
-            return time;
+            return i;
         }
         public void setTime(){
-            time=20;
+            i=90;
         }
     }
 
@@ -262,7 +269,7 @@ public class ClientSocket {
                     String [] arrOfStr = msg.split("-");
 
                     if(arrOfStr[0].equals("@SCHEME")) {
-                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(0,this);
+                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[5]),this);
                         timerThreadSocket.start();
                         int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4]);
                         if (scheme==99)
@@ -281,7 +288,7 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
                         if(arrOfStr[1].equals("true")) {
                             clientInt.timerOut(false);
-                            timerThreadSocket = new TimerThreadSocket(0, this);
+                            timerThreadSocket = new TimerThreadSocket(Integer.parseInt(arrOfStr[2]), this);
                             timerThreadSocket.start();
                             yourturn = true;
                         }

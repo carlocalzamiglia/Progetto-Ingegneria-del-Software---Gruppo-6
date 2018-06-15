@@ -78,7 +78,12 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         {
             root=leggiDaFile();
             String[] parts=root.split(":");
-            PORT=Integer.parseInt(parts[1]);
+            try {
+                PORT = Integer.parseInt(parts[1]);
+            }catch(NumberFormatException e){
+                clientInt.showMessage("Hai inserito un valore non numerico per la porta. Eseguo la disconessione.");
+                System.exit(0);
+            }
             root=parts[0];
             Registry registry = LocateRegistry.getRegistry(root,PORT);
             server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
@@ -196,8 +201,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //******************************************game methods***********************************************+
     @Override
-    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
-        TimerThread timerThread= new TimerThread(0);
+    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, int time) throws IOException, InterruptedException {
+        TimerThread timerThread= new TimerThread(time);
         timerThread.start();
         int choose=clientInt.schemeMessages(scheme1, scheme2, scheme3, scheme4);
         if(choose==99) {
@@ -212,6 +217,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     //-------------------------------------------------------------------------------------------------------------------
     class TimerThread extends Thread implements Serializable {
         int time;
+        int i;
         //constructor
 
         public TimerThread(int time) {
@@ -219,19 +225,20 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }
         @Override
         public void run(){
-            while (time<20) {
+            i=0;
+            while (i<time) {
                 try {
                     sleep(1000);
                 } catch (InterruptedException e) { }
-                time++;
+                i++;
             }clientInt.timerOut(true);
             return;
         }
         public int getTime() {
-            return time;
+            return i;
         }
         public void setTime(){
-            time=20;
+            i=90;
         }
     }
 
@@ -552,6 +559,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                 if(dicepos[0]==99)
                                     return 1;
                                 toolok = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
+                                if(toolok){
+                                    tooldice=true;
+                                }
                             } else {
                                 toolok = true;
                                 exit = true;
@@ -599,6 +609,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                     if(ruler.checkAvailableDice(dice, player.getScheme())) {
                                         checkcorrdice = ruler.checkCorrectPlacement(value[0], value[1], dice, player.getScheme());
                                         if(checkcorrdice) {
+                                            Dice dice1 = greenCarpet.getDiceFromStock(ndice);
                                             player.getScheme().setBoxes(dice, value[0], value[1]);
                                             tooldice = true;
                                         }
@@ -677,19 +688,19 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         String schemejson = gson.toJson(player.getScheme());
         clientInt.schemeUpdated(schemejson);
     }
-    public Game endTurn(GreenCarpet greenCarpet, Player player, int i) throws InterruptedException, IOException {
+    public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
         Game game =new Game(0);
-        TimerThread timerThread=new TimerThread(0);
+        TimerThread timerThread=new TimerThread(time);
         timerThread.start();
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i,timerThread);
         handleTurn.start();
-
-        while (timerThread.getTime()<20){sleep(200);}
+        while (timerThread.getTime()<90){sleep(200);}
         game.setGreenCarpet(handleTurn.getGreenCarpet());
         game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
         clientInt.timerOut(true);
         sleep(300);
         clientInt.endTurn();
+        timerThread.interrupt();
         return game;
     }
 

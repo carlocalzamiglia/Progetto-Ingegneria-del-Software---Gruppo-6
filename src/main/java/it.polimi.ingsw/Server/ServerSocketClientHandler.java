@@ -34,8 +34,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
     private Socket socket;
     private DBUsers DB;
     private Matches matches;
-    //private ObjectOutputStream outs;
-    //private ObjectInputStream ins;
     String message = "";
     String [] arrOfMsg;
     Gson gson = new GsonBuilder().create();
@@ -191,9 +189,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
 
     //********************************************* all game methods ***************************************+
 
-    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4) throws IOException, InterruptedException {
+    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, int time) throws IOException, InterruptedException {
         message="";
-        sendMessageOut("@SCHEME-"+scheme1+"-"+scheme2+"-"+scheme3+"-"+scheme4);
+        sendMessageOut("@SCHEME-"+scheme1+"-"+scheme2+"-"+scheme3+"-"+scheme4+"-"+time);
         while(!(message.equals("@SCHEME")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(300);}
         if(message.equals("@DEAD"))
             return 0;
@@ -210,11 +208,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         GreenCarpet greenCarpet;
         Player player;
         int i;
+        int time;
 
-        public HandleTurn(GreenCarpet greenCarpet, Player player, int i) {
+        public HandleTurn(GreenCarpet greenCarpet, Player player, int i, int time) {
             this.greenCarpet = greenCarpet;
             this.player = player;
             this.i = i;
+            this.time=time;
         }
 
         public GreenCarpet getGreenCarpet() {
@@ -240,7 +240,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
             String playerjson = gson.toJson(player);
 
             try {
-                sendMessageOut("@YOURTURN-true");
+                sendMessageOut("@YOURTURN-true-"+time);
                 sendMessageOut("@PRINTALL-"+greencarpetjson+"-"+playerjson);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -410,9 +410,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         sendMessageOut("@AFTERTOOLUPDATE-"+greencarpetupd+"-"+playerupd);
     }
 
-    public Game endTurn(GreenCarpet greenCarpet, Player player, int i) throws InterruptedException, IOException {
-        Game game =new Game(0);
-        HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i);
+    public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
+        Game game =new Game(time);
+        HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i, time);
         handleTurn.run();
         game.setGreenCarpet(handleTurn.getGreenCarpet());
         game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
@@ -551,7 +551,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
                                 return 0;
                             if(!message.equals("@TOOLEXIT")) {
-                                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]),6,0);
+                                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]),choice,0);
+                                int dicepos = stringToInt(arrOfMsg[1]);
                                 if(dice!=null) {
                                     if (ruler.checkAvailableDice(dice, player.getScheme())) {
                                         while (!checkcorrdice) {
@@ -565,6 +566,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
                                             message = "";
                                         }
+                                        greenCarpet.getDiceFromStock(dicepos);
                                         player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
                                         tooldice=true;
                                     }
@@ -687,6 +689,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                 return 0;
                             if(!message.equals("@TOOLEXIT")) {
                                 dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, 0);
+                                int dicepos = stringToInt(arrOfMsg[1]);
                                 if(dice!=null) {
                                     while (!checkcorrdice) {
                                         dice.setFace("");
@@ -701,6 +704,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
                                         if(ruler.checkAvailableDice(dice, player.getScheme())) {
                                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
                                             if(checkcorrdice) {
+                                                greenCarpet.getDiceFromStock(dicepos);
                                                 player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
                                                 tooldice = true;
                                             }

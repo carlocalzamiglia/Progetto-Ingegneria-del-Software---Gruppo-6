@@ -274,7 +274,7 @@ public class ToolCardsExecutor implements Serializable {
 
         if(bool) {
             if (stockPos > 0 && stockPos <= greenCarpet.getStock().size()) {
-                dice = greenCarpet.getDiceFromStock(stockPos);
+                dice = greenCarpet.checkDiceFromStock(stockPos);
                 if (serialnumber==6)
                   dice.roll();
                 else if (serialnumber==11){
