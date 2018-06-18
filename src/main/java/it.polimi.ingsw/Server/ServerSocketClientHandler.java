@@ -147,6 +147,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient, Seria
         DB.getUser(nickname).setClientHandler(null);
         if(matches.getGame(nickname).getPlaying()) {
             matches.getUser(nickname).setOnline(false);
+            matches.getGame(nickname).playerDisconnect();
             if(matches.getPlayer(nickname)!=null)
                 matches.getPlayer(nickname).setOnline(false);
         }

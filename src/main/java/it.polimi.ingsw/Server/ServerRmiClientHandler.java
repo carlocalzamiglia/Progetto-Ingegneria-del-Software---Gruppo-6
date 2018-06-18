@@ -95,6 +95,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
                 DB.getUser(nickname).setRmiClient(null);
                 if(matches.getGame(nickname).getPlaying()) {
                     matches.getUser(nickname).setOnline(false);
+                    matches.getGame(nickname).playerDisconnect();
                     if(matches.getPlayer(nickname)!=null)
                         matches.getPlayer(nickname).setOnline(false);
                 }
