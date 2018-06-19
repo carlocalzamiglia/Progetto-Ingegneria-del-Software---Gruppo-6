@@ -13,7 +13,6 @@ import java.util.Random;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 public class Game implements Serializable {
     private ArrayList<User> users;

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.ServertoClientHandler;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import it.polimi.ingsw.Game.Dice;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Player;
