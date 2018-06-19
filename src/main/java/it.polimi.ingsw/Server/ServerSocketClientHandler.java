@@ -792,11 +792,14 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     public Boolean newMatch() throws IOException, InterruptedException {
         sendMessageOut("@ENDGAMEACTION");
         while (!(message.equals("@ENDGAMEACTION"))&& !message.equals("@DEAD")) {sleep(300);}
-        if(arrOfMsg[1].equals("true"))
-            return true;
-        else{
+        if(!message.equals("@DEAD")) {
+            if (arrOfMsg[1].equals("true"))
+                return true;
+            else {
+                return false;
+            }
+        }else
             return false;
-        }
     }
 
 

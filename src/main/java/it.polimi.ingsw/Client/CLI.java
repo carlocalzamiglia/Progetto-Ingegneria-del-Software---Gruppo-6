@@ -455,6 +455,7 @@ public class CLI implements ClientInterface {
             value=in.readLine();
         }
         if(value.equals("1")){
+            System.out.println("Sei stato inserito in una nuova partita. Attendi altri giocatori.");
             return true;
         }else {
             return false;

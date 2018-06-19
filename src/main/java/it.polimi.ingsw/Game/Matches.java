@@ -2,23 +2,33 @@ package it.polimi.ingsw.Game;
 
 import it.polimi.ingsw.Server.User;
 
-import javax.jws.soap.SOAPBinding;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import static java.lang.Thread.sleep;
 
 public class Matches implements Serializable {
     private ArrayList<Game> matches;
+    private boolean lock;
 
     public Matches(){
         matches=new ArrayList<>();
+        lock=true;
     }
-    public void addUser(User user) throws IOException, InterruptedException {
+    public synchronized void addUser(User user) throws IOException, InterruptedException {
+        while(!lock){
+            try {
+                wait();
+            }catch(InterruptedException e){}
+        }
+        lock=false;
         if(!matches.isEmpty()){
             for (Game g:matches) {
                 if (!g.getPlaying() && g.getPlaying() != null) {
                     g.addUser(user);
-
+                    lock=true;
+                    notifyAll();
                     return;
                 }
             }
@@ -27,7 +37,8 @@ public class Matches implements Serializable {
         Game tmp=new Game(matches.size(), this);
         tmp.addUser(user);
         matches.add(tmp);
-
+        lock=true;
+        notifyAll();
     }
     public Game getGame(String nickname){
 
