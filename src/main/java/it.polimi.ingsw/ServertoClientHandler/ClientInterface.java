@@ -49,4 +49,8 @@ public interface ClientInterface {
 
     void timerOut(boolean end);
 
+    boolean newMatch() throws IOException;
+
+    void exit();
+
 }

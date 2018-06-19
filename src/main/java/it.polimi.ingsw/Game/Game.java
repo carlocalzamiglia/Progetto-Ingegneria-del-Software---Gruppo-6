@@ -23,14 +23,16 @@ public class Game implements Serializable {
     private int idGame;
     private int numUser;
     private int numUserOnline;
+    Matches matches;
 
-    public Game(int index){
+    public Game(int index, Matches matches){
         isPlaying=false;
         idGame=index;
         this.inventory = new Inventory() ;
         this.numUser=0;
         users=new ArrayList<>();
         player=new ArrayList<>();
+        this.matches=matches;
     }
     public void addUser(User user) throws IOException {
         if (numUser != 4) {
@@ -226,6 +228,7 @@ public class Game implements Serializable {
             calculate_result(5);
         else
             System.out.println("Nessun giocatore è più in partita.");
+        matches.deleteGame(this);
     }
 
     public void calculate_result(int singleplayer) throws IOException {
@@ -305,6 +308,7 @@ public class Game implements Serializable {
     public void playerDisconnect(){
         numUserOnline--;
     }
+
 
 
     //-------------------------------Random methods for the initialization of the match---------------------------------

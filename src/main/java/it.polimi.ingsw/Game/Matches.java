@@ -2,6 +2,7 @@ package it.polimi.ingsw.Game;
 
 import it.polimi.ingsw.Server.User;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,14 +18,16 @@ public class Matches implements Serializable {
             for (Game g:matches) {
                 if (!g.getPlaying() && g.getPlaying() != null) {
                     g.addUser(user);
+
                     return;
                 }
             }
         }
 
-        Game tmp=new Game(matches.size());
+        Game tmp=new Game(matches.size(), this);
         tmp.addUser(user);
         matches.add(tmp);
+
     }
     public Game getGame(String nickname){
 
@@ -66,5 +69,30 @@ public class Matches implements Serializable {
         return null;
     }
 
+
+    public void deleteGame(Game game) throws IOException, InterruptedException {
+        boolean result=false;
+        for(User u: game.getUsers()){
+            DeleteGameTh dg = new DeleteGameTh(u);
+            dg.start();
+        }
+        matches.remove(game);
+    }
+
+    class DeleteGameTh extends Thread{
+        User u;
+        boolean result = false;
+        public DeleteGameTh(User u){
+            this.u=u;
+        }
+        public void run(){
+            try {
+                result=u.getConnectionType().newMatch();
+                if(result){
+                    addUser(u);
+                }
+            }catch(IOException | NullPointerException | InterruptedException e){}
+        }
+    }
 
 }

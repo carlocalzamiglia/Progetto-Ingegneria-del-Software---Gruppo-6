@@ -270,7 +270,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         @Override
         public void run()  {
             clientInt.timerOut(false);
-            Game game = new Game(0);
+            Game game = new Game(0, null);
             boolean usedDice = false;
             boolean flag = true;
             int flagTool = 0;
@@ -689,7 +689,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         clientInt.schemeUpdated(schemejson);
     }
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
-        Game game =new Game(0);
+        Game game =new Game(0, null);
         TimerThread timerThread=new TimerThread(time);
         timerThread.start();
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i,timerThread);
@@ -735,5 +735,15 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             return -1;
     }
 
-
+    @Override
+    public Boolean newMatch() throws IOException {
+        boolean check;
+        check = clientInt.newMatch();
+        if(check)
+            return true;
+        else{
+            clientInt.exit();
+            return false;
+        }
+    }
 }

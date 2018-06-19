@@ -145,11 +145,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
          //       }catch(IOException e){
         DB.getUser(nickname).setOnline(false);
         DB.getUser(nickname).setClientHandler(null);
-        if(matches.getGame(nickname).getPlaying()) {
-            matches.getUser(nickname).setOnline(false);
-            matches.getGame(nickname).playerDisconnect();
-            if(matches.getPlayer(nickname)!=null)
-                matches.getPlayer(nickname).setOnline(false);
+        if(matches.getGame(nickname)!=null) {
+            if (matches.getGame(nickname).getPlaying()) {
+                matches.getUser(nickname).setOnline(false);
+                matches.getGame(nickname).playerDisconnect();
+                if (matches.getPlayer(nickname) != null)
+                    matches.getPlayer(nickname).setOnline(false);
+            }
         }
         System.out.println(nickname + " ha probabilmente perso la connessione.");
         message="@DEAD";
@@ -233,7 +235,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         @Override
         public void run(){
             boolean usedDice=false;
-            Game game= new Game(0);
+            Game game= new Game(0, null);
             int flagTool=0;
             boolean usedTool=false;
             Ruler ruler = new Ruler();
@@ -412,7 +414,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
-        Game game =new Game(time);
+        Game game =new Game(time, null);
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i, time);
         handleTurn.run();
         game.setGreenCarpet(handleTurn.getGreenCarpet());
@@ -421,6 +423,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return null;
         return game;
     }
+
+
 
 
     private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
@@ -784,6 +788,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
 
 
+    @Override
+    public Boolean newMatch() throws IOException, InterruptedException {
+        sendMessageOut("@ENDGAMEACTION");
+        while (!(message.equals("@ENDGAMEACTION"))&& !message.equals("@DEAD")) {sleep(300);}
+        if(arrOfMsg[1].equals("true"))
+            return true;
+        else{
+            return false;
+        }
+    }
 
 
 

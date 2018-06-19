@@ -93,11 +93,13 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
                 flag=false;
                 DB.getUser(nickname).setOnline(false);
                 DB.getUser(nickname).setRmiClient(null);
-                if(matches.getGame(nickname).getPlaying()) {
-                    matches.getUser(nickname).setOnline(false);
-                    matches.getGame(nickname).playerDisconnect();
-                    if(matches.getPlayer(nickname)!=null)
-                        matches.getPlayer(nickname).setOnline(false);
+                if(matches.getGame(nickname)!=null) {
+                    if(matches.getGame(nickname).getPlaying()) {
+                        matches.getUser(nickname).setOnline(false);
+                        matches.getGame(nickname).playerDisconnect();
+                        if (matches.getPlayer(nickname) != null)
+                            matches.getPlayer(nickname).setOnline(false);
+                    }
                 }
                 System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
             }

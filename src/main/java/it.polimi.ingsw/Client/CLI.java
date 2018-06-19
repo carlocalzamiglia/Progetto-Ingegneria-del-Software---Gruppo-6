@@ -445,4 +445,23 @@ public class CLI implements ClientInterface {
     public void timerOut(boolean end){
         c=end;
     }
+
+    public boolean newMatch() throws IOException {
+        String value = new String();
+        System.out.println("Inserisci '1' se vuoi giocare una nuova partita, '0' se vuoi uscire.");
+        value = in.readLine();
+        while(!value.equals("1")&& !value.equals("0")){
+            showMessage("Hai inserito un valore errato");
+            value=in.readLine();
+        }
+        if(value.equals("1")){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public void exit(){
+        System.exit(0);
+    }
 }

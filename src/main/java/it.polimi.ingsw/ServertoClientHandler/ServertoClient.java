@@ -13,4 +13,5 @@ public interface ServertoClient {
     public void sendMessageOut(String message) throws RemoteException, IOException;
     public boolean aliveMessage() throws RemoteException;
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException;
+    public Boolean newMatch() throws IOException, InterruptedException;
 }

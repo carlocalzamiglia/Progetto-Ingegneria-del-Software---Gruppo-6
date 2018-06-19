@@ -423,7 +423,18 @@ public class ClientSocket {
                         }else
                             sendMessage("@TOOLEXIT");
 
-                    } else {
+                    } else if(arrOfStr[0].equals("@ENDGAMEACTION")){
+                        boolean choose;
+                        choose = clientInt.newMatch();
+                        if(choose){
+                            sendMessage("@ENDGAMEACTION-true");
+                        }else{
+                            clientInt.exit();
+                            sendMessage("@ENDGAMEACTION-false");
+                        }
+                    }
+
+                    else {
                         System.out.println(msg);
                     }
                 }
