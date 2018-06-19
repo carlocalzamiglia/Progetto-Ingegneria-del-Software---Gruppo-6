@@ -4,7 +4,7 @@ package it.polimi.ingsw.Server;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DBUsers implements Serializable {
+public class DBUsers {
     private ArrayList<User> users;
     private static boolean synch;
 

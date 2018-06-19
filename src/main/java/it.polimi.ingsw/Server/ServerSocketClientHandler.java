@@ -4,18 +4,18 @@ package it.polimi.ingsw.Server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 
-import it.polimi.ingsw.Client.ClientRmi;
+
+
 import it.polimi.ingsw.Game.Game;
 import it.polimi.ingsw.Game.GreenCarpet;
 import it.polimi.ingsw.Game.Matches;
 import it.polimi.ingsw.Game.Ruler;
-import it.polimi.ingsw.Game.Scheme;
+
 import it.polimi.ingsw.Game.Player;
 import it.polimi.ingsw.Game.Dice;
-import it.polimi.ingsw.Game.Colour;
+
 import it.polimi.ingsw.Game.ToolCardsExecutor;
 import it.polimi.ingsw.ServertoClientHandler.ServertoClient;
 
@@ -23,14 +23,14 @@ import java.io.Serializable;
 
 import java.io.*;
 import java.net.Socket;
-import java.rmi.RemoteException;
+
 import java.util.Random;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
-import static jdk.nashorn.internal.objects.NativeMath.random;
 
-public class ServerSocketClientHandler implements Runnable,ServertoClient, Serializable {
+
+public class ServerSocketClientHandler implements Runnable,ServertoClient {
     private Socket socket;
     private DBUsers DB;
     private Matches matches;
