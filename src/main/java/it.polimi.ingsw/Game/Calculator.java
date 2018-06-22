@@ -11,87 +11,48 @@ public class Calculator implements Serializable {
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
-    public Calculator(ArrayList<Player> players, GreenCarpet greenCarpet){
-        this.players=players;
-        this.greenCarpet=greenCarpet;
+    public Calculator(ArrayList<Player> players, GreenCarpet greenCarpet) {
+        this.players = players;
+        this.greenCarpet = greenCarpet;
     }
 
     //---------------------------------Returns the points of the player-------------------------------------------------
-    public int calculate(int i){
-        int sum=0;
-            sum=sum+checkPrivate(players.get(i));
-            sum=sum-checkEmpty(players.get(i));
-            sum=sum+checkMarkers(players.get(i));
-            sum=sum+checkPublic(players.get(i),greenCarpet);
-
-
-            return sum;
+    public int calculate(int i) {
+        int sum = 0;
+        sum = sum + checkPrivate(players.get(i));
+        sum = sum - checkEmpty(players.get(i));
+        sum = sum + checkMarkers(players.get(i));
+        sum = sum + checkPublic(players.get(i), greenCarpet);
+        return sum;
 
     }
 
     //---------------------------------It calculates the point given by the Private Goal--------------------------------
-    private int checkPrivate(Player player){
-
-        int serialNumber = player.getPrivateGoal().getSerialNumber();
+    private int checkPrivate(Player player) {
         int sumPrivate = 0;
-        int z=0;
-        Ruler ruler= new Ruler();
-        switch (serialNumber) {
-            case 1:
-                for(int i=0;i<4;i++)
-                    for(int j=0; j<5;j++)
-                        if(player.getScheme().getBox(i, j).getAddedDice()!=null)
-                            if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_RED))
-                                sumPrivate=sumPrivate+ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
-                break;
-            case 2:
-                for(int i=0;i<4;i++)
-                    for(int j=0; j<5;j++)
-                        if(player.getScheme().getBox(i, j).getAddedDice()!=null)
-                            if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_YELLOW))
-                                sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
-                break;
-            case 3:
-                for(int i=0;i<4;i++)
-                    for(int j=0; j<5;j++)
-                        if(player.getScheme().getBox(i, j).getAddedDice()!=null)
-                            if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_GREEN))
-                                sumPrivate=sumPrivate+ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
-                break;
-            case 4:
-                for(int i=0;i<4;i++)
-                    for(int j=0; j<5;j++)
-                        if(player.getScheme().getBox(i, j).getAddedDice()!=null)
-                            if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_BLUE))
-                                sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
-                break;
-            case 5:
-                for(int i=0;i<4;i++)
-                    for(int j=0; j<5;j++)
-                        if(player.getScheme().getBox(i, j).getAddedDice()!=null)
-                            if(player.getScheme().getBox(i, j).getAddedDice().getColour().equals(Colour.ANSI_PURPLE))
-                                sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
-                break;
-            default:
-                break;
+        Ruler ruler = new Ruler();
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 5; j++)
+                if (player.getScheme().getBox(i, j).getAddedDice() != null)
+                    if (player.getScheme().getBox(i, j).getAddedDice().getColour().equals(player.getPrivateGoal().getColour()))
+                        sumPrivate = sumPrivate + ruler.stringtoInt(player.getScheme().getBox(i, j).getAddedDice().getFace());
 
-        }
 
-    return sumPrivate;
+        return sumPrivate;
     }
 
-    //---------------------------------It returns the remaining Markers-------------------------------------------------
-    private int checkMarkers(Player player){
+    //---------------------------------It returns the number of the remaining Markers-----------------------------------
+    private int checkMarkers(Player player) {
         return player.getMarkers().size();
     }
 
     //---------------------------------It returns the number of empty boxes in the scheme-------------------------------
-    private int checkEmpty(Player player){
-        int e=0;
+    private int checkEmpty(Player player) {
+        int e = 0;
 
-        for(int i=0;i<4;i++)
-            for(int j=0; j<5;j++)
-                if(player.getScheme().getBox(i, j).getAddedDice()==null)
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 5; j++)
+                if (player.getScheme().getBox(i, j).getAddedDice() == null)
                     e++;
         return e;
 
@@ -100,278 +61,179 @@ public class Calculator implements Serializable {
     //---------------------------------It calculates the point given by the Public Goal---------------------------------
     private int checkPublic(Player player, GreenCarpet greenCarpet) {
         int sumPublic = 0;
-        int serialNumber = 0;
-
+        int serialNumber;
         for (int i = 0; i < 3; i++) {
-            int flag = 0;
             serialNumber = greenCarpet.getPublicGoal(i).getSerialNumber();
-            switch (serialNumber) {
-                case 1:                 //Colori diversi - Riga
-
-                    for (int j = 0; j < 4; j++) {           //righe
-                        flag = 0;
-                        for (int k = 0; k < 5 && flag == 0; k++) {       //colonne
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            for (int z = k + 1; z < 5 && flag == 0; z++) {                //colori
-                                if (player.getScheme().getBox(j, z).getAddedDice() == null)
-                                    flag = 1;
-                                else {
-                                    if (!(player.getScheme().getBox(j, k).getAddedDice().getColour().equals(player.getScheme().getBox(j, z).getAddedDice().getColour()))) {
-                                    } else
-                                        flag = 1;
-                                }
-                            }
-                        }
-                        if (flag == 0)
-                            sumPublic = sumPublic + 6;
-                    }
-                    break;
-                case 2:                     //Colori diversi - Colonna
-
-                    for (int j = 0; j < 5; j++) {            //colonne
-                        flag = 0;
-                        for (int k = 0; k < 4 && flag == 0; k++) {       //righe
-                            if (player.getScheme().getBox(k, j).getAddedDice() == null)
-                                flag = 1;
-                            for (int z = k + 1; z < 4 && flag == 0; z++) {                //colori
-                                if (player.getScheme().getBox(z, j).getAddedDice() == null)
-                                    flag = 1;
-                                else {
-                                    if (!(player.getScheme().getBox(k, j).getAddedDice().getColour().equals(player.getScheme().getBox(z, j).getAddedDice().getColour()))) {
-                                    } else
-                                        flag = 1;
-                                }
-                            }
-                        }
-                        if (flag == 0)
-                            sumPublic = sumPublic + 5;
-                    }
-
-                    break;
-                case 3:
-
-                    for (int j = 0; j < 4; j++) {            //righe
-                        flag = 0;
-                        for (int k = 0; k < 5 && flag == 0; k++) {       //colonne
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            for (int z = k + 1; z < 5 && flag == 0; z++) {                //colori
-                                if (player.getScheme().getBox(j, z).getAddedDice() == null)
-                                    flag = 1;
-                                else {
-                                    if (!(player.getScheme().getBox(j, k).getAddedDice().getFace().equals(player.getScheme().getBox(j, z).getAddedDice().getFace()))) {
-                                    } else
-                                        flag = 1;
-                                }
-                            }
-                        }
-                        if (flag == 0)
-                            sumPublic = sumPublic + 5;
-                    }
-                    break;
-                case 4:
-
-
-                    for (int j = 0; j < 5; j++) {            //colonne
-                        flag = 0;
-                        for (int k = 0; k < 4 && flag == 0; k++) {       //righe
-                            if (player.getScheme().getBox(k, j).getAddedDice() == null)
-                                flag = 1;
-                            for (int z = k + 1; z < 4 && flag == 0; z++) {                //colori
-                                if (player.getScheme().getBox(z, j).getAddedDice() == null)
-                                    flag = 1;
-                                else {
-                                    if (!(player.getScheme().getBox(k, j).getAddedDice().getFace().equals(player.getScheme().getBox(z, j).getAddedDice().getFace()))) {
-                                    } else
-                                        flag = 1;
-                                }
-                            }
-                        }
-                        if (flag == 0)
-                            sumPublic = sumPublic + 4;
-                    }
-                    break;
-                case 5:
-                    int nOne = 0;
-                    int nTwo = 0;
-
-                    for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5 ; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice() != null) {
-                                if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680"))
-                                    nOne++;
-                                else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681"))
-                                    nTwo++;
-                            }
-                        }
-                    }
-                    if (nOne >= nTwo)
-                        sumPublic = sumPublic + (nTwo * 2);
-                    else
-                        sumPublic = sumPublic + (nOne * 2);
-                    break;
-                case 6:
-
-                    int nThree = 0;
-                    int nFour = 0;
-                    for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice() != null) {
-                                if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682"))
-                                    nThree++;
-                                else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683"))
-                                    nFour++;
-                            }
-                        }
-                    }
-                    if (nThree >= nFour)
-                        sumPublic = sumPublic + (nFour * 2);
-                    else
-                        sumPublic = sumPublic + (nThree * 2);
-                    break;
-                case 7:
-
-                    int nFive = 0;
-                    int nSix = 0;
-
-                    for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (player.getScheme().getBox(j, k).getAddedDice() != null) {
-                                if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684"))
-                                    nFive++;
-                                else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685"))
-                                    nSix++;
-                            }
-                        }
-                    }
-                    if (nFive >= nSix)
-                        sumPublic = sumPublic + (nSix * 2);
-                    else
-                        sumPublic = sumPublic + (nFive * 2);
-                    break;
-                case 8:
-                    int noOne = 0;
-                    int noTwo = 0;
-                    int noThree = 0;
-                    int noFour = 0;
-                    int noFive = 0;
-                    int noSix = 0;
-                    int[] values = new int[6];
-                    int min;
-
-                    for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            flag=0;
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2680") && flag!=1) {
-                                noOne++;
-                                values[0] = noOne;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2681") && flag!=1) {
-                                noTwo++;
-                                values[1] = noTwo;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2682")&& flag!=1) {
-                                noThree++;
-                                values[2] = noThree;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2683")&& flag!=1) {
-                                noFour++;
-                                values[3] = noFour;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2684")&& flag!=1) {
-                                noFive++;
-                                values[4] = noFive;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getFace().equals("\u2685")&& flag!=1) {
-                                noSix++;
-                                values[5] = noSix;
-                            }
-                        }
-                    }
-
-                    min = values[0];
-
-                    for (int z = 1; z < 6; z++) {
-                        if (min >= values[z])
-                            min = values[z];
-                    }
-
-                    sumPublic = sumPublic + min * 5;
-                    break;
-                case 9:
-
-                    Scheme testScheme = new Scheme(0);
-
-                    for (int j = 0; j < 3; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (k == 0 && player.getScheme().getBox(j, k).getAddedDice()!=null)
-                                checkRight(testScheme, player.getScheme(), j, k);
-                            else if (k == 4 && player.getScheme().getBox(j, k).getAddedDice()!=null)
-                                checkLeft(testScheme, player.getScheme(), j, k);
-                            else if (player.getScheme().getBox(j, k).getAddedDice()!=null) {
-                                checkRight(testScheme, player.getScheme(), j, k);
-                                checkLeft(testScheme, player.getScheme(), j, k);
-                            }
-                        }
-                    }
-                    sumPublic = sumPublic + schemeCount(testScheme);
-                    break;
-                case 10:
-
-                    int nReds = 0;
-                    int nGreens = 0;
-                    int nYellows = 0;
-                    int nBlues = 0;
-                    int nPurples = 0;
-                    int[] nColors = new int[5];
-                    int minimum;
-
-                    for (int j = 0; j < 4; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            flag=0;
-                            if (player.getScheme().getBox(j, k).getAddedDice() == null)
-                                flag = 1;
-                            else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_PURPLE)&& flag!=1) {
-                                nPurples++;
-                                nColors[0] = nPurples;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_BLUE)&& flag!=1) {
-                                nBlues++;
-                                nColors[1] = nBlues;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_YELLOW)&& flag!=1) {
-                                nYellows++;
-                                nColors[2] = nYellows;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_RED)&& flag!=1) {
-                                nReds++;
-                                nColors[3] = nReds;
-                            } else if (player.getScheme().getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_GREEN)&& flag!=1) {
-                                nGreens++;
-                                nColors[4] = nGreens;
-                            }
-                        }
-                    }
-
-                    minimum = nColors[0];
-
-                    for (int z = 1; z < 5; z++) {
-                        if (minimum >= nColors[z])
-                            minimum = nColors[z];
-                    }
-
-                    sumPublic = sumPublic + minimum * 4;
-                    break;
-                default:
-                    break;
-
-            }
+            if (serialNumber >= 1 && serialNumber <= 4)
+                sumPublic = sumPublic + checkRowOrCol(serialNumber, player.getScheme(), (serialNumber / 3) + 1);
+            else if (serialNumber >= 5 && serialNumber <= 7)
+                sumPublic = sumPublic + countPoints(((serialNumber - 5) * 2) + 1, countOccurrences(player.getScheme()));
+            else if (serialNumber == 8) {
+                int min = findMin(countOccurrences(player.getScheme()));
+                sumPublic = sumPublic + (min * 5);
+            } else if (serialNumber == 9)
+                sumPublic = sumPublic + countPublicN9(player.getScheme());
+            else if (serialNumber == 10)
+                sumPublic = sumPublic + countPublicN10(player.getScheme());
         }
-
         return sumPublic;
     }
 
-    //---------------------------------Method for the conversion of the faces into numbers------------------------------
+    //-----------method that checks whether a row or a column has a repeated color or a repeated face-------------------
+    private int checkRowOrCol(int serialnumber, Scheme scheme, int code) {
+        boolean flag;
+        int limit = 0;
+        int reps = 0;
+        int sumPublic = 0;
+        int code2 = (serialnumber % 2);
+        int counter1;
+        int counter2;
+        int counter3;
+        int[] j = new int[2];
+        int z;
+        int k;
+        if (serialnumber == 1 || serialnumber == 3) {
+            reps = 4;
+            limit = 5;
+        } else if (serialnumber == 2 || serialnumber == 4) {
+            reps = 5;
+            limit = 4;
+        }
+        for (counter1 = 0; counter1 < reps; counter1++) {           //rows
+            flag = true;
+            for (counter2 = 0; counter2 < limit && flag; counter2++) {//columns
+                if (code2 == 0) {
+                    j[0] = counter2;
+                    k = counter1;
+                } else {
+                    j[0] = counter1;
+                    j[1] = counter1;
+                    k = counter2;
+                }
+                if (scheme.getBox(j[0], k).getAddedDice() == null)
+                    flag = false;
+                for (counter3 = counter2 + 1; counter3 < limit && flag; counter3++) {                //colors
+                    if (code2 == 0) {
+                        j[1] = counter3;
+                        z = counter1;
+                    } else
+                        z = counter3;
+                    if (scheme.getBox(j[1], z).getAddedDice() == null)
+                        flag = false;
+                    else {
+                        if (code == 1) {
+                            if ((scheme.getBox(j[0], k).getAddedDice().getColour().equals(scheme.getBox(j[1], z).getAddedDice().getColour())))
+                                flag = false;
+                        } else if (code == 2) {
+                            if ((scheme.getBox(j[0], k).getAddedDice().getFace().equals(scheme.getBox(j[1], z).getAddedDice().getFace())))
+                                flag = false;
+                        }
+                    }
+                }
+            }
+            if (flag && serialnumber == 1)
+                sumPublic = sumPublic + 6;
+            else if (flag && (serialnumber == 2 || serialnumber == 3))
+                sumPublic = sumPublic + 5;
+            else if (flag && serialnumber == 4)
+                sumPublic = sumPublic + 4;
+        }
+        return sumPublic;
+    }
 
+    //---------------------------------returns the occurrences of every dice in the scheme------------------------------
+    private int[] countOccurrences(Scheme scheme) {
+        int[] values = new int[6];
+        for (int i = 0; i < 6; i++)
+            values[i] = 0;
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 5; k++) {
+                if (scheme.getBox(j, k).getAddedDice() == null) ;
+                else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2680")) {
+                    values[0]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2681")) {
+                    values[1]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2682")) {
+                    values[2]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2683")) {
+                    values[3]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2684")) {
+                    values[4]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2685")) {
+                    values[5]++;
+                }
+            }
+        }
+        return values;
+    }
+
+    //-------------------------------return the points assigned by the public goals 5,6,7-------------------------------
+    private int countPoints(int code, int[] values) {
+        int points;
+        if (values[code - 1] >= values[code])
+            points = (values[code] * 2);
+        else
+            points = (values[code - 1] * 2);
+
+        return points;
+    }
+
+    //---------------------------------------returns the minimum value of an array--------------------------------------
+    private int findMin(int[] occurrences) {
+        int min = occurrences[0];
+        for (int z = 1; z < occurrences.length; z++) {
+            if (min >= occurrences[z])
+                min = occurrences[z];
+        }
+        return min;
+    }
+
+    //--------------------------------------Implementation of the rule of public goal n9--------------------------------
+    private int countPublicN9(Scheme scheme) {
+        Scheme testScheme = new Scheme(0);
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 5; k++) {
+                if (k == 0 && scheme.getBox(j, k).getAddedDice() != null)
+                    checkRight(testScheme, scheme, j, k);
+                else if (k == 4 && scheme.getBox(j, k).getAddedDice() != null)
+                    checkLeft(testScheme, scheme, j, k);
+                else if (scheme.getBox(j, k).getAddedDice() != null) {
+                    checkRight(testScheme, scheme, j, k);
+                    checkLeft(testScheme, scheme, j, k);
+                }
+            }
+        }
+        return schemeCount(testScheme);
+    }
+
+    //--------------------------------------Implementation of the rule of public goal n10-------------------------------
+    private int countPublicN10(Scheme scheme) {
+        int[] nColors = new int[5];
+        int minimum;
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 5; k++) {
+                if (scheme.getBox(j, k).getAddedDice() == null) ;
+                else if (scheme.getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_PURPLE)) {
+                    nColors[0]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_BLUE)) {
+                    nColors[1]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_YELLOW)) {
+                    nColors[2]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_RED)) {
+                    nColors[3]++;
+                } else if (scheme.getBox(j, k).getAddedDice().getColour().equals(Colour.ANSI_GREEN)) {
+                    nColors[4]++;
+                }
+            }
+        }
+        minimum = findMin(nColors);
+        return (minimum * 4);
+
+    }
 
     //---------------------------------Check color of the right box-----------------------------------------------------
-    private void checkRight(Scheme testScheme, Scheme playerScheme, int row, int col){
-        if(playerScheme.getBox(row+1, col+1).getAddedDice()!=null) {
+    private void checkRight(Scheme testScheme, Scheme playerScheme, int row, int col) {
+        if (playerScheme.getBox(row + 1, col + 1).getAddedDice() != null) {
             if (playerScheme.getBox(row, col).getAddedDice().getColour().equals(playerScheme.getBox(row + 1, col + 1).getAddedDice().getColour())) {
                 testScheme.setBoxes(playerScheme.getBox(row, col).getAddedDice(), row, col);
                 testScheme.setBoxes(playerScheme.getBox(row + 1, col + 1).getAddedDice(), row + 1, col + 1);
@@ -380,8 +242,8 @@ public class Calculator implements Serializable {
     }
 
     //---------------------------------Check color of the left box------------------------------------------------------
-    private void checkLeft(Scheme testScheme, Scheme playerScheme, int row, int col){
-        if(playerScheme.getBox(row+1, col-1).getAddedDice()!=null) {
+    private void checkLeft(Scheme testScheme, Scheme playerScheme, int row, int col) {
+        if (playerScheme.getBox(row + 1, col - 1).getAddedDice() != null) {
             if (playerScheme.getBox(row, col).getAddedDice().getColour().equals(playerScheme.getBox(row + 1, col - 1).getAddedDice().getColour())) {
                 testScheme.setBoxes(playerScheme.getBox(row, col).getAddedDice(), row, col);
                 testScheme.setBoxes(playerScheme.getBox(row + 1, col - 1).getAddedDice(), row + 1, col - 1);
@@ -390,20 +252,18 @@ public class Calculator implements Serializable {
     }
 
     //---------------------------------Method that returns the number of dices in the scheme----------------------------
-    private int schemeCount(Scheme testScheme){
+    private int schemeCount(Scheme testScheme) {
 
-        int sum=0;
-        for(int j=0;j<4;j++) {
+        int sum = 0;
+        for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 5; k++) {
-                if(testScheme.getBox(j,k).getAddedDice()!=null)
-                    sum=sum+1;
+                if (testScheme.getBox(j, k).getAddedDice() != null)
+                    sum = sum + 1;
 
             }
         }
 
         return sum;
     }
-
-
 
 }

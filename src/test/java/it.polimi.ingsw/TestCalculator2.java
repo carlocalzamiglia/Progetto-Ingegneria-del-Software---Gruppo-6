@@ -44,21 +44,19 @@ class TestCalculator2 {
         }
 
 
-
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(a),inventory.getPublicGoal(b),inventory.getPublicGoal(c));
-
-        for(int i=0;i<4;i++) {
-            for (int j = 0; j < 4; j++) {
-                Dice d = inventory.getDiceBucket().educe();
-                d.roll();
-                players.get(0).getScheme().setBoxes(d, i, j);
+            greenCarpet.setPublicGoals(inventory.getPublicGoal(a), inventory.getPublicGoal(b), inventory.getPublicGoal(c));
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 5; j++) {
+                    Dice d = inventory.getDiceBucket().educe();
+                    d.roll();
+                    players.get(0).getScheme().setBoxes(d, i, j);
+                }
             }
-        }
-        greenCarpet.dump();
-        players.get(0).dump();
-        Calculator calculator=new Calculator(players,greenCarpet);
-        int pointPlayerCesna=calculator.calculate(0);
-        System.out.println(pointPlayerCesna);
+            greenCarpet.dump();
+            players.get(0).dump();
+            Calculator calculator = new Calculator(players, greenCarpet);
+            int pointPlayerCesna = calculator.calculate(0);
+            System.out.println(pointPlayerCesna);
 
     }
 
