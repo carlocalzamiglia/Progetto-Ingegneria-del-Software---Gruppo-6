@@ -15,9 +15,8 @@ public class TestDiceBucket {
         for(int i=0; i<22; i++){
             Dice d=bag.educe();
             d.roll();
-            System.out.println(d);
+            d.dump();
         }
-        System.out.println("ciao");
         bag.dump();
 
     }
@@ -31,7 +30,7 @@ public class TestDiceBucket {
         for(int i=0;i<6;i++){
             diceArray[i]=bag.educe();
             diceArray[i].roll();
-            System.out.print(i+1+") "+diceArray[i]+" ");
+            System.out.print(i+1+") "+diceArray[i].toString()+" ");
         }
         System.out.println();
         System.out.println(bridge);

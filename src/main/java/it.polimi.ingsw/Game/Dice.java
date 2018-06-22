@@ -18,7 +18,9 @@ public class Dice implements Serializable {
     public Dice(Colour colour){
         this.colour=colour;
     }
-
+    public String[] getFaces(){
+        return faces;
+    }
     //-----------------------------------------------Getters and Setters------------------------------------------------
     public void setColour(Colour colour) {
         this.colour = colour;
@@ -52,25 +54,9 @@ public class Dice implements Serializable {
 
     public String faceToNo(){
         String s = null;
-
-        if (face.equals("\u2680")) {
-            s = "1";
-        }
-        if (face.equals("\u2681")) {
-            s = "2";
-        }
-        if (face.equals("\u2682")) {
-            s = "3";
-        }
-        if (face.equals("\u2683")) {
-            s = "4";
-        }
-        if (face.equals("\u2684")) {
-            s = "5";
-        }
-        if (face.equals("\u2685")) {
-            s = "6";
-        }
+        for (int i=0;i<faces.length;i++)
+            if (face.equals(faces[i]))
+                s=""+(i+1)+"";
         return s;
     }
 

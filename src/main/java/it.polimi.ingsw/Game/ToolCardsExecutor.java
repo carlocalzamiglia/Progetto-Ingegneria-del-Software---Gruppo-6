@@ -327,9 +327,7 @@ public class ToolCardsExecutor implements Serializable {
 
     //---------------------------------------Returns true if the row and col are in the scheme--------------------------
     private boolean checkCoordinate(int row,int col){
-        if(row >= 0 && row <= 3 && col >= 0 && col <= 4)
-            return true;
-        return false;
+        return (row >= 0 && row <= 3 && col >= 0 && col <= 4);
     }
     //-----------------------------------------------Conversion methods-------------------------------------------------
     private void setOppositeFace(Dice dice){

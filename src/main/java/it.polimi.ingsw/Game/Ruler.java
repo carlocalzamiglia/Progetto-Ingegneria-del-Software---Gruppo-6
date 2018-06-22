@@ -14,17 +14,15 @@ public class Ruler implements Serializable {
             this.scheme = scheme;
             this.dice = dice;
             if (row < 0 || row > 3 || col < 0 || col > 4) {
-                isCorrect = false;
-                return isCorrect;
+                return false;
             }
-            if (scheme.isEmpty() == true) {
-                if (row != 0 && row != 3 && col != 0 && col != 4) {
+            if (scheme.isEmpty()) {
+                if (row != 0 && row != 3 && col != 0 && col != 4)
                     isCorrect = false;
-                }
-                else if (checkBox(row, col) == false) {
-                    isCorrect = false;
-                }
-            } else {
+                else
+                    isCorrect = checkBox(row,col);
+            }
+            else {
                 isCorrect = checkBox(row, col);
                 if (isCorrect)
                     isCorrect = checkNeighbors(row, col);
@@ -60,7 +58,7 @@ public class Ruler implements Serializable {
         }
 
         //---------------------------Method that returns true if a dice can be placed in a specific box-----------------
-        public boolean checkBox(int row, int col) {
+        private boolean checkBox(int row, int col) {
             boolean bool = true;
             if (scheme.getBox(row, col).getAddedDice() == null) {
                 if (scheme.getBox(row, col).getRestrictionColour() != null) {
@@ -82,13 +80,12 @@ public class Ruler implements Serializable {
         }
 
         //---------------------------Method that controls neighborhood restriction of a dice in a specific box----------
-        public boolean checkNeighbors(int row, int col) {
-            boolean bool = true;
-            int flag = 0;
+        private boolean checkNeighbors(int row, int col) {
+            /*boolean bool = true;
             if(checkNeighborsColours(row,col,dice,scheme)&&checkNeighborsFaces(row,col,dice,scheme)&&!checkEmptyNeighbors(row,col,scheme));
             else
-                bool=false;
-            return bool;
+                bool=false;*/
+            return (checkNeighborsColours(row,col,dice,scheme)&&checkNeighborsFaces(row,col,dice,scheme)&&!checkEmptyNeighbors(row,col,scheme));
         }
 
         //---------------------------Method that controls that a specific box has no neighbors--------------------------
@@ -134,48 +131,30 @@ public class Ruler implements Serializable {
             boolean bool = true;
             int flag = 0;
             if (scheme.isEmpty())
-                return bool;
-            if (col - 1 >= 0)
-                if (scheme.getBox(row, col - 1).getAddedDice() != null) {
-                    if (scheme.getBox(row, col - 1).getAddedDice().getFace().equals(dice.getFace()))
-                        bool = false;
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && bool)
-                if (scheme.getBox(row, col + 1).getAddedDice() != null) {
-                    if (scheme.getBox(row, col + 1).getAddedDice().getFace().equals(dice.getFace()))
-                        bool = false;
-                    flag = 1;
-                }
-            if (row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col).getAddedDice() != null) {
-                    flag = 1;
-                    if (scheme.getBox(row - 1, col).getAddedDice().getFace().equals(dice.getFace()))
-                        bool = false;
-                }
-            if (row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col).getAddedDice() != null) {
-                    flag = 1;
-                    if (scheme.getBox(row + 1, col).getAddedDice().getFace().equals(dice.getFace()))
-                        bool = false;
-                }
-            if (col - 1 >= 0 && row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col - 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col - 1 >= 0 && row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col - 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col + 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col + 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (flag == 0 && bool)
+                return true;
+            if (col - 1 >= 0 && scheme.getBox(row, col - 1).getAddedDice() != null) {
+                if (scheme.getBox(row, col - 1).getAddedDice().getFace().equals(dice.getFace()))
+                    bool = false;
+                flag = 1;
+            }
+            if (col + 1 <= 4 && bool && scheme.getBox(row, col + 1).getAddedDice() != null) {
+                if (scheme.getBox(row, col + 1).getAddedDice().getFace().equals(dice.getFace()))
+                    bool = false;
+                flag = 1;
+            }
+            if (row - 1 >= 0 && bool && scheme.getBox(row - 1, col).getAddedDice() != null){
+                flag = 1;
+                if (scheme.getBox(row - 1, col).getAddedDice().getFace().equals(dice.getFace()))
+                    bool = false;
+            }
+            if (row + 1 <= 3 && bool && scheme.getBox(row + 1, col).getAddedDice() != null) {
+                flag = 1;
+                if (scheme.getBox(row + 1, col).getAddedDice().getFace().equals(dice.getFace()))
+                    bool = false;
+            }
+            if (flag==0)
+                  flag=checkDiagonallyNeighbors(scheme,row,col);
+            if (flag == 0)
                 bool = false;
             return bool;
 
@@ -186,55 +165,50 @@ public class Ruler implements Serializable {
             boolean bool = true;
             int flag = 0;
             if (scheme.isEmpty())
-                return bool;
-            if (col - 1 >= 0)
-                if (scheme.getBox(row, col - 1).getAddedDice() != null) {
-                    if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
-                        bool = false;
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && bool)
-                if (scheme.getBox(row, col + 1).getAddedDice() != null) {
-                    if (scheme.getBox(row, col + 1).getAddedDice().getColour().equals(dice.getColour()))
-                        bool = false;
-                    flag = 1;
-                }
-            if (row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col).getAddedDice() != null) {
-                    flag = 1;
-                    if (scheme.getBox(row - 1, col).getAddedDice().getColour().equals(dice.getColour()))
-                        bool = false;
-                }
-            if (row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col).getAddedDice() != null) {
-                    flag = 1;
-                    if (scheme.getBox(row + 1, col).getAddedDice().getColour().equals(dice.getColour()))
-                        bool = false;
-                }
-            if (col - 1 >= 0 && row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col - 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col - 1 >= 0 && row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col - 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && row - 1 >= 0 && bool)
-                if (scheme.getBox(row - 1, col + 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (col + 1 <= 4 && row + 1 <= 3 && bool)
-                if (scheme.getBox(row + 1, col + 1).getAddedDice() != null) {
-                    flag = 1;
-                }
-            if (flag == 0 && bool)
+                return true;
+            if (col - 1 >= 0 && scheme.getBox(row, col - 1).getAddedDice() != null) {
+                if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
+                    bool = false;
+                flag = 1;
+            }
+            if (col + 1 <= 4 && bool && scheme.getBox(row, col + 1).getAddedDice() != null) {
+                if (scheme.getBox(row, col + 1).getAddedDice().getColour().equals(dice.getColour()))
+                    bool = false;
+                flag = 1;
+            }
+            if (row - 1 >= 0 && bool && scheme.getBox(row - 1, col).getAddedDice() != null) {
+                flag = 1;
+                if (scheme.getBox(row - 1, col).getAddedDice().getColour().equals(dice.getColour()))
+                    bool = false;
+            }
+            if (row + 1 <= 3 && bool && scheme.getBox(row + 1, col).getAddedDice() != null) {
+                flag = 1;
+                if (scheme.getBox(row + 1, col).getAddedDice().getColour().equals(dice.getColour()))
+                    bool = false;
+            }
+            if (flag==0)
+                flag=checkDiagonallyNeighbors(scheme,row,col);
+            if (flag == 0)
                 bool = false;
             return bool;
         }
 
+        //---------------------------------check if there are diagonally adjacent dice----------------------------------
+        private int checkDiagonallyNeighbors(Scheme scheme,int row,int col){
+            int flag=0;
+            if (col - 1 >= 0 && row - 1 >= 0 && scheme.getBox(row - 1, col - 1).getAddedDice() != null)
+                    flag = 1;
+            if (col - 1 >= 0 && row + 1 <= 3 && scheme.getBox(row + 1, col - 1).getAddedDice() != null)
+                    flag = 1;
+            if (col + 1 <= 4 && row - 1 >= 0 && scheme.getBox(row - 1, col + 1).getAddedDice() != null)
+                    flag = 1;
+            if (col + 1 <= 4 && row + 1 <= 3 && scheme.getBox(row + 1, col + 1).getAddedDice() != null)
+                    flag = 1;
+                return flag;
+        }
+
         //---------------------------Returns the number of dices in the scheme------------------------------------------
         public int schemeCount(Scheme testScheme) {
-
             int sum = 0;
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < 5; k++) {
@@ -245,68 +219,22 @@ public class Ruler implements Serializable {
             return sum;
         }
 
-        //---------------------------check if the stock respetc the restriction of the tool card number 9---------------
-        public boolean checkRulesTool9(GreenCarpet greenCarpet,Player player) {
-            boolean bool = false;
-            Dice dice;
-            for (int i = 0; i < greenCarpet.getStock().size()+1; i++) {
-                dice = greenCarpet.getDiceFromStock(i+1);
-                for (int k = 0; k <= 3 && !bool; k++)
-                    for (int x = 0; x <= 4 && !bool; x++) {
-                        if (checkEmptyNeighbors(k, x, player.getScheme())) {
-                            if (player.getScheme().getBox(k, x).getRestrictionColour() != null)
-                                bool = player.getScheme().getBox(k, x).getRestrictionColour().equals(dice.getColour());
-                            else if (player.getScheme().getBox(k, x).getRestrictionValue() != null)
-                                bool = player.getScheme().getBox(k, x).getRestrictionValue().equals(dice.faceToNo());
-                            else
-                                bool = true;
-                        }
-                    }
-            }
-            return bool;
-        }
-
+        //--------------------------------converts the face of a dice into an integer-----------------------------------
         public int stringtoInt(String face){
         int i=0;
-
-        if(face.equals("\u2680")){
-            i=1;
-        }
-        if(face.equals("\u2681")){
-            i=2;
-        }
-        if(face.equals("\u2682")){
-            i=3;
-        }
-        if(face.equals("\u2683")){
-            i=4;
-        }
-        if(face.equals("\u2684")){
-            i=5;
-        }
-        if(face.equals("\u2685")){
-            i=6;
-        }
+        Dice d=new Dice(null);
+        String[] faces= d.getFaces();
+        for (int j=0;j<faces.length;j++)
+            if (face.equals(faces[j]))
+                i=j+1;
         return i;
     }
+
+    //--------------------------------converts an integer into a face of a dice-----------------------------------------
         public String intToString(int i) {
-            String s = new String();
-            if (i == 1)
-                s = "\u2680";
-            if (i == 2)
-                s = "\u2681";
-            if (i == 3)
-                s = "\u2682";
-            if (i == 4)
-                s = "\u2683";
-            if (i == 5)
-                s = "\u2684";
-            if (i == 6)
-                s = "\u2685";
-            return s;
+            Dice d= new Dice(null);
+            String[] faces= d.getFaces();
+            return faces[i-1];
         }
-
-
-
 
     }

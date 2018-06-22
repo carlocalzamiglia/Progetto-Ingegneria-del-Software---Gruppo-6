@@ -44,7 +44,7 @@ class TestCalculator2 {
         }
 
 
-            greenCarpet.setPublicGoals(inventory.getPublicGoal(a), inventory.getPublicGoal(b), inventory.getPublicGoal(c));
+            greenCarpet.setPublicGoals(inventory.getPublicGoal(5), inventory.getPublicGoal(6), inventory.getPublicGoal(7));
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 5; j++) {
                     Dice d = inventory.getDiceBucket().educe();

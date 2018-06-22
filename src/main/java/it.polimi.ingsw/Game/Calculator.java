@@ -144,24 +144,16 @@ public class Calculator implements Serializable {
     //---------------------------------returns the occurrences of every dice in the scheme------------------------------
     private int[] countOccurrences(Scheme scheme) {
         int[] values = new int[6];
+        Dice d=new Dice(null);
+        String[] faces=d.getFaces();
         for (int i = 0; i < 6; i++)
             values[i] = 0;
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 5; k++) {
-                if (scheme.getBox(j, k).getAddedDice() == null) ;
-                else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2680")) {
-                    values[0]++;
-                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2681")) {
-                    values[1]++;
-                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2682")) {
-                    values[2]++;
-                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2683")) {
-                    values[3]++;
-                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2684")) {
-                    values[4]++;
-                } else if (scheme.getBox(j, k).getAddedDice().getFace().equals("\u2685")) {
-                    values[5]++;
-                }
+                if (scheme.getBox(j, k).getAddedDice() != null)
+                    for(int z=0;z<faces.length;z++)
+                        if (scheme.getBox(j, k).getAddedDice().getFace().equals(faces[z]))
+                            values[z]++;
             }
         }
         return values;

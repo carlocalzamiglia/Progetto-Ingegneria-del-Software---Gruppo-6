@@ -10,8 +10,7 @@ public class Server {
 
     //-----------------------------------------launch the two server threads--------------------------------------------
     public static void main(String[] args) throws InterruptedException, RemoteException {
-
-        final DBUsers DB=new DBUsers();
+        final DBUsers DB=new DBUsers();;
         final Matches matches=new Matches();
         Thread t1;
         Thread t2;
