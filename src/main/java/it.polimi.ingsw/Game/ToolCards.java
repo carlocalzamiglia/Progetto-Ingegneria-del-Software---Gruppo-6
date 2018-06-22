@@ -1,6 +1,14 @@
 package it.polimi.ingsw.Game;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class ToolCards implements Serializable {
     private String name;
@@ -12,7 +20,94 @@ public class ToolCards implements Serializable {
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
-    public ToolCards (int serialNumber) {
+    public ToolCards(int serialNumber) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/src/main/resources/JsonFile/toolCards.json"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Gson gson = new GsonBuilder().create();
+        ArrayList<ToolCards> toolCardsFromJson = gson.fromJson(reader, new TypeToken<ArrayList<ToolCards>>() {
+        }.getType());
+
+
+        if (serialNumber < 0 || serialNumber > 12) {
+            this.name = toolCardsFromJson.get(0).getName();
+            this.colour = toolCardsFromJson.get(0).getColour();
+            this.description1 = toolCardsFromJson.get(0).getDescription1();
+            this.description2 = toolCardsFromJson.get(0).getDescription2();
+            this.serialNumber=toolCardsFromJson.get(0).getSerialNumber();
+            this.cost=toolCardsFromJson.get(0).getCost();
+
+        } else {
+            this.name = toolCardsFromJson.get(serialNumber).getName();
+            this.colour = toolCardsFromJson.get(serialNumber).getColour();
+            this.description1 = toolCardsFromJson.get(serialNumber).getDescription1();
+            this.description2 = toolCardsFromJson.get(serialNumber).getDescription2();
+            this.serialNumber=toolCardsFromJson.get(serialNumber).getSerialNumber();
+            this.cost=toolCardsFromJson.get(serialNumber).getCost();
+        }
+
+    }
+
+
+    //-----------------------------------------------Getters and setters------------------------------------------------
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public Colour getColour() {
+        return colour;
+    }
+    public String getDescription1() {
+        return description1;
+    }
+    public String getDescription2() {
+        return description2;
+    }
+    public int getSerialNumber() {
+        return serialNumber;
+    }
+    public int getCost(){
+        return cost;
+    }
+
+
+    //-----------------------------------------------Checks the serialnumber of a tool card-----------------------------
+    public boolean checkSpecial(int serialNumber){
+        if(serialNumber==1 || serialNumber==5 ||serialNumber==6 ||serialNumber==9 ||serialNumber==10 ||serialNumber==11){
+            return true;
+        }
+        else
+            return false;
+    }
+
+    //-----------------------------------------------Print methods------------------------------------------------------
+    @Override
+    public String toString() {
+        String s=new String();
+        if(colour!=null)
+            s=colour.escape()+"[]"+Colour.RESET;
+        else
+            s=s+"[?]";
+        s=s+name+"\t"+serialNumber+"\tCosto:"+cost+"\n  "+description1+". ";
+        if(description2!=null)
+            s=s+description2+"\n";
+        else
+            s=s+"\n";
+        return s;
+    }
+    public void dump(){
+        System.out.println(this);
+    }
+
+
+    /*
+    * public ToolCards (int serialNumber) {
         switch (serialNumber) {
             case 1:
                 this.name = "Pinza Sgrossatrice";
@@ -121,44 +216,5 @@ public class ToolCards implements Serializable {
                 break;
         }
 
-    }
-
-    //-----------------------------------------------Getters and setters------------------------------------------------
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-    public int getCost(){
-        return cost;
-    }
-    public int getSerialNumber() {
-        return serialNumber;
-    }
-
-    //-----------------------------------------------Checks the serialnumber of a tool card-----------------------------
-    public boolean checkSpecial(int serialNumber){
-        if(serialNumber==1 || serialNumber==5 ||serialNumber==6 ||serialNumber==9 ||serialNumber==10 ||serialNumber==11){
-            return true;
-        }
-        else
-            return false;
-    }
-
-    //-----------------------------------------------Print methods------------------------------------------------------
-    @Override
-    public String toString() {
-        String s=new String();
-        if(colour!=null)
-            s=colour.escape()+"[]"+Colour.RESET;
-        else
-            s=s+"[?]";
-        s=s+name+"\t"+serialNumber+"\tCosto:"+cost+"\n  "+description1+". ";
-        if(description2!=null)
-            s=s+description2+"\n";
-        else
-            s=s+"\n";
-        return s;
-    }
-    public void dump(){
-        System.out.println(this);
-    }
+    }*/
 }
