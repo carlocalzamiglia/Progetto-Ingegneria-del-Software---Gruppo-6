@@ -12,7 +12,7 @@ public interface ClientInterface {
 
     void showMessage(String message);
 
-    int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4) throws IOException, InterruptedException;
+    int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4, String privategoal) throws IOException, InterruptedException;
 
     void printCarpetFirst(String greenCarpetjson, String playerjson);
 
@@ -52,5 +52,7 @@ public interface ClientInterface {
     boolean newMatch() throws IOException;
 
     void exit();
+
+
 
 }

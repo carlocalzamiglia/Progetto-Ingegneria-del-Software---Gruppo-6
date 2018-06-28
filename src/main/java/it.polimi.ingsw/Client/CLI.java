@@ -1,25 +1,16 @@
 package it.polimi.ingsw.Client;
 
-import it.polimi.ingsw.Game.Game;
+import it.polimi.ingsw.Game.PrivateGoal;
 import it.polimi.ingsw.Game.GreenCarpet;
-import it.polimi.ingsw.Game.Matches;
-import it.polimi.ingsw.Game.Ruler;
 import it.polimi.ingsw.Game.Scheme;
 import it.polimi.ingsw.Game.Player;
 import it.polimi.ingsw.Game.Dice;
-import it.polimi.ingsw.Game.Colour;
-import it.polimi.ingsw.Game.ToolCardsExecutor;
 import it.polimi.ingsw.ServertoClientHandler.ClientInterface;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import static java.lang.Thread.sleep;
 
@@ -59,15 +50,17 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4) throws IOException, InterruptedException {
+    public int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4, String privategoal) throws IOException, InterruptedException {
         String message;
         Scheme scheme1class=gson.fromJson(scheme1, Scheme.class);
         Scheme scheme2class=gson.fromJson(scheme2, Scheme.class);
         Scheme scheme3class=gson.fromJson(scheme3, Scheme.class);
         Scheme scheme4class=gson.fromJson(scheme4, Scheme.class);
+        PrivateGoal privateGoal=gson.fromJson(privategoal, PrivateGoal.class);
 
         try {
             do {
+                System.out.println("Ecco il tuo obiettivo privato: "+privateGoal.toString());
                 System.out.println("Scegli uno schema:\n" + scheme1class.toString() + "\n" + scheme2class.toString() + "\n" + scheme3class.toString() + "\n" + scheme4class.toString() + "\n");
                 while(!in.ready() && !c) {sleep(200);}
                 if (!c)
@@ -79,7 +72,7 @@ public class CLI implements ClientInterface {
             } while (Integer.parseInt(message) <= 0 || Integer.parseInt(message) > 4);
         }catch (NumberFormatException e){
             this.showMessage("Hai inserito un valore errato!");
-            return schemeMessages(scheme1, scheme2, scheme3, scheme4);
+            return schemeMessages(scheme1, scheme2, scheme3, scheme4, privategoal);
         }
         if (c) {
             int i=99;
@@ -131,7 +124,11 @@ public class CLI implements ClientInterface {
             value="1";
         while(!value.equals("1")&& !value.equals("2")&& !value.equals("3")){
             showMessage("Hai inserito un valore errato");
-            value=in.readLine();
+            while(!in.ready() && !c) {sleep(200);}
+            if(!c)
+                value = in.readLine();
+            else
+                value="1";
         }
         if(c)
             value="4";
@@ -465,4 +462,6 @@ public class CLI implements ClientInterface {
     public void exit(){
         System.exit(0);
     }
+
+
 }

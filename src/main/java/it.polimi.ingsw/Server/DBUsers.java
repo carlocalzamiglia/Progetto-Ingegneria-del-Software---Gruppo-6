@@ -28,7 +28,7 @@ public class DBUsers {
                 //user already online
                 if (u.isOnline()) {
                     synch=false;
-                    notify();
+                    notifyAll();
                     return 3;
                 }
                 //user not online
@@ -36,13 +36,13 @@ public class DBUsers {
                     //wrong password
                     if (!u.getPassword().equals(password)) {
                         synch=false;
-                        notify();
+                        notifyAll();
                         return 2;
                     }//login correct
                     else {
                         u.setOnline(true);
                         synch=false;
-                        notify();
+                        notifyAll();
                         return 1;
                     }
                 }
@@ -53,7 +53,7 @@ public class DBUsers {
         //new nickname
         users.add(temp);
         synch=false;
-        notify();
+        notifyAll();
         return 0;
     }
 
@@ -80,7 +80,6 @@ public class DBUsers {
     public User getUser(String nickname) {
         for (User u : users)
             if (u.getNickname().equals(nickname)) {
-                u.getNickname().toString();
                 return u;
             }
         return null;

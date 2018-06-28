@@ -3,9 +3,11 @@ package it.polimi.ingsw.Client;
 import it.polimi.ingsw.ServertoClientHandler.ClientInterface;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.Socket;
 
 import java.io.Serializable;
+import java.net.SocketException;
 
 public class ClientSocket {
     private int PORT;
@@ -80,7 +82,12 @@ public class ClientSocket {
                 System.exit(0);
             }
             root=parts[0];
-            socket = new Socket(root, PORT);
+            try {
+                socket = new Socket(root, PORT);
+            }catch(ConnectException e2){
+                clientInt.showMessage("Il server sembra essere offline. Chiudo il programma.");
+                System.exit(0);
+            }
             //canali di comunicazione
             inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outSocket = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
@@ -269,9 +276,9 @@ public class ClientSocket {
                     String [] arrOfStr = msg.split("-");
 
                     if(arrOfStr[0].equals("@SCHEME")) {
-                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[5]),this);
+                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[6]),this);
                         timerThreadSocket.start();
-                        int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4]);
+                        int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4], arrOfStr[5]);
                         if (scheme==99)
                             return;
                         else {
@@ -442,7 +449,9 @@ public class ClientSocket {
                     clientInt.showMessage("Ops, c'è stato un problema di connessione con il socket. Riconnessione imminente.");
                     try {
                         sendMessage("@RECONNECT");
-                    } catch (IOException e1) {}
+                    }
+                    catch (IOException e1) {
+                    }
                     clientSocket.execute(logindata[0], logindata[1]);
                 }
                 catch(ClassNotFoundException e2) {
@@ -456,8 +465,10 @@ public class ClientSocket {
 
     //---------------------------------------------send message to server-----------------------------------------------
     public void sendMessage(String message) throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.writeObject(message);
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            out.writeObject(message);
+        }catch(SocketException e){}
     }
 
 

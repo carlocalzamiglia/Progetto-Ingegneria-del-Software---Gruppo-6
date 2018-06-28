@@ -16,5 +16,5 @@ public interface ServerRmiClientHandlerInt extends Remote {
     public void newUserMessage(String nickname) throws IOException;
     public void addToMatches(String username) throws IOException, InterruptedException;
     public boolean reconnectUser(String username, ClientRmiInt client) throws RemoteException;
-
+    public boolean serverConnected() throws RemoteException;
 }

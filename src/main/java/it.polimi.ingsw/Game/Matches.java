@@ -20,7 +20,7 @@ public class Matches implements Serializable {
         while(!lock){
             try {
                 wait();
-            }catch(InterruptedException e){}
+            }catch(InterruptedException e){Thread.currentThread().interrupt();}
         }
         lock=false;
         if(!matches.isEmpty()){

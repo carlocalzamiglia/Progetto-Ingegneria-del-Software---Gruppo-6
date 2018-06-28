@@ -5,6 +5,7 @@ import it.polimi.ingsw.Client.ClientRmiInt;
 import it.polimi.ingsw.Game.Matches;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -109,15 +110,20 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         return flag;
     }
 
+    public boolean serverConnected(){
+        return true;
+    }
+
 
     //--------------------------------------new client connected message------------------------------------------------
     public void newUserMessage(String nickname) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
-                if (DB.getUser(i).getConnectionType() != null)
-                    DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
-                else if (DB.getUser(i).getConnectionType() != null)
-                    DB.getUser(i).getConnectionType().sendMessageOut(nickname+" ha appena effettuato il login ed è pronto a giocare.");
+                if (DB.getUser(i).getConnectionType() != null) {
+                    try {
+                        DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                    }catch(RemoteException | SocketException e) {}
+                }
             }
         }
     }

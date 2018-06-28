@@ -59,7 +59,7 @@ public class ServerRmi implements Runnable{
         BufferedReader b = new BufferedReader(f);
         int port;
         try {
-            b.readLine();
+            String useless = b.readLine();
             port = Integer.parseInt(b.readLine());
         }finally {
             b.close();

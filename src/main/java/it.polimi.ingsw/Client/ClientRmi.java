@@ -87,6 +87,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             root=parts[0];
             Registry registry = LocateRegistry.getRegistry(root,PORT);
             server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
+            new HandleServerConnectionForRmi(this).start();
         }
         catch(Exception e)
         {
@@ -184,7 +185,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         BufferedReader b = new BufferedReader(f);
         String root;
         try {
-            b.readLine();
+            String useless = b.readLine();
             root = (b.readLine());
         }finally {
             b.close();
@@ -201,10 +202,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //******************************************game methods***********************************************+
     @Override
-    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, int time) throws IOException, InterruptedException {
+    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException {
         TimerThread timerThread= new TimerThread(time);
         timerThread.start();
-        int choose=clientInt.schemeMessages(scheme1, scheme2, scheme3, scheme4);
+        int choose=clientInt.schemeMessages(scheme1, scheme2, scheme3, scheme4, privategoal);
         if(choose==99) {
             clientInt.endTurn();
             Random random = new Random();
@@ -229,7 +230,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             while (i<time) {
                 try {
                     sleep(1000);
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException e) { Thread.currentThread().interrupt();}
                 i++;
             }clientInt.timerOut(true);
             return;
@@ -290,7 +291,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
                 if (value.equals("1")) {
                     timerThread.setTime();
@@ -303,7 +304,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                             } catch (IOException e) {
                                 e.printStackTrace();
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                Thread.currentThread().interrupt();
                             }
                             usedDice = true;
                             if (usedTool) {
@@ -320,7 +321,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
                     }
                     if (flagTool == 1) {     //used a toolcard which include dice placement
                         timerThread.setTime();
@@ -345,6 +346,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         String message;
         boolean flag;
         int choice;
+        int realchoice=2;
         do {
             choice=clientInt.chooseToolMessages();
             if(choice==0){
@@ -361,6 +363,12 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         boolean tooldice=false;
         if(choice>0 && choice<13) {
             //rembember to check if the tool chosen is inside the greencarpet.
+            if(choice==3) {
+                choice = 2;
+                realchoice = 3;
+            }
+            if(choice==2)
+                realchoice=2;
             switch (choice) {
                 case 1:     //no placement
                     while(!toolok) {
@@ -383,7 +391,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
 
 
-                case 2:
+                case 2:     //used for tool 2 & 3
                     while (!toolok) {        //used to have a correct use of the tool
                         goon=clientInt.goOnTool();
                         if(goon.equals("0"))
@@ -393,30 +401,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                             coordinates=clientInt.tool23Messages();
                             if(coordinates[0]==99)
                                 return 1;
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates);
+                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, realchoice, coordinates);
                         }else {
-                            exit = true;
                             toolok = true;
+                            exit = true;
                         }
                     }
                     break;
-                case 3:
-                    while (!toolok) {        //used to have a correct use of the tool
-                        goon=clientInt.goOnTool();
-                        if(goon.equals("0"))
-                            return 1;
-                        if(goon.equals("y")) {
-                            int[] coordinates;
-                            coordinates=clientInt.tool23Messages();
-                            if(coordinates[0]==99)
-                                return 1;
-                            toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coordinates);
-                        }else {
-                            exit = true;
-                            toolok = true;
-                        }
-                    }
-                    break;
+
                 case 4:
                     while (!toolok) {
                         goon=clientInt.goOnTool();
@@ -522,22 +514,22 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     break;
                 case 8:
                     while(!toolok) {
+                        //se 0 exit true e toolok true
+                        //se 1 return 1
+                        //se 2 ho usato la tool --> toolok=true;
+                        //se 3 --> toolok=false;
                         if(greenCarpet.getTurn()==1 && usedDice){
-                            goon=clientInt.goOnTool();
-                            if(goon.equals("0"))
+                            int methodchoice = tool89method(player, greenCarpet, choice);
+
+                            if(methodchoice==0){
+                                exit=true;
+                                toolok=true;
+                            }else if(methodchoice==1)
                                 return 1;
-                            if(goon.equals("y")){
-                                int vdice=clientInt.chooseDice();
-                                if(vdice==99)
-                                    return 1;
-                                int[] dicepos=clientInt.chooseCoordinates();
-                                if(dicepos[0]==99)
-                                    return 1;
-                                toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
-                            }else{
-                                toolok = true;
-                                exit = true;
-                            }
+                            else if(methodchoice==2)
+                                toolok=true;
+                            else
+                                toolok=false;
                         }else {
                             sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile. Ricordati di piazzare un dado prima di utilizzarla!");
                             toolok=true;
@@ -546,26 +538,24 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 9:
+                    //se 0 exit true e toolok true
+                    //se 1 return 1
+                    //se 2 ho usato la tool --> toolok=true e tooldice=true;
+                    //se 3 --> toolok=false;
                     if(!usedDice) {
                         while (!toolok) {
-                            goon = clientInt.goOnTool();
-                            if(goon.equals("0"))
+                            int methodchoice = tool89method(player, greenCarpet, choice);
+
+                            if(methodchoice==0){
+                                exit=true;
+                                toolok=true;
+                            }else if(methodchoice==1)
                                 return 1;
-                            if (goon.equals("y")) {
-                                int vdice = clientInt.chooseDice();
-                                if(vdice==99)
-                                    return 1;
-                                int[] dicepos = clientInt.chooseCoordinates();
-                                if(dicepos[0]==99)
-                                    return 1;
-                                toolok = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
-                                if(toolok){
-                                    tooldice=true;
-                                }
-                            } else {
+                            else if(methodchoice==2) {
                                 toolok = true;
-                                exit = true;
-                            }
+                                tooldice=true;
+                            }else
+                                toolok=false;
                         }
                     }else
                         sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
@@ -609,7 +599,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                     if(ruler.checkAvailableDice(dice, player.getScheme())) {
                                         checkcorrdice = ruler.checkCorrectPlacement(value[0], value[1], dice, player.getScheme());
                                         if(checkcorrdice) {
-                                            Dice dice1 = greenCarpet.getDiceFromStock(ndice);
+                                            greenCarpet.getDiceFromStock(ndice);
                                             player.getScheme().setBoxes(dice, value[0], value[1]);
                                             tooldice = true;
                                         }
@@ -667,6 +657,35 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
 
+    //-----------------------------------------TOOL METHODS-------
+
+    private int tool89method(Player player, GreenCarpet greenCarpet, int choice) throws IOException, InterruptedException {
+        String goon=clientInt.goOnTool();
+        ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
+        boolean toolok = false;
+        boolean exit = false;
+        if(goon.equals("0"))
+            return 1;
+        if(goon.equals("y")) {
+            int vdice = clientInt.chooseDice();
+            if (vdice == 99)
+                return 1;
+            int[] dicepos = clientInt.chooseCoordinates();
+            if (dicepos[0] == 99)
+                return 1;
+            toolok = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
+        }else{
+            exit = true;
+        }
+        if(exit)        //exit
+            return 0;
+        if(toolok){     //toolcard used
+            return 2;
+        }else
+            return 3;   //tool not used
+    }
+
+
     private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
         Boolean checkdice = false;
         Ruler ruler = new Ruler();
@@ -704,35 +723,17 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         return game;
     }
 
-    private int stringToInt(String message){
-        if(message.equals("0"))
-            return 0;
-        else if(message.equals("1"))
-            return 1;
-        else if(message.equals("2"))
-            return 2;
-        else if(message.equals("3"))
-            return 3;
-        else if(message.equals("4"))
-            return 4;
-        else if(message.equals("5"))
-            return 5;
-        else if(message.equals("6"))
-            return 6;
-        else if(message.equals("7"))
-            return 7;
-        else if(message.equals("8"))
-            return 8;
-        else if(message.equals("9"))
-            return 9;
-        else if(message.equals("10"))
-            return 10;
-        else if(message.equals("11"))
-            return 11;
-        else if(message.equals("12"))
-            return 12;
-        else
-            return -1;
+
+    public boolean serverAlive() throws RemoteException{
+        boolean alive;
+        try {
+            alive = server.serverConnected();
+        }catch(RemoteException e){
+            alive=false;
+            clientInt.showMessage("Il server sembra essere offline. Chiudo il programma.");
+            clientInt.exit();
+        }
+        return alive;
     }
 
     @Override

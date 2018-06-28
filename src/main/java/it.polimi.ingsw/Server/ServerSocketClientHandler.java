@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.io.*;
 import java.net.Socket;
 
+import java.net.SocketException;
+import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -169,7 +171,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
                 if (DB.getUser(i).getConnectionType() != null) {
                     sleep(1000);
-                    DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                    try {
+                        DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                    }catch(RemoteException | SocketException e){}
                 }
             }
         }
@@ -192,9 +196,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     //********************************************* all game methods ***************************************+
 
-    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, int time) throws IOException, InterruptedException {
+    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException {
         message="";
-        sendMessageOut("@SCHEME-"+scheme1+"-"+scheme2+"-"+scheme3+"-"+scheme4+"-"+time);
+        sendMessageOut("@SCHEME-"+scheme1+"-"+scheme2+"-"+scheme3+"-"+scheme4+"-"+privategoal+"-"+time);
         while(!(message.equals("@SCHEME")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(300);}
         if(message.equals("@DEAD"))
             return 0;

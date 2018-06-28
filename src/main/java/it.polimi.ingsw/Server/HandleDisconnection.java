@@ -17,14 +17,6 @@ public class HandleDisconnection extends Thread{
         //this.serverSocket=null;
     }
 
-    //---------------------------------------------constructor for Socket-----------------------------------------------
-    /*
-    public HandleDisconnection(String nickname, ServerSocketClientHandler serverSocket) throws RemoteException {
-        this.nickname=nickname;
-        this.serverSocket=serverSocket;
-        this.serverRmi=null;
-    }*/
-
     //----------------------------------------check if client is alive yet----------------------------------------------
     public void run() {
         while(alive){

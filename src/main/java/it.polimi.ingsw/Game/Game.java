@@ -34,7 +34,7 @@ public class Game implements Serializable {
         player=new ArrayList<>();
         this.matches=matches;
     }
-    public void addUser(User user) throws IOException {
+    public void addUser(User user){
         if (numUser != 4) {
             numUser++;
             numUserOnline++;
@@ -55,7 +55,7 @@ public class Game implements Serializable {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -72,7 +72,7 @@ public class Game implements Serializable {
             try {
                 GameStartonTime.sleep(10000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
             try {
                 if(isPlaying==false && numUser>1)
@@ -80,7 +80,7 @@ public class Game implements Serializable {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -124,14 +124,7 @@ public class Game implements Serializable {
                 player.setPrivateGoal(privateGoals[i]);
 
                 try {
-                    users.get(i).getConnectionType().sendMessageOut("Il tuo obiettivo privato è: " + privateGoals[i] + "\n");
-                    String[] schemesjson = getJsonSchemes(schemes[(i * 4)], schemes[(i * 4) + 1], schemes[(i * 4) + 2], schemes[(i * 4) + 3]);
-                    int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3], time);
-                    if (schemechose != 0) {
-                        player.setBridge(bridges[i]);
-                        player.setScheme(schemes[(i * 4) + schemechose - 1]);
-                        player.setMarkers();
-                    }
+                    setScheme(schemes, bridges, i, time, player);
                 } catch (IOException | NullPointerException e) {
                     users.get(i).setOnline(false);
                     player.setOnline(false);
@@ -159,28 +152,16 @@ public class Game implements Serializable {
                     if(numUserOnline>1) {
                         try {
                             if (player.get(i).getScheme() == null) {
-                                String[] schemesjson = getJsonSchemes(schemes[(i * 4)], schemes[(i * 4) + 1], schemes[(i * 4) + 2], schemes[(i * 4) + 3]);
-                                int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3], time);
-                                if (schemechose != 0) {
-                                    player.get(i).setBridge(bridges[i]);
-                                    player.get(i).setScheme(schemes[(i * 4) + schemechose - 1]);
-                                    player.get(i).setMarkers();
-                                }
+                                setScheme(schemes, bridges, i, time, player.get(i));
                             }
                             greenCarpet.setTurn(1);
-                            System.out.println("tocca a: " + users.get(i).getNickname());
-                            Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i, time);
-                            if (game != null) {
-                                this.greenCarpet = game.greenCarpet;
-                                this.player.set(i, game.getPlayer(0));
-                            }
+                            turn(i, time);
                         } catch (IOException | NullPointerException e) {
-                            users.get(i).setOnline(false);
-                            player.get(i).setOnline(false);
-                            numUserOnline--;
+                            setOffPlayer(i);
                         }
                     }else{
                         calculate_result(i);
+                        matches.deleteGame(this);
                         return;
                     }
                 }
@@ -191,28 +172,18 @@ public class Game implements Serializable {
                     if(numUserOnline>1) {
                         try {
                             if (player.get(i).getScheme() == null) {
-                                String[] schemesjson = getJsonSchemes(schemes[(i * 4)], schemes[(i * 4) + 1], schemes[(i * 4) + 2], schemes[(i * 4) + 3]);
-                                int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3], time);
-                                if (schemechose != 0) {
-                                    player.get(i).setBridge(bridges[i]);
-                                    player.get(i).setScheme(schemes[(i * 4) + schemechose - 1]);
-                                    player.get(i).setMarkers();
-                                }
+                                setScheme(schemes, bridges, i, time, player.get(i));
                             }
                             greenCarpet.setTurn(2);
                             if (player.get(i).getSecondTurn()) {
-                                System.out.println("tocca a: " + users.get(i).getNickname());
-                                Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i, time);
-                                this.greenCarpet = game.greenCarpet;
-                                this.player.set(i, game.getPlayer(0));
+                                turn(i, time);
                             }
                         } catch (IOException | NullPointerException e) {
-                            users.get(i).setOnline(false);
-                            player.get(i).setOnline(false);
-                            numUserOnline--;
+                            setOffPlayer(i);
                         }
                     }else{
                         calculate_result(i);
+                        matches.deleteGame(this);
                         return;
                     }
                 }
@@ -285,6 +256,27 @@ public class Game implements Serializable {
         return schemesjson;
     }
 
+    private void setScheme(Scheme[] schemes,Bridge[] bridges, int i, int time, Player player) throws IOException, InterruptedException {
+        String[] schemesjson = getJsonSchemes(schemes[(i * 4)], schemes[(i * 4) + 1], schemes[(i * 4) + 2], schemes[(i * 4) + 3]);
+        Gson gson = new GsonBuilder().create();
+        String privategoaljson = gson.toJson(player.getPrivateGoal());
+        int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3], privategoaljson, time);
+        if (schemechose != 0) {
+            player.setBridge(bridges[i]);
+            player.setScheme(schemes[(i * 4) + schemechose - 1]);
+            player.setMarkers();
+        }
+    }
+
+    private void turn(int i, int time) throws IOException, InterruptedException{
+        System.out.println("tocca a: " + users.get(i).getNickname());
+        Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i, time);
+        if(game!=null) {
+            this.greenCarpet = game.greenCarpet;
+            this.player.set(i, game.getPlayer(0));
+        }
+    }
+
 
     public ArrayList<User> getUsers() {
         return users;
@@ -301,8 +293,15 @@ public class Game implements Serializable {
             s=s+p.toString()+"\n";
         return s;
     }
+
     public void dump(){
         System.out.println(this);
+    }
+
+    private void setOffPlayer(int i){
+        users.get(i).setOnline(false);
+        player.get(i).setOnline(false);
+        playerDisconnect();
     }
 
     public void playerDisconnect(){
@@ -312,7 +311,7 @@ public class Game implements Serializable {
 
 
     //-------------------------------Random methods for the initialization of the match---------------------------------
-    public PrivateGoal[] getRndPrivateGoals(int numPlayer){
+    private PrivateGoal[] getRndPrivateGoals(int numPlayer){
         Random rnd=new Random();
         PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
         int index[]=new int[4];
@@ -331,7 +330,7 @@ public class Game implements Serializable {
         }
         return privateGoals;
     }
-    public Scheme[] getRndSchemes(int numPlayer){
+    private Scheme[] getRndSchemes(int numPlayer){
         Random rnd=new Random();
         Scheme [] schemes=new Scheme[numPlayer*4];
         int index[]=new int[16];
@@ -372,7 +371,7 @@ public class Game implements Serializable {
         }
         return schemes;
     }
-    public Bridge[] getRndBridges(int numPlayer) {
+    private Bridge[] getRndBridges(int numPlayer) {
         Random rnd = new Random();
         Bridge[] bridges = new Bridge[numPlayer];
         int index[] = new int[4];
@@ -393,7 +392,7 @@ public class Game implements Serializable {
     }
 
 
-    public String tableToString(Player[] playerscore){
+    private String tableToString(Player[] playerscore){
         String s=new String();
         s=s+"CLASSIFICA FINALE \n";
         for (int i=0;i<playerscore.length;i++){
@@ -414,8 +413,8 @@ public class Game implements Serializable {
         BufferedReader b = new BufferedReader(f);
         String time;
         try {
-            b.readLine();
-            b.readLine();
+            String useless=b.readLine();
+            useless=b.readLine();
             time = (b.readLine());
         }finally {
             b.close();

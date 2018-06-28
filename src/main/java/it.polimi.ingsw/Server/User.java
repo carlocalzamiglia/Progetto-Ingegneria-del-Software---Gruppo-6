@@ -22,7 +22,7 @@ public class User {
     }
 
     public void setName(String name) {
-        this.nickname = nickname;
+        this.nickname = name;
     }
 
     public void setPassword(String password) {
