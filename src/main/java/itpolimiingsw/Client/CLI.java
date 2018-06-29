@@ -466,5 +466,13 @@ public class CLI implements ClientInterface {
     @Override
     public void loginOkMessage() { }
 
+    @Override
+    public void showScore(String[] score) {
+        System.out.println("Il gioco è terminato.\n CLASSIFICA:\n");
+        for(int i=0; i<score.length; i++){
+            System.out.println(score[i]);
+        }
+    }
+
 
 }

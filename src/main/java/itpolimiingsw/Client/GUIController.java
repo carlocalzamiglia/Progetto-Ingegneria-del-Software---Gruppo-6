@@ -26,14 +26,15 @@ import static java.lang.Thread.sleep;
 public class GUIController extends Application {
     static Stage window;
 
-    StackPane pane1, pane2,pane3,pane4;
+    StackPane pane1, pane2,pane3,pane4,pane5;
     GridPane pane;
-    Scene scene1, scene2,scene3,scene4;
+    Scene scene1, scene2,scene3,scene4,scene5;
     HBox hBox= new HBox(40);
     VBox vbox = new VBox(10);
     private static boolean dicePlaceable =false;
-
-
+    private static boolean endgamechoose;
+    private static boolean newGame;
+    private static String[] scorefinal;
     private static boolean login = false;
     private static String[] loginData = new String[2];
     private static int scenechoose = 0;
@@ -59,6 +60,11 @@ public class GUIController extends Application {
         return schemechose;
     }
 
+    public static boolean getNewGameChosen() {return endgamechoose;}
+
+    public static void setNewGameChosen(boolean choose){endgamechoose=choose;}
+
+    public static boolean getNewGame(){return newGame;}
 
     public void launchgui(){
         launch();
@@ -537,6 +543,38 @@ public class GUIController extends Application {
 
     }
 
+    public void setScene5(String [] score ){
+        Label scoreL[]=new Label[score.length];
+        VBox vBoxscene5=new VBox(40);
+        Label labelTop=new Label("CLASSIFICA");
+        labelTop.setFont(new Font(200));
+        vBoxscene5.setAlignment(Pos.CENTER);
+        vBoxscene5.getChildren().add(labelTop);
+        HBox hBoxscene5=new HBox(40);
+        Button replay=new Button("Gioca ancora");
+        Button quit = new Button("LOGOUT");
+        hBoxscene5.getChildren().addAll(replay,quit);
+        for(int i=0;i<score.length;i++){
+            scoreL[i].setFont(new Font(100-(i*25)));
+            scoreL[i].setText(score[i]);
+            vBoxscene5.getChildren().add(scoreL[i]);
+        }
+        vBoxscene5.getChildren().add(hBoxscene5);
+        pane5 = new StackPane(vBoxscene5);
+        pane5.setBackground(new Background(myBI));
+        scene5 = new Scene(pane5);
+
+        replay.setOnAction(e ->{
+            endgamechoose=true;
+            newGame=true;
+        });
+        quit.setOnAction(e ->{
+            endgamechoose=true;
+            newGame=false;
+        });
+
+    }
+
     public static void loginOK() {
         scenechoose = 3;
     }
@@ -582,6 +620,11 @@ public class GUIController extends Application {
         scenechoose=4;
     }
 
+    public static void showScore(String[] score) {
+        scorefinal=score;
+        scenechoose=5;
+    }
+
     public class SceneThread extends Thread{
         private GUIController GUIController;
         public  SceneThread(GUIController GUIController){
@@ -618,9 +661,6 @@ public class GUIController extends Application {
                     try {
                         Platform.runLater(()->{
                             window.setScene(scene3);
-                            window.setMaximized(true);
-                            window.setResizable(true);
-
                         });
                     } catch (NullPointerException e) {
                     }
@@ -636,15 +676,12 @@ public class GUIController extends Application {
                     System.out.println("tavolo aggiornato");
                     Platform.runLater(()->{
                         window.setScene(scene4);
-                        window.setMaximized(true);
                     });
                 }
                 else if (scenechoose == 3){
                     GUIController.setScene2();
                     Platform.runLater(() ->{
                         window.setScene(scene2);
-                        window.setMaximized(true);
-                        window.setResizable(true);
                     });
                 }
                 else if(scenechoose==4){      //set scene 4 with buttons
@@ -654,7 +691,12 @@ public class GUIController extends Application {
                         e.printStackTrace();
                     } Platform.runLater(()->{
                         window.setScene(scene4);
-                        window.setMaximized(true);
+                    });
+                }
+                else if(scenechoose==5){
+                    GUIController.setScene5(scorefinal);
+                    Platform.runLater(() ->{
+                        window.setScene(scene5);
                     });
                 }
                 scenechoose = 0;

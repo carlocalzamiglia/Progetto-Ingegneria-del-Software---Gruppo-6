@@ -338,6 +338,11 @@ public class ClientSocket {
                         clientInt.showError("errore-"+ arrOfStr[1]);
                     }
 
+                    else if(arrOfStr[0].equals("@SHOWSCORE")){
+                        String[] scores = arrOfStr[1].split("_");
+                        clientInt.showScore(scores);
+                    }
+
                     else if(arrOfStr[0].equals("@TOOL")){
                         String choose;
                         if(!(arrOfStr[1].equals("61")) && !(arrOfStr[1].equals("91"))) {       //avoids a double check.

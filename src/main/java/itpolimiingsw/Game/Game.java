@@ -160,7 +160,6 @@ public class Game implements Serializable {
                         }
                     }else{
                         calculate_result(i);
-                        matches.deleteGame(this);
                         return;
                     }
                 }
@@ -182,7 +181,6 @@ public class Game implements Serializable {
                         }
                     }else{
                         calculate_result(i);
-                        matches.deleteGame(this);
                         return;
                     }
                 }
@@ -198,10 +196,10 @@ public class Game implements Serializable {
             calculate_result(5);
         else
             System.out.println("Nessun giocatore è più in partita.");
-        matches.deleteGame(this);
+
     }
 
-    public void calculate_result(int singleplayer) throws IOException {
+    public void calculate_result(int singleplayer) throws IOException, InterruptedException {       //AGGIUNGERE SHOWSCORE
         Calculator calculator = new Calculator(player, greenCarpet);
         //------------start calculating------------
         if(singleplayer==5) {
@@ -224,23 +222,21 @@ public class Game implements Serializable {
             System.out.println("E' appena terminata la partita con il seguente risultato:\n");
             for (int i = 0; i < numUser; i++) {
                 try {
-                    users.get(i).getConnectionType().sendMessageOut(tableToString(playerscore));
-                } catch (NullPointerException | IOException e) {
+                    users.get(i).getConnectionType().showScore(tableToString(playerscore));
+                } catch (NullPointerException e) {
                 }
             }
-            for (int i = 0; i < numUser; i++)
-                for (int j = 0; j < users.size(); j++)
-                    if (users.get(j).getNickname().equals(playerscore[i].getNickname()))
-                        try {
-                            users.get(j).getConnectionType().sendMessageOut("Ti sei posizionato " + (i + 1) + "°, complimenti!");
-                        } catch (NullPointerException | IOException e) { }
 
         }else{
             player.get(singleplayer).setPoints(calculator.calculate(singleplayer));
             try {
-                users.get(singleplayer).getConnectionType().sendMessageOut("Sei l'unico giocatore all'interno della partita. Hai vinto con " + player.get(singleplayer).getPoints() + " punti!");
-            } catch(NullPointerException | IOException e) { }
+                String[] s=new String[1];
+                s[0]="Sei l'unico giocatore all'interno della partita. Hai vinto con " + player.get(singleplayer).getPoints() + " punti!";
+                users.get(singleplayer).getConnectionType().showScore(s);
+            } catch(NullPointerException e) { }
         }
+
+        matches.deleteGame(this);
 
     }
 
@@ -391,11 +387,10 @@ public class Game implements Serializable {
     }
 
 
-    private String tableToString(Player[] playerscore){
-        String s=new String();
-        s=s+"CLASSIFICA FINALE \n";
+    private String[] tableToString(Player[] playerscore){
+        String[] s=new String[playerscore.length];
         for (int i=0;i<playerscore.length;i++){
-            s=s+(i + 1) + "°: " + playerscore[i].getNickname() + "\tPunteggio: " + playerscore[i].getPoints()+"\n";
+            s[i]=(i + 1) + "°: " + playerscore[i].getNickname() + "\tPunteggio: " + playerscore[i].getPoints()+"\n";
         }
         return s;
     }

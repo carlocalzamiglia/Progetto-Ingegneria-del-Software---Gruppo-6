@@ -744,4 +744,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             return false;
         }
     }
+
+    @Override
+    public void showScore(String[] score) {
+        clientInt.showScore(score);
+    }
 }

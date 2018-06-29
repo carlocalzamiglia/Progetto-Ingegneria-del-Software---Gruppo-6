@@ -806,7 +806,17 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return false;
     }
 
-
+    @Override
+    public void showScore(String[] score) {
+        String string=new String();
+        for (int i=0;i<score.length;i++)
+            string=string+"_"+score[i];
+        try {
+            sendMessageOut("@SHOWSCORE-"+string);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     //----------------------------------------------------support methods-----------------------------------------------

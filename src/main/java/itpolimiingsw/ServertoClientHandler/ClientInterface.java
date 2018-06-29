@@ -50,6 +50,8 @@ public interface ClientInterface {
 
     void loginOkMessage();
 
+    void showScore(String[] score);
+
 
 
 }

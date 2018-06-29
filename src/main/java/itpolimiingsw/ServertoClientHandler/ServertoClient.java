@@ -6,12 +6,14 @@ import itpolimiingsw.Game.GreenCarpet;
 import itpolimiingsw.Game.Player;
 
 import java.io.IOException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ServertoClient {
-    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException;
-    public void sendMessageOut(String message) throws RemoteException, IOException;
-    public boolean aliveMessage() throws RemoteException;
-    public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException;
-    public Boolean newMatch() throws IOException, InterruptedException;
+    int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException;
+    void sendMessageOut(String message) throws RemoteException, IOException;
+    boolean aliveMessage() throws RemoteException;
+    Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException;
+    Boolean newMatch() throws IOException, InterruptedException;
+    void showScore(String[] score) throws RemoteException;
 }

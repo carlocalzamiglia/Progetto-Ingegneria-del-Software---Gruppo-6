@@ -192,17 +192,32 @@ public class GUI implements ClientInterface {
 
     @Override
     public boolean newMatch() throws IOException {
-        return false;
+        GUIController.setNewGameChosen(false);
+        while(GUIController.getNewGameChosen()){
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        GUIController.setNewGameChosen(false);
+        return GUIController.getNewGame();
     }
 
     @Override
     public void exit() {
-
+        System.exit(0);
     }
 
     @Override
     public void loginOkMessage() {
         GUIController.loginOK();
+    }
+
+    @Override
+    public void showScore(String[] score) {
+        GUIController.showScore(score);
+
     }
 
 
