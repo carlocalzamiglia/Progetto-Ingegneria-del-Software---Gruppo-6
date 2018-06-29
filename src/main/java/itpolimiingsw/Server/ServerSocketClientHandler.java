@@ -808,9 +808,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     @Override
     public void showScore(String[] score) {
+
         String string=new String();
         for (int i=0;i<score.length;i++)
-            string=string+"_"+score[i];
+            string=string+score[i]+"_";
+
+        System.out.println(string);
         try {
             sendMessageOut("@SHOWSCORE-"+string);
         } catch (IOException e) {

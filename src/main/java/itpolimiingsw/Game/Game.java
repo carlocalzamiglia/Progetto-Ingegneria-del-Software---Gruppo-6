@@ -137,7 +137,7 @@ public class Game implements Serializable {
             }
         }
 
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < 1; j++) {
             greenCarpet.setRound(j);
             greenCarpet.setPlayer(player);
             for (int i = 0; i < numUser; i++) {
