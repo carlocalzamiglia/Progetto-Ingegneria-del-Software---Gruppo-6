@@ -193,7 +193,7 @@ public class GUI implements ClientInterface {
     @Override
     public boolean newMatch() throws IOException {
         GUIController.setNewGameChosen(false);
-        while(GUIController.getNewGameChosen()){
+        while(!GUIController.getNewGameChosen()){
             try {
                 sleep(200);
             } catch (InterruptedException e) {
@@ -217,7 +217,6 @@ public class GUI implements ClientInterface {
     @Override
     public void showScore(String[] score) {
         GUIController.showScore(score);
-
     }
 
 

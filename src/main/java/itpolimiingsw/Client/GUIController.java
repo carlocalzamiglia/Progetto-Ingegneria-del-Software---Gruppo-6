@@ -29,8 +29,7 @@ public class GUIController extends Application {
     StackPane pane1, pane2,pane3,pane4,pane5;
     GridPane pane;
     Scene scene1, scene2,scene3,scene4,scene5;
-    HBox hBox= new HBox(40);
-    VBox vbox = new VBox(10);
+
     private static boolean dicePlaceable =false;
     private static boolean endgamechoose;
     private static boolean newGame;
@@ -376,6 +375,8 @@ public class GUIController extends Application {
     public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
         //object third layout
 
+        HBox hBox= new HBox(40);
+        VBox vbox = new VBox(10);
 
         Button play = new Button("Gioca");
         play.setPrefSize(300,100);
@@ -396,6 +397,11 @@ public class GUIController extends Application {
         //vbox.prefWidthProperty().bind(hBox.widthProperty());
         //vbox.prefHeightProperty().bind(hBox.heightProperty());
         vbox.setAlignment(Pos.CENTER);
+
+        hBox.getChildren().addAll(pane, vbox);
+        pane3 = new StackPane(hBox);
+        pane3.setBackground(new Background(myBI));
+        scene3 = new Scene(pane3);
 
         play.setOnAction(e -> {
             RadioButton r1=(RadioButton)pane.getChildren().get(2);
@@ -555,6 +561,7 @@ public class GUIController extends Application {
         Button quit = new Button("LOGOUT");
         hBoxscene5.getChildren().addAll(replay,quit);
         for(int i=0;i<score.length;i++){
+            scoreL[i]=new Label();
             scoreL[i].setFont(new Font(100-(i*25)));
             scoreL[i].setText(score[i]);
             vBoxscene5.getChildren().add(scoreL[i]);
@@ -567,6 +574,11 @@ public class GUIController extends Application {
         replay.setOnAction(e ->{
             endgamechoose=true;
             newGame=true;
+
+            setScene2();
+            Platform.runLater(() ->{
+                window.setScene(scene2);
+            });
         });
         quit.setOnAction(e ->{
             endgamechoose=true;
@@ -648,16 +660,12 @@ public class GUIController extends Application {
                     } catch (IOException e) {
                         System.out.println("catch beccata");
                     }
-                    System.out.println("droga");
                     try {
                         GUIController.setScene3(pane,privateGoalJsonSt);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    hBox.getChildren().addAll(pane, vbox);
-                    pane3 = new StackPane(hBox);
-                    pane3.setBackground(new Background(myBI));
-                    scene3 = new Scene(pane3);
+
                     try {
                         Platform.runLater(()->{
                             window.setScene(scene3);
