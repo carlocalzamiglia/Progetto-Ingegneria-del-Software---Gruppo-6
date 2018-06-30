@@ -52,13 +52,11 @@ public class GreenCarpet implements Serializable {
     public PublicGoal getPublicGoal(int i) {
         return publicGoals[i];
     }
-
     public void setToolCards(ToolCards t1,ToolCards t2,ToolCards t3){
         this.toolCards[0]=t1;
         this.toolCards[1]=t2;
         this.toolCards[2]=t3;
     }
-
     public void setRndToolCards(){
         Random rnd=new Random();
         int index1=rnd.nextInt(11)+1;
@@ -73,11 +71,9 @@ public class GreenCarpet implements Serializable {
         toolCards[1]=new ToolCards(index2);
         toolCards[2]=new ToolCards(index3);
     }
-
     public ToolCards[] getToolCards(){
         return toolCards;
     }
-
     public void setStock(int numbers){
         for(int i=0; i<numbers;i++){
             Dice dice=diceBucket.educe();
@@ -85,11 +81,9 @@ public class GreenCarpet implements Serializable {
             this.stock.add(dice);
         }
     }
-
     public ArrayList<Dice> getStock(){
         return stock;
     }
-
     public void setRoundPath(int round){
         for(int i=0; stock.size()>0;i++){
             this.roundPath[i][round-1]=getDiceFromStock(1);
@@ -110,36 +104,29 @@ public class GreenCarpet implements Serializable {
         roundPath[i-1][round-1]=dice;
         setDiceInStock(d);
     }
-
     public Dice getDiceFromRoundPath(int i, int round){
         return roundPath[i-1][round-1];
     }
-
     public Dice getDiceFromStock(int i){
         Dice dice= stock.get(i-1);
         stock.remove(i-1);
         return dice;
     }
-
     public Dice checkDiceFromStock(int i){
         Dice dice = null;
         if(i>0 && i<=stock.size())
             dice = stock.get(i - 1);
         return dice;
     }
-
     public void setDiceInStock(Dice dice){
         this.stock.add(dice);
     }
-
     public ToolCards getToolCard(int i) {
         return toolCards[i-1];
     }
-
     public int getnPlayers() {
         return nPlayers;
     }
-
     public DiceBucket getDiceBucket() {
         return diceBucket;
     }
@@ -230,6 +217,15 @@ public class GreenCarpet implements Serializable {
         for (int i = 0; i < stock.size(); i++)
             s = s + (i + 1) + ")" + stock.get(i).toString() + " ";
         s = s + "\n";
+        return s;
+    }
+
+    public String toolcardToString(){
+        String s = new String();
+        s = s + "--CARTE UTENSILI--\n";
+        for (int i = 0; i < 3; i++) {
+            s = s + toolCards[i];
+        }
         return s;
     }
 

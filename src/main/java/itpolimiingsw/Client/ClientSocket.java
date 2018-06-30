@@ -339,10 +339,7 @@ public class ClientSocket {
                     }
 
                     else if(arrOfStr[0].equals("@SHOWSCORE")){
-                        String s=new String();
-                        for (int i=1;i<arrOfStr.length;i++)
-                            s=s+arrOfStr[i]+"-";
-                        String[] scores = s.split("_");
+                        String[] scores = arrOfStr[1].split("_");
                         clientInt.showScore(scores);
                     }
 

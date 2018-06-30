@@ -54,9 +54,10 @@ public class TestCalculator {
 
 
         calculator=new Calculator(players, greenCarpet);
-        for(int i=0; i<players.size();i++) {
-            punteggio1 = calculator.calculate(i);
-            System.out.println("punteggio: " + punteggio1);
+        for(int i=0; i<players.size();i++){
+            punteggio1=calculator.calculate(i);
+            System.out.println("punteggio: "+punteggio1);
+
         }
 
 

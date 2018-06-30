@@ -801,7 +801,9 @@ public class GUIController extends Application {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    System.out.println("BBB");
                 }
+                System.out.println("AA");
                 Platform.runLater(()->{
                     modify(currentmessage);
                 });

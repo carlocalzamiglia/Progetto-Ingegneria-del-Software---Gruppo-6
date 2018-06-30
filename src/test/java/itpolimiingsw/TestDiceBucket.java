@@ -1,7 +1,10 @@
 package itpolimiingsw;
 
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.Game.Bridge;
+import itpolimiingsw.Game.Dice;
+import itpolimiingsw.Game.DiceBucket;
+import itpolimiingsw.Game.Scheme;
 import org.junit.jupiter.api.Test;
 
 public class TestDiceBucket {
@@ -15,8 +18,6 @@ public class TestDiceBucket {
             d.dump();
         }
         bag.dump();
-        Dice dice=bag.educe();
-        bag.insertDice(dice);
 
     }
     @org.junit.jupiter.api.Test
@@ -33,10 +34,8 @@ public class TestDiceBucket {
         }
         System.out.println();
         System.out.println(bridge);
-    }
-    @org.junit.jupiter.api.Test
-    public void testDice(){
-        Dice d=new Dice(Colour.ANSI_YELLOW);
-        d.roll();
+
+
+
     }
 }
