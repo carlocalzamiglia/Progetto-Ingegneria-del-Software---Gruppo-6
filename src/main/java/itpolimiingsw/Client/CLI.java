@@ -270,7 +270,7 @@ public class CLI implements ClientInterface {
         int dice;
         try{
             System.out.println("Scegli il valore da assegnare al dado.");
-            while(!in.ready() && !c) {sleep(200);}
+            while(!in.ready() && !c) {sleep(200); }
             if(!c)
                 dice = Integer.parseInt(in.readLine());
             else {
