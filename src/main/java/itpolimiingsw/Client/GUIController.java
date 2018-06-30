@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,7 +28,8 @@ import static java.lang.Thread.sleep;
 public class GUIController extends Application {
     static Stage window;
 
-    StackPane pane1, pane2,pane3,pane4,pane5;
+    StackPane pane1,pane3,pane4,pane5;
+    VBox pane2;
     GridPane pane;
     Scene scene1, scene2,scene3,scene4,scene5;
 
@@ -43,13 +46,17 @@ public class GUIController extends Application {
     private static String privateGoalJsonSt;
     private GridPane myscheme=new GridPane();
     private static int[] placedice = new int[3];
-
+    private static int current;
     private static String playerScheme;
 
     private static String greencarpetJsonSt;
     private static String playerJsonSt;
 
     private static boolean dicechoose = false;
+
+
+    private static String []currentmessage;
+    private static boolean newmessage=false;
 
     public GUIController() throws FileNotFoundException {
 
@@ -88,12 +95,23 @@ public class GUIController extends Application {
     BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/image.jpg")),
             BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
             BackgroundSize.DEFAULT);
+    //final double initialSceneWidth = 2000;
+    //final double initialSceneHeight = 1000;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         window=new Stage();
         window=primaryStage;
         window.setTitle("Sagrada");
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+
+        window.setX(bounds.getMinX());
+        window.setY(bounds.getMinY());
+        window.setWidth(bounds.getWidth());
+        window.setHeight(bounds.getHeight());
+
 
 
 
@@ -196,7 +214,10 @@ public class GUIController extends Application {
 
         SceneThread sceneThread = new SceneThread(this);
         sceneThread.start();
+        MessageThread messageThread=new MessageThread(this);
+        messageThread.start();
         window.setScene(scene1);
+        current=1;
         window.setMaximized(true);
         window.show();
 
@@ -220,34 +241,48 @@ public class GUIController extends Application {
         GridPane sc2 = setScheme(s2,50,350,250);
         GridPane sc3 = setScheme(s3,50,350,250);
         GridPane sc4 = setScheme(s4,50,350,250);
-
+        Label label1=new Label(s1.getName());
+        label1.setFont(new Font(40));
+        Label label2=new Label(s2.getName());
+        label2.setFont(new Font(40));
+        Label label3=new Label(s3.getName());
+        label3.setFont(new Font(40));
+        Label label4=new Label(s4.getName());
+        label4.setFont(new Font(40));
 
 
         ToggleGroup group1=new ToggleGroup();
-        RadioButton r1=new RadioButton(s1.getName());
-        r1.setFont(new Font(20));
+        RadioButton r1=new RadioButton("\tdifficolta: "+difficultyToStr(s1.getDifficulty()));
+        r1.setFont(new Font(30));
         r1.setSelected(true);
-        RadioButton r2=new RadioButton(s2.getName());
-        r2.setFont(new Font(20));
-        RadioButton r3=new RadioButton(s3.getName());
-        r3.setFont(new Font(20));
-        RadioButton r4=new RadioButton(s4.getName());
-        r4.setFont(new Font(20));
+        RadioButton r2=new RadioButton("\tdifficolta: "+difficultyToStr(s2.getDifficulty()));
+        r2.setFont(new Font(30));
+        RadioButton r3=new RadioButton("\tdifficolta: "+difficultyToStr(s3.getDifficulty()));
+        r3.setFont(new Font(30));
+        RadioButton r4=new RadioButton("\tdifficolta: "+difficultyToStr(s4.getDifficulty()));
+        r4.setFont(new Font(30));
 
         r1.setToggleGroup(group1);
         r2.setToggleGroup(group1);
         r3.setToggleGroup(group1);
         r4.setToggleGroup(group1);
-        pane.add(sc1,0,0);
-        pane.add(sc2,1,0);
-        pane.add(r1,0,1);
-        pane.add(r2,1,1);
-        pane.add(sc3,0,2);
-        pane.add(sc4,1,2);
-        pane.add(r3,0,3);
-        pane.add(r4,1,3);
+
+        pane.add(label1,0,0);
+        pane.add(label2,1,0);
+        pane.add(sc1,0,1);
+        pane.add(sc2,1,1);
+        pane.add(r1,0,2);
+        pane.add(r2,1,2);
+        pane.add(label3,0,3);
+        pane.add(label4,1,3);
+        pane.add(sc3,0,4);
+        pane.add(sc4,1,4);
+        pane.add(r3,0,5);
+        pane.add(r4,1,5);
         pane.setAlignment(Pos.CENTER_RIGHT);
-       return pane;
+        pane .setHgap(10);
+        pane.setVgap(20);
+        return pane;
 
     }
     public GridPane setScheme(Scheme scheme,int sizeIm,int width,int height) throws IOException {
@@ -360,12 +395,13 @@ public class GUIController extends Application {
     public void setScene2(){
         //object second layout
         Label match=new Label("MATCHMAKING...");
+        Label message=new Label();
+        message.setId("#labelScene2");
         match.setFont(new Font(80));
         //second layout
-        VBox vBox=new VBox(10);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(match);
-        pane2=new StackPane(vBox);
+        pane2=new VBox(70);
+        pane2.setAlignment(Pos.CENTER);
+        pane2.getChildren().addAll(match,message);
         pane2.setBackground(new Background(myBI));
         scene2=new Scene(pane2);
 
@@ -375,8 +411,8 @@ public class GUIController extends Application {
     public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
         //object third layout
 
-        HBox hBox= new HBox(40);
-        VBox vbox = new VBox(10);
+        HBox hBox= new HBox(100);
+        VBox vbox = new VBox(20);
 
         Button play = new Button("Gioca");
         play.setPrefSize(300,100);
@@ -386,48 +422,41 @@ public class GUIController extends Application {
         PrivateGoal privateGoal=gson.fromJson(privateGoalJson,PrivateGoal.class);
         ImageView imageView1=new ImageView(numbToImage_PrG(privateGoal.getSerialNumber()));
         AnchorPane im=new AnchorPane(imageView1);
-        //im.prefWidthProperty().bind(vbox.widthProperty());
-        //im.prefHeightProperty().bind(vbox.heightProperty());
-
 
         pane.setAlignment(Pos.CENTER);
-        pane.prefWidthProperty().bind(hBox.widthProperty());
-        pane.prefHeightProperty().bind(hBox.heightProperty());
         vbox.getChildren().addAll(im,play);
-        //vbox.prefWidthProperty().bind(hBox.widthProperty());
-        //vbox.prefHeightProperty().bind(hBox.heightProperty());
         vbox.setAlignment(Pos.CENTER);
-
         hBox.getChildren().addAll(pane, vbox);
+        hBox.setAlignment(Pos.CENTER);
         pane3 = new StackPane(hBox);
         pane3.setBackground(new Background(myBI));
         scene3 = new Scene(pane3);
 
         play.setOnAction(e -> {
-            RadioButton r1=(RadioButton)pane.getChildren().get(2);
-            RadioButton r2=(RadioButton)pane.getChildren().get(3);
-            RadioButton r3=(RadioButton)pane.getChildren().get(6);
-            RadioButton r4=(RadioButton)pane.getChildren().get(7);
+            RadioButton r1=(RadioButton)pane.getChildren().get(4);
+            RadioButton r2=(RadioButton)pane.getChildren().get(5);
+            RadioButton r3=(RadioButton)pane.getChildren().get(10);
+            RadioButton r4=(RadioButton)pane.getChildren().get(11);
 
             if(r1.isSelected()){
                 System.out.println("1");
                 schemechose=1;
-                myscheme.getChildren().add(pane.getChildren().get(0));
+                myscheme.getChildren().add(pane.getChildren().get(2));
             }
             else if(r2.isSelected()){
                 System.out.println("2");
                 schemechose=2;
-                myscheme.getChildren().add(pane.getChildren().get(1));
+                myscheme.getChildren().add(pane.getChildren().get(3));
             }
             else if(r3.isSelected()){
                 System.out.println("3");
                 schemechose=3;
-                myscheme.getChildren().add(pane.getChildren().get(4));
+                myscheme.getChildren().add(pane.getChildren().get(8));
             }
             else if(r4.isSelected()){
                 System.out.println("4");
                 schemechose=4;
-                myscheme.getChildren().add(pane.getChildren().get(5));
+                myscheme.getChildren().add(pane.getChildren().get(9));
             }
             String string1="first";
             String string2="first";
@@ -437,7 +466,7 @@ public class GUIController extends Application {
                 e1.printStackTrace();
             }
             window.setScene(scene4);
-            window.setMaximized(true);
+            current=4;
             setLogin(true);
         });
 
@@ -472,12 +501,29 @@ public class GUIController extends Application {
         HBox hBox2=new HBox(40);
         VBox vbox2=new VBox(10);
         HBox hBox1=new HBox(40);
+        Button play=new Button("Piazza dado");
+        play.setFont(new Font(30));
+        play.setPrefSize(300,50);
+        play.setVisible(visible);
+        play.setAlignment(Pos.CENTER);
+        Button useTool=new Button("Usa carta");
+        useTool.setFont(new Font(30));
+        useTool.setPrefSize(300,50);
+        useTool.setAlignment(Pos.CENTER);
+        useTool.setVisible(visible);
+        Button pass=new Button("Passa");
+        pass.setPrefSize(300,50);
+        pass.setFont(new Font(30));
+        pass.setAlignment(Pos.CENTER);
+        pass.setVisible(visible);
+        VBox vbox4=new VBox(20,play,useTool,pass);
+
         if(flag==1) {
             scheme=setScheme(player.getScheme(),60,380,275);
             hBox1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250), imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250), imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
             grc=setStockAndRound(gc);
-            imageView2=new ImageView(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()));
+            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),450, 300);
             im2=new AnchorPane(imageView2);
         }
         else{
@@ -485,20 +531,14 @@ public class GUIController extends Application {
             hBox1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250), imageToImageV(numbToTool(0), 350, 250), imageToImageV(numbToTool(0), 350, 250));
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250));
         }
-        vbox2.getChildren().addAll(im2,scheme);
+        vbox2.getChildren().addAll(vbox4,im2,scheme);
         vbox2.setAlignment(Pos.CENTER);
         HBox hbox3=new HBox(10);
         hbox3.getChildren().setAll(setScheme(schemes[0],35,200,140),setScheme(schemes[1],35,200,140),setScheme(schemes[2],35,200,140));
         VBox vBox1=new VBox(10,hBox1,hBox2,hbox3);
         HBox hboxgrande=new HBox(20);
-        Button play=new Button("Posiziona dado");
-        play.setVisible(visible);
-        Button useTool=new Button("Usa carta");
-        useTool.setVisible(visible);
-        Button pass=new Button("Passa");
-        pass.setVisible(visible);
-        HBox hbox4=new HBox(20,play,useTool,pass);
-        VBox vbox5=new VBox(20,grc,hbox4);
+
+        VBox vbox5=new VBox(20,grc);
         hboxgrande.getChildren().setAll(vbox5,vbox2,vBox1);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
@@ -578,6 +618,7 @@ public class GUIController extends Application {
             setScene2();
             Platform.runLater(() ->{
                 window.setScene(scene2);
+                current=2;
             });
         });
         quit.setOnAction(e ->{
@@ -637,6 +678,35 @@ public class GUIController extends Application {
         scenechoose=5;
     }
 
+    public static void showMessages(String[] messages) {
+        currentmessage=messages;
+        Platform.runLater(()->
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERRORE");
+            alert.setHeaderText(messages[0]);
+            alert.setContentText(messages[1]);
+            alert.showAndWait();
+        });
+        newmessage=true;
+    }
+
+    private void modify(String[] messages) {
+        if(current==1){
+
+        }
+        else if(current==2){
+            String string=new String();
+            for(int i=0;i<messages.length;i++){
+                string=string+messages[i]+"\n";
+            }
+            pane2.getChildren().remove(1);
+            System.out.println("AAAAAA\n"+string+"\n");
+            Label label=new Label(string);
+            pane2.getChildren().add(label);
+        }
+    }
+
     public class SceneThread extends Thread{
         private GUIController GUIController;
         public  SceneThread(GUIController GUIController){
@@ -669,6 +739,7 @@ public class GUIController extends Application {
                     try {
                         Platform.runLater(()->{
                             window.setScene(scene3);
+                            current=3;
                         });
                     } catch (NullPointerException e) {
                     }
@@ -684,6 +755,7 @@ public class GUIController extends Application {
                     System.out.println("tavolo aggiornato");
                     Platform.runLater(()->{
                         window.setScene(scene4);
+                        current=4;
                     });
                 }
                 else if (scenechoose == 3){
@@ -705,11 +777,39 @@ public class GUIController extends Application {
                     GUIController.setScene5(scorefinal);
                     Platform.runLater(() ->{
                         window.setScene(scene5);
+                        current=5;
                     });
                 }
                 scenechoose = 0;
             }
 
+        }
+    }
+    public class MessageThread extends Thread {
+        private GUIController GUIController;
+
+        public MessageThread(GUIController GUIController) {
+            this.GUIController = GUIController;
+        }
+
+        @Override
+        public void run() {
+            while (10 > 0) {
+                while (!newmessage) {
+                    try {
+                        sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("BBB");
+                }
+                System.out.println("AA");
+                Platform.runLater(()->{
+                    modify(currentmessage);
+                });
+                newmessage=false;
+
+            }
         }
     }
     public String toStr(int numb){
@@ -750,6 +850,14 @@ public class GUIController extends Application {
 
 
 
+    }
+
+    public String difficultyToStr(int numb){
+        String string=new String();
+        for(int i=0;i<numb;i++){
+            string=string+"*";
+        }
+        return string;
     }
 }
 

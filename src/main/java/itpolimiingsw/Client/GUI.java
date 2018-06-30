@@ -50,6 +50,8 @@ public class GUI implements ClientInterface {
 
     @Override
     public void showMessage(String message) {
+        String[] messages = message.split("-");
+        GUIController.showMessages(messages);
     }
 
     @Override
