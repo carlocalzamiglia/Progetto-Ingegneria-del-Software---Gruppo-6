@@ -50,6 +50,9 @@ public class TestRuler {
         dice = diceBucket.educe();
         dice.roll();
         dice.dump();
+        int count =ruler.schemeCount(player1.getScheme());
+        System.out.println(count);
+        System.out.println(ruler.stringtoInt(dice.getFace()));
         bool = ruler.checkCorrectPlacement(1, 4, dice, player1.getScheme());
         if (bool) {
             player1.getScheme().setBoxes(dice, 1, 4);

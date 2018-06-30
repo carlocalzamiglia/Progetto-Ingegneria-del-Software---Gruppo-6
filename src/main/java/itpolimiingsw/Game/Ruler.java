@@ -81,10 +81,6 @@ public class Ruler implements Serializable {
 
         //---------------------------Method that controls neighborhood restriction of a dice in a specific box----------
         private boolean checkNeighbors(int row, int col) {
-            /*boolean bool = true;
-            if(checkNeighborsColours(row,col,dice,scheme)&&checkNeighborsFaces(row,col,dice,scheme)&&!checkEmptyNeighbors(row,col,scheme));
-            else
-                bool=false;*/
             return (checkNeighborsColours(row,col,dice,scheme)&&checkNeighborsFaces(row,col,dice,scheme)&&!checkEmptyNeighbors(row,col,scheme));
         }
 

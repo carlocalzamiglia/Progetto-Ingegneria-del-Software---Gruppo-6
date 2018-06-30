@@ -5,14 +5,22 @@ import java.util.ArrayList;
 
 public class Calculator implements Serializable {
 
-    private final ArrayList<Player> players;
-    private final GreenCarpet greenCarpet;
+    private  ArrayList<Player> players;
+    private  GreenCarpet greenCarpet;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
     public Calculator(ArrayList<Player> players, GreenCarpet greenCarpet) {
         this.players = players;
         this.greenCarpet = greenCarpet;
+    }
+
+    public void setGreenCarpet(GreenCarpet greenCarpet) {
+        this.greenCarpet = greenCarpet;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
     }
 
     //---------------------------------Returns the points of the player-------------------------------------------------

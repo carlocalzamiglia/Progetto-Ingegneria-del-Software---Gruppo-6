@@ -16,7 +16,7 @@ public class Dice implements Serializable {
     };
     //-----------------------------------------------Constructor--------------------------------------------------------
     public Dice(Colour colour){
-        this.colour=colour;
+        setColour(colour);
     }
     public String[] getFaces(){
         return faces;
@@ -49,7 +49,7 @@ public class Dice implements Serializable {
         int count = faces.length;
         Random rand = new Random();
         int index = rand.nextInt(count);
-        this.face = faces[index];
+        setFace(faces[index]);
     }
 
     public String faceToNo(){

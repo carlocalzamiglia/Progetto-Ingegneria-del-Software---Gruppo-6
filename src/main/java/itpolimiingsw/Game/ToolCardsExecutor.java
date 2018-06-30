@@ -328,7 +328,7 @@ public class ToolCardsExecutor implements Serializable {
         return (row >= 0 && row <= 3 && col >= 0 && col <= 4);
     }
     //-----------------------------------------------Conversion methods-------------------------------------------------
-    private void setOppositeFace(Dice dice){
+    public void setOppositeFace(Dice dice){
         if (dice.getFace().equals("\u2680"))
             dice.setFace("\u2685");
         else if (dice.getFace().equals("\u2681"))
