@@ -60,4 +60,17 @@ public class Dice implements Serializable {
         return s;
     }
 
+    public String getItalianColour(){
+        if(this.colour.equals(Colour.ANSI_BLUE))
+            return "BLU";
+        else if(this.colour.equals(Colour.ANSI_YELLOW))
+            return "GIALLO";
+        else if(this.colour.equals(Colour.ANSI_GREEN))
+            return "VERDE";
+        else if(this.colour.equals(Colour.ANSI_RED))
+            return "ROSSO";
+        else
+            return "VIOLA";
+    }
+
 }

@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,11 +16,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -34,6 +38,7 @@ public class GUIController extends Application {
     Scene scene1, scene2,scene3,scene4,scene5;
 
     private static boolean dicePlaceable =false;
+    private static boolean toolUsable = false;
     private static boolean endgamechoose;
     private static boolean newGame;
     private static String[] scorefinal;
@@ -44,8 +49,10 @@ public class GUIController extends Application {
     private static int schemechose;
     private static String menuaction;
     private static String privateGoalJsonSt;
+    private static String dicejsonSt;
     private GridPane myscheme=new GridPane();
     private static int[] placedice = new int[3];
+    private static int toolchose;
     private static int current;
     private static String playerScheme;
 
@@ -53,39 +60,233 @@ public class GUIController extends Application {
     private static String playerJsonSt;
 
     private static boolean dicechoose = false;
+    private static boolean toolchoose = false;
 
 
     private static String []currentmessage;
     private static boolean newmessage=false;
 
+
+    //TOOL VAR
+
+
+    //tool2-3
+    public static int[] dicetoolpos = new int[2];
+    public static boolean toolCoord = false;
+    public static boolean toolCoordDone = false;
+
+    //tool5
+    public static boolean dicePath = false;
+    public static int[] pathVal = new int[2];
+
+
+
+
+
     public GUIController() throws FileNotFoundException {
 
     }
 
+
+    //----------------------------------------------------GETTER----------------------------------------------
+
     public static int getScheme() {
         return schemechose;
+    }       //RITORNA LO SCHEMA SCELTO
+
+    public static boolean getNewGame(){return newGame;}         //RITORNA SE SI HA SCELTO PER LA FINE DELLA PARTITA
+
+    public static boolean getNewGameChosen() {return endgamechoose;}    //RITORNA LA SCELTA DI FINE PARTITA
+
+
+    public static boolean getDiceChoose(){
+        return dicechoose;
+    }       //RITORNA SE HAI SCELTO IL DADO DELLA RISERVA
+
+    public static int getDiceChosen(){                                  //RITORNA IL DADO SCELTO DALLA RISERVA
+        dicechoose=false;
+        return placedice[0];
     }
 
-    public static boolean getNewGameChosen() {return endgamechoose;}
 
-    public static void setNewGameChosen(boolean choose){endgamechoose=choose;}
 
-    public static boolean getNewGame(){return newGame;}
-
-    public void launchgui(){
-        launch();
+    public static int getTool() {                                   //RITORNA LA TOOL SCELTA
+        setLogin(false);
+        toolchoose=false;
+        return toolchose;
     }
+
+    public static boolean getToolChoose() {
+        return toolchoose;
+    }           //RITORNA SE HAI SCELTO LA TOOL DA USARE
+
     public static boolean getLogin() {
         return login;
     }
 
-    public static String[] getLoginData() {
+    public static String[] getLoginData() {                         //RITORNA I DATI DI LOGIN
         return loginData;
+    }               //RITORNA I DATI DI LOGIN
+
+    public static int[] getplaceDice() {
+        return placedice;
+    }               //RITORNA DADO SCELTO + NUOVA POSIZIONE
+
+
+
+    //getter tool
+
+    public static int getTool1Val() {   //TOOL1 VALORE INCREMENTATO O DECREMENTATO
+        AtomicInteger tool1res= new AtomicInteger();
+        tool1res.set(0);
+        Platform.runLater(() ->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Pinza Sgrossatrice");
+            alert.setContentText("Scegli un'opzione.");
+
+            ButtonType buttonTypeOne = new ButtonType("Incrementa");
+            ButtonType buttonTypeTwo = new ButtonType("Decrementa");
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+            boolean tool1=true;
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeOne) {
+                tool1res.set(1);
+            } else if (result.get() == buttonTypeTwo) {
+                tool1res.set(2);
+            }
+        });
+        while(tool1res.get()==0){
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("SCELTA: "+tool1res.get());
+        return tool1res.get();
+    }
+
+    public static int getTool11(String colour) {
+        AtomicBoolean flag= new AtomicBoolean(false);
+        AtomicInteger tool11res= new AtomicInteger();
+        tool11res.set(0);
+        System.out.println("a");
+        Platform.runLater(() ->{
+            List<Integer> choices = new ArrayList<Integer>();
+            choices.add(1);
+            choices.add(2);
+            choices.add(3);
+            choices.add(4);
+            choices.add(5);
+            choices.add(6);
+
+
+            ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(1, choices);
+            dialog.setTitle("Diluente per Pasta Salda");
+            dialog.setHeaderText("Il dado pescato è di colore: "+colour+".");
+            dialog.setContentText("Scegli il nuovo valore:");
+            dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setVisible(false);
+            Optional<Integer> result = dialog.showAndWait();
+
+            if (result.isPresent())
+                tool11res.set(result.get());
+            else
+                flag.set(true);
+        });
+        while(tool11res.get()==0 && !flag.get()){
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if(flag.get())
+            return getTool11(colour);
+        return tool11res.get();
+    }
+
+    public static int getndice12() {
+        AtomicInteger tool12res= new AtomicInteger();
+        tool12res.set(0);
+        Platform.runLater(() ->{Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog with Custom Actions");
+            alert.setHeaderText("Look, a Confirmation Dialog with Custom Actions");
+            alert.setContentText("Choose your option.");
+
+            ButtonType buttonTypeOne = new ButtonType("Uno");
+            ButtonType buttonTypeTwo = new ButtonType("Due");
+
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeOne){
+                tool12res.set(1);
+            } else if (result.get() == buttonTypeTwo) {
+                tool12res.set(2);
+            } else {
+                getndice12();
+            }});
+
+
+        while(tool12res.get()==0){
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return tool12res.get();
+    }
+
+    public static void showTool6(String dicejson){
+        dicejsonSt=dicejson;
+        scenechoose=6;
+    }
+
+    public static boolean getToolCoordDone(){
+        return toolCoordDone;
+    }
+
+    public static int[] getToolCoord() {
+        toolCoordDone =false;
+        return dicetoolpos;
     }
 
 
+    public static boolean getDicePath() {
+        return dicePath;
+    }
+
+    public static int[] getPathVal() {
+        setDicePath();
+        return pathVal;
+    }
+
+
+    //----------------------------------------------------SETTER----------------------------------------------
+
+    public static void setDicePath() {
+        dicePath=false;
+    }
+    public static void setNewGameChosen(boolean choose){endgamechoose=choose;}
     public static void setLogin(boolean bool) {
         login=bool;
+    }
+    public static void setDiceChose(boolean chosedice) {
+         dicePlaceable = chosedice;
+    }
+
+    public static void setToolCoord(){
+        toolCoord =true;
+    }
+
+
+
+
+    public void launchgui(){
+        launch();
     }
 
 
@@ -104,13 +305,12 @@ public class GUIController extends Application {
         window=primaryStage;
         window.setTitle("Sagrada");
 
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bounds = screen.getVisualBounds();
+        //Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
 
-        window.setX(bounds.getMinX());
-        window.setY(bounds.getMinY());
-        window.setWidth(bounds.getWidth());
-        window.setHeight(bounds.getHeight());
+        //window.setX(bounds.getMinX());
+        //window.setY(bounds.getMinY());
+        //window.setWidth(bounds.getWidth());
+        //window.setHeight(bounds.getHeight());
 
 
 
@@ -475,10 +675,16 @@ public class GUIController extends Application {
     public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
         Scheme empty = new Scheme(0);
         GreenCarpet gc = new GreenCarpet(0);
+        int first=0;
+        int second=0;
+        int third=0;
         Player player = new Player("tmp");
         if (flag == 1) {
                 Gson gson = new Gson();
                 gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
+                first=gc.getToolCard(1).getSerialNumber();
+                second=gc.getToolCard(2).getSerialNumber();
+                third=gc.getToolCard(3).getSerialNumber();
                 player = gson.fromJson(playerJson, Player.class);
         }
         int k=0;
@@ -486,6 +692,7 @@ public class GUIController extends Application {
         for(int i=0;i<3;i++)
             schemes[i]=empty;
         if(flag==1){
+
             for(int i=0;i<gc.getnPlayers();i++){
                 if(!gc.getPlayer().get(i).getNickname().equals(player.getNickname())){
                     schemes[k]=gc.getPlayer().get(i).getScheme();
@@ -544,18 +751,34 @@ public class GUIController extends Application {
         pane4.setBackground(new Background(myBI));
         scene4 = new Scene(pane4);
         if(flag==1) {
-            GridPane tmp = (GridPane) grc.getChildren().get(1);
+            GridPane tmp = (GridPane) grc.getChildren().get(1);     //STOCK
             tmp.getChildren().forEach(item -> {
-                item.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI RISERVA
                     @Override
                     public void handle(MouseEvent event) {
                         if(dicePlaceable) {
                             Node source = (Node) event.getSource();
-                            dicechoose = true;
                             placedice[0] = GridPane.getRowIndex(source) + 1;
+                            dicechoose = true;
                         }
                     }
                 });
+            });
+
+
+            GridPane tmp2 = (GridPane) grc.getChildren().get(0);
+            tmp2.getChildren().forEach(item -> {
+                item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI PATH
+                    @Override
+                    public void handle(MouseEvent event) {
+                        Node source = (Node) event.getSource();
+                        pathVal[1] = GridPane.getRowIndex(source) + 1;
+                        pathVal[0] = GridPane.getColumnIndex(source) + 1;
+                        dicePath=true;
+                        System.out.println("path:"+pathVal[0]+".."+pathVal[1]);
+                    }
+                });
+
             });
 
 
@@ -572,6 +795,14 @@ public class GUIController extends Application {
                             dicePlaceable=false;
                             setLogin(true);
                         }
+                        if(toolCoord){
+                            Node source2 = (Node) event.getSource();
+                            dicetoolpos[0]=GridPane.getRowIndex(source2);
+                            dicetoolpos[1]=GridPane.getColumnIndex(source2);
+                            toolCoordDone =true;
+                            toolCoord =false;
+                            System.out.println("primo dado");
+                        }
                     }
                 });
             });
@@ -586,6 +817,48 @@ public class GUIController extends Application {
             dicePlaceable=true;
             setLogin(true);
         });
+
+        useTool.setOnAction(e -> {
+            menuaction="3";
+            toolUsable=true;
+            setLogin(true);
+        });
+
+        int finalFirst = first;
+        hBox1.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+            @Override
+            public void handle(MouseEvent event) {
+                if(toolUsable) {
+                    toolchose = finalFirst;
+                    toolchoose = true;
+                    toolUsable=false;
+                }
+            }
+        });
+        int finalSecond = second;
+        hBox1.getChildren().get(1).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+            @Override
+            public void handle(MouseEvent event) {
+                if(toolUsable) {
+                    toolchose = finalSecond;
+                    toolchoose = true;
+                    toolUsable=false;
+                }
+            }
+        });
+        int finalThird = third;
+        hBox1.getChildren().get(2).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+            @Override
+            public void handle(MouseEvent event) {
+                if(toolUsable) {
+                    toolchose = finalThird;
+                    toolchoose = true;
+                    toolUsable=false;
+                }
+            }
+        });
+
+
 
     }
 
@@ -663,9 +936,7 @@ public class GUIController extends Application {
         }
     }
 
-    public static int[] placeDice() {
-        return placedice;
-    }
+
 
     public static void updateView(String greencarpet, String playerJson) {
         playerJsonSt=playerJson;
@@ -680,14 +951,14 @@ public class GUIController extends Application {
 
     public static void showMessages(String[] messages) {
         currentmessage=messages;
-        Platform.runLater(()->
+        /*Platform.runLater(()->
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERRORE");
             alert.setHeaderText(messages[0]);
             alert.setContentText(messages[1]);
             alert.showAndWait();
-        });
+        });*/
         newmessage=true;
     }
 
@@ -706,6 +977,86 @@ public class GUIController extends Application {
             pane2.getChildren().add(label);
         }
     }
+
+
+    public class MessageThread extends Thread {
+        private GUIController GUIController;
+
+        public MessageThread(GUIController GUIController) {
+            this.GUIController = GUIController;
+        }
+
+        @Override
+        public void run() {
+            while (10 > 0) {
+                while (!newmessage) {
+                    try {
+                        sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Platform.runLater(()->{
+                    modify(currentmessage);
+                });
+                newmessage=false;
+
+            }
+        }
+    }
+    public String toStr(int numb){
+        String string=new String();
+        if(numb==1){
+            string="one";
+        }else if(numb==2){
+            string="two";
+        }else if(numb==3){
+            string="three";
+        }else if(numb==4){
+            string="four";
+        }else if(numb==5){
+            string="five";
+        }else if(numb==6){
+            string="six";
+        }else if(numb==7){
+            string="seven";
+        }else if(numb==8){
+            string="eight";
+        }else if(numb==9){
+            string="nine";
+        }else if(numb==10){
+            string="ten";
+        }else if(numb==11) {
+            string = "eleven";
+        }else if(numb==12) {
+            string = "twelve";
+        }
+        else
+            string="empty";
+        return string;
+
+
+
+
+
+
+
+
+    }
+
+    public String difficultyToStr(int numb){
+        String string=new String();
+        for(int i=0;i<numb;i++){
+            string=string+"*";
+        }
+        return string;
+    }
+
+
+
+
+    //---------------------------------------------TOOL METHODS---------------------------------------------------------
+
 
     public class SceneThread extends Thread{
         private GUIController GUIController;
@@ -780,85 +1131,28 @@ public class GUIController extends Application {
                         current=5;
                     });
                 }
+                else if(scenechoose==6){
+                    Gson gson = new Gson();
+                    Dice dice = gson.fromJson(dicejsonSt, Dice.class);
+                    Platform.runLater(() ->{
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Pennello per Pasta Salda");
+                        alert.setHeaderText("Dado");
+                        alert.setContentText("Ecco il tuo dado rilanciato: "+dice.toString()+"Scegli dove piazzarlo.");
+                        try {
+                            alert.getDialogPane().getChildren().add(imageToImageV(diceToImage(dice),50,50));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        alert.showAndWait();
+                    });
+                }
                 scenechoose = 0;
             }
 
         }
     }
-    public class MessageThread extends Thread {
-        private GUIController GUIController;
 
-        public MessageThread(GUIController GUIController) {
-            this.GUIController = GUIController;
-        }
-
-        @Override
-        public void run() {
-            while (10 > 0) {
-                while (!newmessage) {
-                    try {
-                        sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("BBB");
-                }
-                System.out.println("AA");
-                Platform.runLater(()->{
-                    modify(currentmessage);
-                });
-                newmessage=false;
-
-            }
-        }
-    }
-    public String toStr(int numb){
-        String string=new String();
-        if(numb==1){
-            string="one";
-        }else if(numb==2){
-            string="two";
-        }else if(numb==3){
-            string="three";
-        }else if(numb==4){
-            string="four";
-        }else if(numb==5){
-            string="five";
-        }else if(numb==6){
-            string="six";
-        }else if(numb==7){
-            string="seven";
-        }else if(numb==8){
-            string="eight";
-        }else if(numb==9){
-            string="nine";
-        }else if(numb==10){
-            string="ten";
-        }else if(numb==11) {
-            string = "eleven";
-        }else if(numb==12) {
-            string = "twelve";
-        }
-        else
-            string="empty";
-        return string;
-
-
-
-
-
-
-
-
-    }
-
-    public String difficultyToStr(int numb){
-        String string=new String();
-        for(int i=0;i<numb;i++){
-            string=string+"*";
-        }
-        return string;
-    }
 }
 
 

@@ -313,25 +313,28 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     } else
                         clientInt.showError("Errore-Non è possibile inserire alcun dado. Passa il turno o utilizza una carta tool.");
                 } else if (value.equals("3")) {
-                    try {
-                        flagTool = placeTool(greenCarpet, player, i, usedDice);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    if (flagTool == 1) {     //used a toolcard which include dice placement
-                        timerThread.setTime();
-                        return;
-                    }
-                    if (flagTool == 2) {
-                        if (!usedDice)
-                            usedTool = true;
-                        else {
+                    if(!usedTool) {
+                        try {
+                            flagTool = placeTool(greenCarpet, player, i, usedDice);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                        if (flagTool == 1) {     //used a toolcard which include dice placement
                             timerThread.setTime();
                             return;
                         }
-                    }
+                        if (flagTool == 2) {
+                            if (!usedDice)
+                                usedTool = true;
+                            else {
+                                timerThread.setTime();
+                                return;
+                            }
+                        }
+                    }else
+                        clientInt.showError("Scelta errata-Hai già utilizzato una carta tool in questo giro!");
                 }
                 if (timerThread.getTime()==20)
                     return;
@@ -358,13 +361,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         String goon;
         boolean exit=false;
         boolean tooldice=false;
+        System.out.println("tool scelta: "+choice);
         if(choice>0 && choice<13) {
             //rembember to check if the tool chosen is inside the greencarpet.
             if(choice==3) {
                 choice = 2;
                 realchoice = 3;
             }
-            if(choice==2)
+            else if(choice==2)
                 realchoice=2;
             switch (choice) {
                 case 1:     //no placement
@@ -473,6 +477,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                             return 1;
                                         checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
                                     }
+                                    greenCarpet.getDiceFromStock(ndice);
                                     player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
                                     tooldice=true;
                                 }

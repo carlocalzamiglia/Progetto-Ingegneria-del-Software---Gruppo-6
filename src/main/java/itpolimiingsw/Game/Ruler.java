@@ -228,9 +228,12 @@ public class Ruler implements Serializable {
 
     //--------------------------------converts an integer into a face of a dice-----------------------------------------
         public String intToString(int i) {
-            Dice d= new Dice(null);
-            String[] faces= d.getFaces();
-            return faces[i-1];
+            if(i!=0) {
+                Dice d = new Dice(null);
+                String[] faces = d.getFaces();
+                return faces[i - 1];
+            }else
+                return null;
         }
 
     }

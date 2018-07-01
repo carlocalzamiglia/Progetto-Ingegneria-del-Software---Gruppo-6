@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="Progetto-Ingegneria-del-Software---Gruppo-6:jar2">
+    <output-path>$PROJECT_DIR$/../../../../GUIJAR</output-path>
+    <root id="root">
+      <element id="archive" name="Progetto-Ingegneria-del-Software---Gruppo-6.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../../../GUIJAR/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="module-output" name="Progetto-Ingegneria-del-Software---Gruppo-6" />
+      </element>
+      <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.8.5" />
+    </root>
+  </artifact>
+</component>
