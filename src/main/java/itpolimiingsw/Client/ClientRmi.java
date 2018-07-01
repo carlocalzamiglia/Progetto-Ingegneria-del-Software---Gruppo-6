@@ -204,7 +204,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         timerThread.start();
         int choose=clientInt.schemeMessages(scheme1, scheme2, scheme3, scheme4, privategoal);
         if(choose==99) {
-            clientInt.endTurn();
+            clientInt.endTurnMessage();
             Random random = new Random();
             return random.nextInt(4) + 1;
         }

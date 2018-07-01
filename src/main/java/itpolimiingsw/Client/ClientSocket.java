@@ -209,14 +209,15 @@ public class ClientSocket {
         String[] logindata;
         ClientSocket clientSocket;
         int i;
+        boolean flag; //gui scheme
         //constructor
 
-        public TimerThreadSocket(int time,ListenFromServer listenFromServer) {
+        public TimerThreadSocket(int time,ListenFromServer listenFromServer, boolean flag) {
             this.time = time;
             this.listenFromServer=listenFromServer;
             this.logindata=listenFromServer.getLogindata();
             this.clientSocket=listenFromServer.getClientSocket();
-
+            this.flag=flag;
         }
         @Override
         public void run() {
@@ -233,7 +234,10 @@ public class ClientSocket {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                clientInt.endTurn();
+                if(flag)
+                    clientInt.endTurnMessage();
+                else
+                    clientInt.endTurn();
                 listenFromServer.interrupt();
                 ListenFromServer newListen = new ListenFromServer(clientSocket, logindata);
                 newListen.start();
@@ -276,7 +280,7 @@ public class ClientSocket {
                     String [] arrOfStr = msg.split("-");
 
                     if(arrOfStr[0].equals("@SCHEME")) {
-                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[6]),this);
+                        TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[6]),this, true);
                         timerThreadSocket.start();
                         int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4], arrOfStr[5]);
                         if (scheme==99)
@@ -295,7 +299,7 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
                         if(arrOfStr[1].equals("true")) {
                             clientInt.timerOut(false);
-                            timerThreadSocket = new TimerThreadSocket(Integer.parseInt(arrOfStr[2]), this);
+                            timerThreadSocket = new TimerThreadSocket(Integer.parseInt(arrOfStr[2]), this, false);
                             timerThreadSocket.start();
                             yourturn = true;
                         }

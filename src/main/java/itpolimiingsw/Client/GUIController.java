@@ -161,9 +161,7 @@ public class GUIController extends Application {
         while(tool1res.get()==0){
             try {
                 sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) { }
         }
         if(tool1res.get()==1)
             return "y";
@@ -195,9 +193,7 @@ public class GUIController extends Application {
         while(tool1res.get()==0){
             try {
                 sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) { }
         }
         System.out.println("SCELTA: "+tool1res.get());
         return tool1res.get();
@@ -233,9 +229,7 @@ public class GUIController extends Application {
         while(tool11res.get()==0 && !flag.get()){
             try {
                 sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) { }
         }
         if(flag.get())
             return getTool11(colour);
@@ -269,9 +263,7 @@ public class GUIController extends Application {
         while(tool12res.get()==0){
             try {
                 sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) { }
         }
         return tool12res.get();
     }
@@ -672,9 +664,7 @@ public class GUIController extends Application {
             String string2="first";
             try {
                 setScene4(string1,string2,0,false);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            } catch (IOException e1) { }
             window.setScene(scene4);
             current=4;
             setLogin(true);
@@ -702,7 +692,6 @@ public class GUIController extends Application {
         for(int i=0;i<3;i++)
             schemes[i]=empty;
         if(flag==1){
-
             for(int i=0;i<gc.getnPlayers();i++){
                 if(!gc.getPlayer().get(i).getNickname().equals(player.getNickname())){
                     schemes[k]=gc.getPlayer().get(i).getScheme();
@@ -765,7 +754,10 @@ public class GUIController extends Application {
             name.setFont(new Font(30));
         }
         else{
-            scheme=myscheme;
+            if(myscheme!=null)
+                scheme=myscheme;
+            else
+                scheme=setScheme(empty,60,300,240);
             vboxTool1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost1);
             vboxTool2.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost2);
             vboxTool3.getChildren().addAll( imageToImageV(numbToTool(0), 350, 250),cost3);
@@ -977,9 +969,7 @@ public class GUIController extends Application {
         scenechoose=2;
         try {
             sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        } catch (InterruptedException e) { }
     }
 
 
@@ -1038,9 +1028,7 @@ public class GUIController extends Application {
                 while (!newmessage) {
                     try {
                         sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (InterruptedException e) { }
                 }
                 Platform.runLater(()->{
                     modify(currentmessage);
@@ -1115,9 +1103,7 @@ public class GUIController extends Application {
                 while(scenechoose==0){
                     try {
                         sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (InterruptedException e) { }
                 }
                 if(scenechoose==1) {  //TIME TO SHOW SCHEMES
                     System.out.println("a");
@@ -1191,6 +1177,16 @@ public class GUIController extends Application {
                             e.printStackTrace();
                         }
                         alert.showAndWait();
+                    });
+                }
+                else if(scenechoose==7){
+                    System.out.println("aaaa");
+                    try {
+                        GUIController.setScene4("first", "first",0 ,false);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } Platform.runLater(()->{
+                        window.setScene(scene4);
                     });
                 }
                 scenechoose = 0;

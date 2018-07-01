@@ -97,13 +97,17 @@ public class GUI implements ClientInterface {
 
         GUIController.setLogin(false);
         String action = GUIController.handleTurnMenu();
-        System.out.println("AZIONE:"+action);
         return action;
     }
 
     @Override
     public void endTurn() {
         GUIController.endTurn();
+    }
+
+    @Override
+    public void endTurnMessage() {
+        GUIController.chooseAction(7);
     }
 
     @Override

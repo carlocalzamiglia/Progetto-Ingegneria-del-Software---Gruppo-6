@@ -19,6 +19,8 @@ public interface ClientInterface {
 
     void endTurn();
 
+    void endTurnMessage();
+
     int[] placeDiceMessages() throws IOException, InterruptedException;
 
     int chooseToolMessages() throws IOException, InterruptedException;

@@ -147,6 +147,11 @@ public class CLI implements ClientInterface {
     }
 
     @Override
+    public void endTurnMessage() {
+        endTurn();
+    }
+
+    @Override
     public int[] placeDiceMessages() throws IOException, InterruptedException {
         int[] dicecoord = new int[3];
         int[] coordinates;
