@@ -48,8 +48,9 @@ public class GUI implements ClientInterface {
 
     @Override
     public void showMessage(String message) {
-        String[] messages = message.split("-");
-        GUIController.showMessages(messages);
+        System.out.println(message);
+        System.out.println("entro in showmessage");
+        GUIController.showMessages(message);
     }
 
     @Override

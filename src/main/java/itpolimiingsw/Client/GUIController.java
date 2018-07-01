@@ -35,8 +35,7 @@ import static java.lang.Thread.sleep;
 public class GUIController extends Application {
     static Stage window;
 
-    StackPane pane1,pane3,pane4,pane5;
-    VBox pane2;
+    StackPane pane1,pane2,pane3,pane4,pane5;
     GridPane pane;
     Scene scene1, scene2,scene3,scene4,scene5;
 
@@ -66,7 +65,7 @@ public class GUIController extends Application {
     private static boolean toolchoose = false;
 
 
-    private static String []currentmessage;
+    private static String currentmessage;
     private static boolean newmessage=false;
 
 
@@ -321,7 +320,7 @@ public class GUIController extends Application {
     BackgroundFill myBF = new BackgroundFill(Color.rgb(0, 0, 0, 0), new CornerRadii(1),
             new Insets(0.0, 0.0, 0.0, 0.0));
 
-    BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/image.jpg")),
+    BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/screen.jpg")),
             BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
             BackgroundSize.DEFAULT);
     //final double initialSceneWidth = 2000;
@@ -594,20 +593,20 @@ public class GUIController extends Application {
     }
 
 
-    public void setScene2(){
+    public void setScene2(String messages ){
+
         //object second layout
         Label match=new Label("MATCHMAKING...");
         Label message=new Label();
-        message.setId("#labelScene2");
+        message.setText(messages);
         match.setFont(new Font(80));
+        message.setFont(new Font(50));
         //second layout
-        pane2=new VBox(70);
-        pane2.setAlignment(Pos.CENTER);
-        pane2.getChildren().addAll(match,message);
+        VBox vBox=new VBox(match,message);
+        vBox.setAlignment(Pos.CENTER);
+        pane2=new StackPane(vBox);
         pane2.setBackground(new Background(myBI));
         scene2=new Scene(pane2);
-
-
     }
 
     public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
@@ -926,10 +925,11 @@ public class GUIController extends Application {
             endgamechoose=true;
             newGame=true;
 
-            setScene2();
+            setScene2("");
+            current=2;
             Platform.runLater(() ->{
                 window.setScene(scene2);
-                current=2;
+
             });
         });
         quit.setOnAction(e ->{
@@ -941,6 +941,7 @@ public class GUIController extends Application {
 
     public static void loginOK() {
         scenechoose = 3;
+        current=2;
     }
 
     public static void showPopup(String[] message) {
@@ -985,60 +986,13 @@ public class GUIController extends Application {
         scenechoose=5;
     }
 
-    public static void showMessages(String[] messages) {
+    public static void showMessages(String messages) {
         currentmessage=messages;
-        /*Platform.runLater(()->
-        {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERRORE");
-            alert.setHeaderText(messages[0]);
-            alert.setContentText(messages[1]);
-            alert.showAndWait();
-        });*/
+        System.out.println("ho impostato new message"+current+messages);
         newmessage=true;
     }
 
-    private void modify(String[] messages) {
-        if(current==1){
-
-        }
-        else if(current==2){
-            String string=new String();
-            for(int i=0;i<messages.length;i++){
-                string=string+messages[i]+"\n";
-            }
-            pane2.getChildren().remove(1);
-            System.out.println("AAAAAA\n"+string+"\n");
-            Label label=new Label(string);
-            pane2.getChildren().add(label);
-        }
-    }
-
-
-    public class MessageThread extends Thread {
-        private GUIController GUIController;
-
-        public MessageThread(GUIController GUIController) {
-            this.GUIController = GUIController;
-        }
-
-        @Override
-        public void run() {
-            while (10 > 0) {
-                while (!newmessage) {
-                    try {
-                        sleep(200);
-                    } catch (InterruptedException e) { }
-                }
-                Platform.runLater(()->{
-                    modify(currentmessage);
-                });
-                newmessage=false;
-
-            }
-        }
-    }
-    public String toStr(int numb){
+    private String toStr(int numb){
         String string=new String();
         if(numb==1){
             string="one";
@@ -1078,7 +1032,7 @@ public class GUIController extends Application {
 
     }
 
-    public String difficultyToStr(int numb){
+    private String difficultyToStr(int numb){
         String string=new String();
         for(int i=0;i<numb;i++){
             string=string+"*";
@@ -1086,6 +1040,36 @@ public class GUIController extends Application {
         return string;
     }
 
+
+
+    public class MessageThread extends Thread {
+        private GUIController GUIController;
+        private MessageThread(GUIController GUIController) {
+            this.GUIController = GUIController;
+        }
+
+        @Override
+        public void run() {
+            while (10 > 0) {
+                while (!newmessage) {
+                    try {
+                        sleep(200);
+                    } catch (InterruptedException e) { }
+                }
+                if (current==2) {
+                    System.out.println("sono nel thread");
+                    Platform.runLater(()->{
+                        GUIController.setScene2(currentmessage);
+                        current=2;
+                        window.setScene(scene2);
+                    });
+                    System.out.println("ho fatto la run later");
+
+                }
+                newmessage=false;
+            }
+        }
+    }
 
 
 
@@ -1142,7 +1126,8 @@ public class GUIController extends Application {
                     });
                 }
                 else if (scenechoose == 3){
-                    GUIController.setScene2();
+                    GUIController.setScene2("");
+                    current=2;
                     Platform.runLater(() ->{
                         window.setScene(scene2);
                     });
