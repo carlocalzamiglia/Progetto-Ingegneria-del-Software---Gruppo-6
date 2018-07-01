@@ -227,7 +227,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             while (i<time) {
                 try {
                     sleep(1000);
-                } catch (InterruptedException e) { Thread.currentThread().interrupt();}
+                } catch (InterruptedException e) { }
                 i++;
             }clientInt.timerOut(true);
             return;
@@ -236,8 +236,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             return i;
         }
         public void setTime(){
-            i=90;
+            i=time;
         }
+        public int getMaxTime() {return time;}
     }
 
     class HandleTurn extends Thread implements Serializable {
@@ -287,9 +288,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                } catch (InterruptedException e) {return;}
                 if (value.equals("1")) {
                     timerThread.setTime();
                     return;
@@ -300,9 +299,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                 placedice(greenCarpet, player, i);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                            }
+                            } catch (InterruptedException e) { return;}
                             usedDice = true;
                             if (usedTool) {
                                 timerThread.setTime();
@@ -318,9 +315,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                             flagTool = placeTool(greenCarpet, player, i, usedDice);
                         } catch (IOException e) {
                             e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
+                        } catch (InterruptedException e) {return;}
                         if (flagTool == 1) {     //used a toolcard which include dice placement
                             timerThread.setTime();
                             return;
@@ -336,7 +331,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }else
                         clientInt.showError("Scelta errata-Hai già utilizzato una carta tool in questo giro!");
                 }
-                if (timerThread.getTime()==20)
+                if (timerThread.getTime()==timerThread.getMaxTime())
                     return;
             }
         }
@@ -715,7 +710,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         timerThread.start();
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i,timerThread);
         handleTurn.start();
-        while (timerThread.getTime()<90){sleep(200);}
+        while (timerThread.getTime()<time){sleep(200);}
         game.setGreenCarpet(handleTurn.getGreenCarpet());
         game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
         clientInt.timerOut(true);
@@ -739,7 +734,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
     @Override
-    public Boolean newMatch() throws IOException {
+    public Boolean newMatch() throws IOException, InterruptedException {
         boolean check;
         check = clientInt.newMatch();
         if(check)

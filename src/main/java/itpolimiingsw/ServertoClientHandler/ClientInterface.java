@@ -3,7 +3,7 @@ package itpolimiingsw.ServertoClientHandler;
 import java.io.IOException;
 
 public interface ClientInterface {
-    String[] loginMessages() throws IOException;
+    String[] loginMessages() throws IOException, InterruptedException;
 
     void showMessage(String message);
 
@@ -44,7 +44,7 @@ public interface ClientInterface {
 
     void timerOut(boolean end);
 
-    boolean newMatch() throws IOException;
+    boolean newMatch() throws IOException, InterruptedException;
 
     void exit();
 

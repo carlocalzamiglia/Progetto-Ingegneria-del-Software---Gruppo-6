@@ -18,6 +18,7 @@ public class GUI implements ClientInterface {
     private String pass = "";
     Gson gson = new Gson();
     GUIController launcher = new GUIController();
+    boolean c = false;
 
     public GUI() throws FileNotFoundException {
         Launcher threadl = new Launcher();
@@ -34,13 +35,9 @@ public class GUI implements ClientInterface {
     }
     //-------------------------------------GAME METHODS------------------
     @Override
-    public String[] loginMessages() throws IOException {
+    public String[] loginMessages() throws IOException, InterruptedException {
         while(!GUIController.getLogin()){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(200);
         }
         GUIController.setLogin(false);
         //salviamo user e pass
@@ -66,12 +63,12 @@ public class GUI implements ClientInterface {
         //need method to create GUI schemes.
         GUIController.setLogin(false);
         GUIController.showSchemes(scheme1, scheme2, scheme3, scheme4,privategoljson);
-        while(!GUIController.getLogin()){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while(!GUIController.getLogin() && !c){
+            sleep(200);
+        }
+        if (c) {
+            int i=99;
+            return i;
         }
         GUIController.setLogin(false);
         int scheme = GUIController.getScheme();
@@ -93,12 +90,11 @@ public class GUI implements ClientInterface {
         GUIController.setLogin(false);
         GUIController.chooseAction(4);
         while(!GUIController.getLogin()){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(200);
         }
+        if(c)
+            return "4";
+
         GUIController.setLogin(false);
         String action = GUIController.handleTurnMenu();
         System.out.println("AZIONE:"+action);
@@ -114,15 +110,17 @@ public class GUI implements ClientInterface {
     public int[] placeDiceMessages() throws IOException, InterruptedException {
         GUIController.setLogin(false);
         GUIController.chooseAction(2);
-        while(!GUIController.getLogin()){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        int[] placedice = new int [3];
+        while(!GUIController.getLogin() && !c){
+            sleep(200);
+        }
+
+        if(c){
+            placedice[0]=99;
+            return placedice;
         }
         GUIController.setLogin(false);
-        int[] placedice = GUIController.getplaceDice();
+        placedice = GUIController.getplaceDice();
         System.out.println("dadoscelto: "+placedice[0]);
         return placedice;
     }
@@ -132,13 +130,13 @@ public class GUI implements ClientInterface {
     public int chooseToolMessages() throws IOException, InterruptedException {
         GUIController.setLogin(false);
         GUIController.chooseAction(2);
-        while(!GUIController.getToolChoose()){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while(!GUIController.getToolChoose() && !c){
+            sleep(200);
+
         }
+        if(c)
+            return 0;
+
         GUIController.setLogin(false);
         int toolnumber = GUIController.getTool();
         return toolnumber;
@@ -152,9 +150,11 @@ public class GUI implements ClientInterface {
     @Override
     public int chooseDice() throws IOException, InterruptedException {      //DONE
         GUIController.setDiceChose(true);
-        while(!GUIController.getDiceChoose()){
+        while(!GUIController.getDiceChoose() &&!c){
             sleep(200);
         }
+        if(c)
+            return 99;
         GUIController.setDiceChose(false);
         return GUIController.getDiceChosen();
     }
@@ -162,8 +162,15 @@ public class GUI implements ClientInterface {
     @Override
     public int[] chooseCoordinates() throws IOException, InterruptedException {     //NEVER USED
         GUIController.setToolCoord();
-        while(!GUIController.getToolCoordDone()){
+        while(!GUIController.getToolCoordDone() && !c){
             sleep(200);
+        }
+
+        if(c){
+            int[] ret = new int[2];
+            ret[0]=99;
+            ret[1]=0;
+            return ret;
         }
         return GUIController.getToolCoord();
     }
@@ -171,8 +178,13 @@ public class GUI implements ClientInterface {
     @Override
     public int[] chooseFromPath() throws IOException, InterruptedException {
         GUIController.setDicePath();
-        while(!GUIController.getDicePath()){
+        while(!GUIController.getDicePath() && !c){
             sleep(200);
+        }
+        if(c) {
+            int[] ret = new int[1];
+            ret[0] = 99;
+            return ret;
         }
         return GUIController.getPathVal();
     }
@@ -239,18 +251,14 @@ public class GUI implements ClientInterface {
 
     @Override
     public void timerOut(boolean end) {
-
+        c=end;
     }
 
     @Override
-    public boolean newMatch() throws IOException {
+    public boolean newMatch() throws IOException, InterruptedException {
         GUIController.setNewGameChosen(false);
         while(!GUIController.getNewGameChosen()){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(200);
         }
         GUIController.setNewGameChosen(false);
         return GUIController.getNewGame();
