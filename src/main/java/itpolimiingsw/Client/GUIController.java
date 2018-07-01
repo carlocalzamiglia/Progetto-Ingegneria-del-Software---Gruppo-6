@@ -135,6 +135,39 @@ public class GUIController extends Application {
 
 
     //getter tool
+    public static String goOn() {   //SCEGLI SE CONTINUARE CON L'UTILIZZO DELLA TOOL
+        AtomicInteger tool1res= new AtomicInteger();
+        tool1res.set(0);
+        Platform.runLater(() ->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Sei sicuro di voler proseguire?");
+            alert.setContentText("Scegli un'opzione.");
+
+            ButtonType buttonTypeOne = new ButtonType("Continua");
+            ButtonType buttonTypeTwo = new ButtonType("Torna al menù");
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+            boolean tool1=true;
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeOne) {
+                tool1res.set(1);
+            } else if (result.get() == buttonTypeTwo) {
+                tool1res.set(2);
+            }
+        });
+        while(tool1res.get()==0){
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if(tool1res.get()==1)
+            return "y";
+        else
+            return "n";
+    }
+
 
     public static int getTool1Val() {   //TOOL1 VALORE INCREMENTATO O DECREMENTATO
         AtomicInteger tool1res= new AtomicInteger();
@@ -210,9 +243,9 @@ public class GUIController extends Application {
         AtomicInteger tool12res= new AtomicInteger();
         tool12res.set(0);
         Platform.runLater(() ->{Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog with Custom Actions");
-            alert.setHeaderText("Look, a Confirmation Dialog with Custom Actions");
-            alert.setContentText("Choose your option.");
+            alert.setTitle("Taglierina Manuale");
+            alert.setHeaderText("Quanti dadi vuoi spostare?");
+            alert.setContentText("Scegli opzione:");
 
             ButtonType buttonTypeOne = new ButtonType("Uno");
             ButtonType buttonTypeTwo = new ButtonType("Due");

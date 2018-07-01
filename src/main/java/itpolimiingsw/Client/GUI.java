@@ -146,7 +146,7 @@ public class GUI implements ClientInterface {
 
     @Override
     public String goOnTool() throws IOException, InterruptedException {
-        return "y";
+        return GUIController.goOn();
     }
 
     @Override
