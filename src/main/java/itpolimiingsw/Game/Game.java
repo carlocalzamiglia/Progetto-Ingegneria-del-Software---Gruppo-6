@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.rmi.ConnectException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -233,7 +234,7 @@ public class Game implements Serializable {
                 String[] s=new String[1];
                 s[0]="Sei l'unico giocatore all'interno della partita. Hai vinto con " + player.get(singleplayer).getPoints() + " punti!";
                 users.get(singleplayer).getConnectionType().showScore(s);
-            } catch(NullPointerException e) { }
+            } catch(NullPointerException | ConnectException e) { }
         }
 
         matches.deleteGame(this);

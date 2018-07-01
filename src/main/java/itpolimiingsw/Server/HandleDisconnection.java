@@ -21,7 +21,7 @@ public class HandleDisconnection extends Thread{
     public void run() {
         while(alive){
             try {
-                sleep(10000);
+                sleep(1000);
                 //if(serverSocket==null) {
                     alive = serverRmi.clientAlive(nickname);
                 //}else {

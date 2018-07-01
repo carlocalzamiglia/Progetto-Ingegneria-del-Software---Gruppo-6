@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -395,55 +396,22 @@ public class GUIController extends Application {
 
         login.setOnAction(event -> {
             //prova connessione
-            System.out.println("nome: " + username_t.getText());
-            System.out.println("password: " + password_t.getText());
-            loginData[0]=username_t.getText();
-            loginData[1]=password_t.getText();
-            setLogin(true);
-
-            /*
-            if (username_t.getText().equals("CESNA")) {
-                window.setScene(scene2);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("ERRORE LOGIN");
-                alert.setHeaderText("Utente già presente");
-                alert.setContentText("scegliere un altro username");
-
-                alert.showAndWait();
-            }*/
+            if(!username_t.getText().trim().isEmpty() && !password_t.getText().trim().isEmpty()){
+                loginData[0] = username_t.getText();
+                loginData[1] = password_t.getText();
+                setLogin(true);
+            }
         });
-        /*play.setOnAction(e -> {
-            RadioButton r1=(RadioButton)pane.getChildren().get(2);
-            RadioButton r2=(RadioButton)pane.getChildren().get(3);
-            RadioButton r3=(RadioButton)pane.getChildren().get(6);
-            RadioButton r4=(RadioButton)pane.getChildren().get(7);
-            if(r1.isSelected()){
-                System.out.println("1");
-                schemechose=1;
-                myscheme.getChildren().add(pane.getChildren().get(0));
-                window.setScene(scene4);
+
+        scene1.setOnKeyPressed(e->{
+            if(e.getCode() == KeyCode.ENTER){
+                if(!username_t.getText().trim().isEmpty() && !password_t.getText().trim().isEmpty()){
+                    loginData[0]=username_t.getText();
+                    loginData[1]=password_t.getText();
+                    setLogin(true);
+                }
             }
-            else if(r2.isSelected()){
-                System.out.println("2");
-                schemechose=2;
-                myscheme.getChildren().add(pane.getChildren().get(1));
-                window.setScene(scene4);
-            }
-            else if(r3.isSelected()){
-                System.out.println("3");
-                schemechose=3;
-                myscheme.getChildren().add(pane.getChildren().get(4));
-                window.setScene(scene4);
-            }
-            else if(r4.isSelected()){
-                System.out.println("4");
-                schemechose=4;
-                myscheme.getChildren().add(pane.getChildren().get(5));
-                window.setScene(scene4);
-            }
-            setLogin(true);
-        });*/
+        });
 
         SceneThread sceneThread = new SceneThread(this);
         sceneThread.start();
