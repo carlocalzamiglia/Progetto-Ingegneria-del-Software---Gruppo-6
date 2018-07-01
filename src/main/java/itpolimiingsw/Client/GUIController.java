@@ -516,6 +516,15 @@ public class GUIController extends Application {
         gridPane.setAlignment(Pos.CENTER);
         return gridPane;
     }
+    public HBox setDifficulty(int num) throws FileNotFoundException {
+        HBox pane=new HBox(5);
+        for(int i=0;i<num;i++){
+            ImageView imageV =imageToImageV (new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/markers.png")),50,50);
+            pane.getChildren().add(imageV);
+        }
+        return pane;
+    }
+
 
     public GridPane setStockAndRound(GreenCarpet gc) throws FileNotFoundException {
         GridPane roundTr=new GridPane();
@@ -708,7 +717,11 @@ public class GUIController extends Application {
         GridPane grc=new GridPane();
         HBox hBox2=new HBox(40);
         VBox vbox2=new VBox(10);
-        HBox hBox1=new HBox(40);
+        HBox hboxTool=new HBox(40);
+        VBox vboxTool1=new VBox(5);
+        VBox vboxTool2=new VBox(5);
+        VBox vboxTool3=new VBox(5);
+
         Button play=new Button("Piazza dado");
         play.setFont(new Font(30));
         play.setPrefSize(300,50);
@@ -725,18 +738,38 @@ public class GUIController extends Application {
         pass.setAlignment(Pos.CENTER);
         pass.setVisible(visible);
         VBox vbox4=new VBox(20,play,useTool,pass);
-
+        Label name=new Label();
+        Label cost1=new Label();
+        Label cost2=new Label();
+        Label cost3=new Label();
+        HBox markers=new HBox(5);
+        HBox hboxcost=new HBox(40);
         if(flag==1) {
-            scheme=setScheme(player.getScheme(),60,380,275);
-            hBox1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250), imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250), imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
+            scheme=setScheme(player.getScheme(),60,300,240);
+            markers=setDifficulty(player.getMarkers().size());
+            cost1.setText("Costo: "+gc.getToolCard(1).getCost());
+            cost1.setFont(new Font(30));
+            cost2.setText("Costo: "+gc.getToolCard(2).getCost());
+            cost2.setFont(new Font(30));
+            cost3.setText("Costo: "+gc.getToolCard(3).getCost());
+            cost3.setFont(new Font(30));
+            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250),cost1);
+            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250),cost2);
+            vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250),cost3);
+            hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
             grc=setStockAndRound(gc);
             imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
             im2=new AnchorPane(imageView2);
+            name.setText(player.getScheme().getName()+"\tDifficoltà "+player.getScheme().getDifficulty());
+            name.setFont(new Font(30));
         }
         else{
             scheme=myscheme;
-            hBox1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250), imageToImageV(numbToTool(0), 350, 250), imageToImageV(numbToTool(0), 350, 250));
+            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost1);
+            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost2);
+            vboxTool3.getChildren().addAll( imageToImageV(numbToTool(0), 350, 250),cost3);
+            hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250));
         }
 
@@ -744,15 +777,14 @@ public class GUIController extends Application {
         im2.prefHeightProperty().bind(vbox2.heightProperty());
         scheme.prefHeightProperty().bind(vbox2.heightProperty());
 
-
-        vbox2.getChildren().addAll(vbox4,scheme,im2);
+        vbox2.getChildren().addAll(vbox4,scheme,name,im2);
 
         HBox hbox3=new HBox(10);
         hbox3.getChildren().setAll(setScheme(schemes[0],35,200,140),setScheme(schemes[1],35,200,140),setScheme(schemes[2],35,200,140));
-        VBox vBox1=new VBox(10,hBox1,hBox2,hbox3);
+        VBox vBox1=new VBox(10,hboxTool,hBox2,hbox3);
         HBox hboxgrande=new HBox(20);
 
-        VBox vbox5=new VBox(20,grc);
+        VBox vbox5=new VBox(20,grc,markers);
 
         //set vbox 2 heigh prop.
 
@@ -839,7 +871,7 @@ public class GUIController extends Application {
         });
 
         int finalFirst = first;
-        hBox1.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+        vboxTool1.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
                 if(toolUsable) {
@@ -850,7 +882,7 @@ public class GUIController extends Application {
             }
         });
         int finalSecond = second;
-        hBox1.getChildren().get(1).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+        vboxTool2.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
                 if(toolUsable) {
@@ -861,7 +893,7 @@ public class GUIController extends Application {
             }
         });
         int finalThird = third;
-        hBox1.getChildren().get(2).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+        vboxTool3.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
                 if(toolUsable) {
