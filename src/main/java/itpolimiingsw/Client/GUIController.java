@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
@@ -339,12 +341,6 @@ public class GUIController extends Application {
         window=primaryStage;
         window.setTitle("Sagrada");
 
-        //Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-
-        //window.setX(bounds.getMinX());
-        //window.setY(bounds.getMinY());
-        //window.setWidth(bounds.getWidth());
-        //window.setHeight(bounds.getHeight());
 
 
 
@@ -385,12 +381,24 @@ public class GUIController extends Application {
 
 
 
+        SceneThread sceneThread = new SceneThread(this);
+        sceneThread.start();
+        MessageThread messageThread=new MessageThread(this);
+        messageThread.start();
+        window.setScene(scene1);
+        current=1;
+        window.show();
 
 
 
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 
 
-
+        //set Stage boundaries to visible bounds of the main screen
+        window.setX(primaryScreenBounds.getMinX());
+        window.setY(primaryScreenBounds.getMinY());
+        window.setWidth(primaryScreenBounds.getWidth());
+        window.setHeight(primaryScreenBounds.getHeight());
 
 
 
@@ -413,14 +421,6 @@ public class GUIController extends Application {
             }
         });
 
-        SceneThread sceneThread = new SceneThread(this);
-        sceneThread.start();
-        MessageThread messageThread=new MessageThread(this);
-        messageThread.start();
-        window.setScene(scene1);
-        current=1;
-        window.setMaximized(true);
-        window.show();
 
 
     }
@@ -731,7 +731,7 @@ public class GUIController extends Application {
             hBox1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250), imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250), imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
             grc=setStockAndRound(gc);
-            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),450, 300);
+            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
             im2=new AnchorPane(imageView2);
         }
         else{
@@ -739,14 +739,27 @@ public class GUIController extends Application {
             hBox1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250), imageToImageV(numbToTool(0), 350, 250), imageToImageV(numbToTool(0), 350, 250));
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250));
         }
-        vbox2.getChildren().addAll(vbox4,im2,scheme);
-        vbox2.setAlignment(Pos.CENTER);
+
+        vbox4.prefHeightProperty().bind(vbox2.heightProperty());
+        im2.prefHeightProperty().bind(vbox2.heightProperty());
+        scheme.prefHeightProperty().bind(vbox2.heightProperty());
+
+
+        vbox2.getChildren().addAll(vbox4,scheme,im2);
+
         HBox hbox3=new HBox(10);
         hbox3.getChildren().setAll(setScheme(schemes[0],35,200,140),setScheme(schemes[1],35,200,140),setScheme(schemes[2],35,200,140));
         VBox vBox1=new VBox(10,hBox1,hBox2,hbox3);
         HBox hboxgrande=new HBox(20);
 
         VBox vbox5=new VBox(20,grc);
+
+        //set vbox 2 heigh prop.
+
+        vbox2.prefHeightProperty().bind(hboxgrande.heightProperty());
+        hboxgrande.prefHeightProperty().bind(scene1.heightProperty());
+        hboxgrande.prefWidthProperty().bind(scene1.widthProperty());
+
         hboxgrande.getChildren().setAll(vbox5,vbox2,vBox1);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
