@@ -18,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -434,13 +435,13 @@ public class GUIController extends Application {
         GridPane sc3 = setScheme(s3,50,350,250);
         GridPane sc4 = setScheme(s4,50,350,250);
         Label label1=new Label(s1.getName());
-        label1.setFont(new Font(40));
+        label1.setFont(Font.font(null,FontWeight.BOLD,40));
         Label label2=new Label(s2.getName());
-        label2.setFont(new Font(40));
+        label2.setFont(Font.font(null,FontWeight.BOLD,40));
         Label label3=new Label(s3.getName());
-        label3.setFont(new Font(40));
+        label3.setFont(Font.font(null,FontWeight.BOLD,40));
         Label label4=new Label(s4.getName());
-        label4.setFont(new Font(40));
+        label4.setFont(Font.font(null,FontWeight.BOLD,40));
 
 
         ToggleGroup group1=new ToggleGroup();
@@ -583,7 +584,6 @@ public class GUIController extends Application {
         schemesjson[3]=scheme4;
         privateGoalJsonSt=privateGoalJson;
         scenechoose=1;
-        System.out.println("scene a 1");
     }
     public static void updateGreenCarpet(String greencarpetJson, String playerJson){
         greencarpetJsonSt=greencarpetJson;
@@ -599,8 +599,8 @@ public class GUIController extends Application {
         Label match=new Label("MATCHMAKING...");
         Label message=new Label();
         message.setText(messages);
-        match.setFont(new Font(80));
-        message.setFont(new Font(50));
+        match.setFont(Font.font(null, FontWeight.BOLD,80));
+        message.setFont(Font.font(null,FontWeight.BOLD,50));
         //second layout
         VBox vBox=new VBox(match,message);
         vBox.setAlignment(Pos.CENTER);
@@ -736,11 +736,11 @@ public class GUIController extends Application {
             scheme=setScheme(player.getScheme(),60,300,240);
             markers=setDifficulty(player.getMarkers().size());
             cost1.setText("Costo: "+gc.getToolCard(1).getCost());
-            cost1.setFont(new Font(30));
+            cost1.setFont(Font.font(null,FontWeight.BOLD,30));
             cost2.setText("Costo: "+gc.getToolCard(2).getCost());
-            cost2.setFont(new Font(30));
+            cost2.setFont(Font.font(null,FontWeight.BOLD,30));
             cost3.setText("Costo: "+gc.getToolCard(3).getCost());
-            cost3.setFont(new Font(30));
+            cost3.setFont(Font.font(null,FontWeight.BOLD,30));
             vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250),cost1);
             vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250),cost2);
             vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250),cost3);
@@ -750,7 +750,7 @@ public class GUIController extends Application {
             imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
             im2=new AnchorPane(imageView2);
             name.setText(player.getScheme().getName()+"\tDifficoltà "+player.getScheme().getDifficulty());
-            name.setFont(new Font(30));
+            name.setFont(Font.font(null,FontWeight.BOLD,35));
         }
         else{
             if(myscheme!=null)
@@ -903,7 +903,7 @@ public class GUIController extends Application {
         Label scoreL[]=new Label[score.length];
         VBox vBoxscene5=new VBox(40);
         Label labelTop=new Label("CLASSIFICA");
-        labelTop.setFont(new Font(200));
+        labelTop.setFont(Font.font(null,FontWeight.BOLD,200));
         vBoxscene5.setAlignment(Pos.CENTER);
         vBoxscene5.getChildren().add(labelTop);
         HBox hBoxscene5=new HBox(40);
@@ -912,7 +912,7 @@ public class GUIController extends Application {
         hBoxscene5.getChildren().addAll(replay,quit);
         for(int i=0;i<score.length;i++){
             scoreL[i]=new Label();
-            scoreL[i].setFont(new Font(100-(i*25)));
+            scoreL[i].setFont(Font.font(null,FontWeight.BOLD,100-(i*25)));
             scoreL[i].setText(score[i]);
             vBoxscene5.getChildren().add(scoreL[i]);
         }
@@ -1057,7 +1057,7 @@ public class GUIController extends Application {
                     } catch (InterruptedException e) { }
                 }
                 if (current==2) {
-                    System.out.println("sono nel thread");
+                    System.out.println("sono nel thread\t"+currentmessage);
                     Platform.runLater(()->{
                         GUIController.setScene2(currentmessage);
                         current=2;
