@@ -161,8 +161,7 @@ public class ClientSocket {
             try {
                 socket.close();
             }
-            catch(IOException ex)
-            {
+            catch(IOException ex) {
                 clientInt.showError("Eccezione-Socket not closed");
             }
         }
@@ -232,10 +231,12 @@ public class ClientSocket {
                     sleep(300);
                     sendMessage("@TIMEROUT");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("catchato eccezione 1");
                 }
-                if(flag)
+                if(flag) {
+                    flag=false;
                     clientInt.endTurnMessage();
+                }
                 else
                     clientInt.endTurn();
                 listenFromServer.interrupt();
@@ -438,6 +439,10 @@ public class ClientSocket {
                         System.out.println(msg);
                     }
                 }
+                catch (InterruptedException e) {
+                    this.interrupt();
+                    return;
+                }
                 catch(IOException e) {
                     clientInt.showError("Errore di connessione-Ops, c'è stato un problema di connessione con il socket. Riconnessione imminente.");
                     try {
@@ -449,8 +454,6 @@ public class ClientSocket {
                 }
                 catch(ClassNotFoundException e2) {
                     e2.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -461,7 +464,9 @@ public class ClientSocket {
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(message);
-        }catch(SocketException e){}
+        }catch(IOException e){
+            System.out.println("Ho catchato");
+        }
     }
 
 
