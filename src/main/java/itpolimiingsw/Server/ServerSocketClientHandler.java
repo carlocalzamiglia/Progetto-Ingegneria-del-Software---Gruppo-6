@@ -438,345 +438,245 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         int choice;
         boolean exit=false;     //catch the exit message
         boolean tooldice=false; //if the tool cards include dice placement
-        while(!toolok) {                //run 'till the card is correct and used
-            do {
-                sendMessageOut("@USETOOL");
-                while (!(message.equals("@TOOLUSED")) && !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) { sleep(300); }
-                if(message.equals("@DEAD")||message.equals("@TIMEROUT"))
-                    return 0;
-                choice = stringToInt(arrOfMsg[1]);
-                flag=greenCarpet.toolIsIn(choice);
-                if (!flag)
-                    sendMessageOut("@ERROR-La carta utensile scelta non è presente sul tavolo da gioco.");
-                message="";
-            }while(!flag);
-            if(choice>0 && choice<13) {
-                //rembember to check if the tool chosen is inside the greencarpet.
-                switch (choice) {
-                    case 1:     //no placement
-                        while(!toolok) {
-                                sendMessageOut("@TOOL-4");
-                                while (!(message.equals("@TOOLUSED4")) && !(message.equals("@TOOLEXIT"))  && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
-                                if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                    return 0;
-                                if(!(message.equals("@TOOLEXIT"))) {
-                                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
-                                }else {
-                                    exit = true;
-                                    toolok = true;
+        do {
+            sendMessageOut("@USETOOL");
+            while (!(message.equals("@TOOLUSED")) && !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) { sleep(300); }
+            if(message.equals("@DEAD")||message.equals("@TIMEROUT"))
+                return 0;
+            choice = stringToInt(arrOfMsg[1]);
+            flag=greenCarpet.toolIsIn(choice);
+            if (!flag)
+                sendMessageOut("@ERROR-La carta utensile scelta non è presente sul tavolo da gioco.");
+            message="";
+        }while(!flag);
+        if(choice>0 && choice<13) {
+            //rembember to check if the tool chosen is inside the greencarpet.
+            switch (choice) {
+                case 1:     //no placement
+                    sendMessageOut("@TOOL-4");
+                    while (!(message.equals("@TOOLUSED4")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                    if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                        return 0;
+                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
+                    if(!toolok) {
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    }
+                    message="";
+                    break;
+                case 2:
+                    sendMessageOut("@TOOL-1");
+                    while (!(message.equals("@TOOLUSED1"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
+                    if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                        return 0;
+                    int[] coord=new int[4];
+                    for (int k=1; k<5;k++)
+                        coord[k-1]=stringToInt(arrOfMsg[k]);
+                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord);
+                    if(!toolok)
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    message = "";
+                    break;
+                case 3:
+                    sendMessageOut("@TOOL-1");
+                    while (!(message.equals("@TOOLUSED1"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
+                    if(message.equals("@DEAD") ||message.equals("@TIMEROUT"))
+                        return 0;
+                    //reset coord
+                    coord=new int[4];           //TODO controllare bene se funziona dopo tool 2!!!!
+                    for (int k=1; k<5;k++)
+                        coord[k-1]=stringToInt(arrOfMsg[k]);
+                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord);
+                    if(!toolok)
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    message = "";
+                    break;
+                case 4:
+                    sendMessageOut("@TOOL-2");
+                    while (!(message.equals("@TOOLUSED2"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
+                    if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                        return 0;
+                    int[] coord1dice= new int[4];
+                    int[] coord2dice= new int[4];
+                    for (int k=0;k<arrOfMsg.length;k++) {
+                        if (k<4)
+                            coord1dice[k] = stringToInt(arrOfMsg[k+1]);
+                        else if (k<8)
+                            coord2dice[k % 4] = stringToInt(arrOfMsg[k+1]);
+                    }
+                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord1dice, coord2dice);
+                    if(!toolok)
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    message = "";
+                    break;
+                case 5:
+                    sendMessageOut("@TOOL-5");
+                    while (!(message.equals("@TOOLUSED5"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                    if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                        return 0;
+                    int[] dicePos= new int[2];
+                    dicePos[0]=stringToInt(arrOfMsg[2]);
+                    dicePos[1]=stringToInt(arrOfMsg[3]);
+                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]),dicePos);
+                    if(!toolok)
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    message="";
+                    break;
+                case 6:
+                    Ruler ruler = new Ruler();
+                    boolean checkcorrdice=false;
+                    Dice dice=null;
+                    if(!useddice) {
+                        sendMessageOut("@TOOL-6");
+                        while (!(message.equals("@TOOLUSED6"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                        if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                            return 0;
+                        dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]),choice,0);
+                        int dicepos = stringToInt(arrOfMsg[1]);
+                        if(dice!=null) {
+                            if (ruler.checkAvailableDice(dice, player.getScheme())) {
+                                while (!checkcorrdice) {
+                                    String dicejson = gson.toJson(dice);
+                                    sendMessageOut("@TOOL-61-" + dicejson);
+                                    while (!(message.equals("@TOOLUSED61") && !message.equals("@TIMEROUT")) && !message.equals("@DEAD")) {
+                                        sleep(200);
+                                    }
+                                    if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                                        return 0;
+                                    checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
+                                    message = "";
                                 }
-                                message="";
+                                greenCarpet.getDiceFromStock(dicepos);
+                                player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
+                                tooldice=true;
+                            }
+                        }else{
+                            sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
                         }
-                        break;
-                    case 2:
-                        while (!toolok) {        //used to have a correct use of the tool
-                            sendMessageOut("@TOOL-1");
-                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
-                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                        message="";
+                    }else
+                        sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dad in questo turno.");
+                    message="";
+                    break;
+                case 7:
+                    if(greenCarpet.getTurn()==2 && !useddice) {
+                        sendMessageOut("@TOOL-7");
+                        while (!(message.equals("@TOOLUSED7"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) { sleep(200); }
+                        if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                            return 0;
+                        toolok=toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
+                        if(!toolok)
+                            sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    }else
+                        sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.");
+                    message="";
+                    break;
+                case 8:
+                    if(greenCarpet.getTurn()==1 && useddice) {
+                        sendMessageOut("@TOOL-8");
+                        while (!(message.equals("@TOOLUSED8"))&& !message.equals("@DEAD")&& !message.equals("@TIMEROUT")){sleep(200) ;}
+                        if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                            return 0;
+                        toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+                        if(!toolok)
+                            sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    }else
+                        sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.  Ricordati di piazzare un dado prima di utilizzarla!");
+                    message="";
+                    break;
+                case 9:
+                    if (!useddice) {
+                        sendMessageOut("@TOOL-8");
+                        while (!(message.equals("@TOOLUSED8"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")){ sleep(200);}
+                        if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                            return 0;
+                        toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
+                        if(!toolok)
+                            sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                        message="";
+                    } else
+                        sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                    message="";
+                    tooldice=true;
+                    break;
+                case 10:
+                    sendMessageOut("@TOOL-6");
+                    while (!(message.equals("@TOOLUSED6"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                    if(message.equals("@DEAD") || arrOfMsg[1].equals("@TIMEROUT"))
+                        return 0;
+                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), 0);
+                    if(!toolok)
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    message="";
+                    break;
+                case 11:
+                    ruler = new Ruler();
+                    checkcorrdice=false;
+                    dice=null;
+                    if(!useddice) {
+                        sendMessageOut("@TOOL-6");
+                        while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                        if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                            return 0;
+                        dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, 0);
+                        int dicepos = stringToInt(arrOfMsg[1]);
+                        if(dice!=null) {
+                            dice.setFace("");
+                            String dicejson = gson.toJson(dice);
+                            sendMessageOut("@TOOL-91-" + dicejson);
+                            while (!(message.equals("@TOOLUSED91")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {
+                                sleep(200);
+                            }
+                            if(message.equals("@DEAD") || message.equals("@TIMEROUT")) {
+                                Random rnd = new Random();
+                                int val = rnd.nextInt(6) + 1;
+                                dice.setFace(ruler.intToString(val));
+                                greenCarpet.getDiceFromStock(dicepos);
+                                greenCarpet.setDiceInStock(dice);
                                 return 0;
-                            if(!(message.equals("@TOOLEXIT"))) {
-                                int[] coord=new int[4];
-                                for (int k=1; k<5;k++)
-                                    coord[k-1]=stringToInt(arrOfMsg[k]);
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord);
                             }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message = "";
-                        }
-                        break;
-                    case 3:
-                        while (!toolok) {
-                            sendMessageOut("@TOOL-1");
-                            while (!(message.equals("@TOOLUSED1")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
-                            if(message.equals("@DEAD") ||message.equals("@TIMEROUT"))
-                                return 0;
-                            if(!(message.equals("@TOOLEXIT"))) {
-                                int[] coord=new int[4];
-                                for (int k=1; k<5;k++)
-                                    coord[k-1]=stringToInt(arrOfMsg[k]);
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord);
-                            }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message = "";
-                        }
-                        break;
-                    case 4:
-                        while (!toolok) {
-                            sendMessageOut("@TOOL-2");
-                            while (!(message.equals("@TOOLUSED2")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
-                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                return 0;
-                            if(!(message.equals("@TOOLEXIT"))) {
-                                int[] coord1dice= new int[4];
-                                int[] coord2dice= new int[4];
-                                for (int k=0;k<arrOfMsg.length;k++) {
-                                    if (k<4)
-                                        coord1dice[k] = stringToInt(arrOfMsg[k+1]);
-                                    else if (k<8)
-                                        coord2dice[k % 4] = stringToInt(arrOfMsg[k+1]);
-                                }
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord1dice, coord2dice);
-                            }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message = "";
-                        }
-                        break;
-                    case 5:
-                        while(!toolok) {
-                            sendMessageOut("@TOOL-5");
-                            while (!(message.equals("@TOOLUSED5")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
-                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                return 0;
-                            if(!message.equals("@TOOLEXIT")) {
-                                int[] dicePos= new int[2];
-                                dicePos[0]=stringToInt(arrOfMsg[2]);
-                                dicePos[1]=stringToInt(arrOfMsg[3]);
-                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]),dicePos);
-                            }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message="";
-                        }
-                        break;
-                    case 6:
-                        Ruler ruler = new Ruler();
-                        boolean checkplacement;
-                        boolean checkcorrdice=false;
-                        Dice dice=null;
-                        while(!toolok && !useddice) {
-                            sendMessageOut("@TOOL-6");
-                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
-                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                return 0;
-                            if(!message.equals("@TOOLEXIT")) {
-                                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]),choice,0);
-                                int dicepos = stringToInt(arrOfMsg[1]);
-                                if(dice!=null) {
-                                    if (ruler.checkAvailableDice(dice, player.getScheme())) {
-                                        while (!checkcorrdice) {
-                                            String dicejson = gson.toJson(dice);
-                                            sendMessageOut("@TOOL-61-" + dicejson);
-                                            while (!(message.equals("@TOOLUSED61") && !message.equals("@TIMEROUT")) && !message.equals("@DEAD")) {
-                                                sleep(200);
-                                            }
-                                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                                return 0;
-                                            checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
-                                            message = "";
-                                        }
+                            dice.setFace(ruler.intToString(stringToInt(arrOfMsg[3])));
+                            while (!checkcorrdice) {
+                                if(ruler.checkAvailableDice(dice, player.getScheme())) {
+                                    checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
+                                    if(checkcorrdice) {
                                         greenCarpet.getDiceFromStock(dicepos);
                                         player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
-                                        tooldice=true;
+                                        tooldice = true;
                                     }
-                                    else
-                                        greenCarpet.setDiceInStock(dice);
-                                    toolok = true;
-                                }else{
-                                    sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
-                                    toolok=true;
-                                    exit=true;
-                                }
+                                }else
+                                    checkcorrdice = true;
                             }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message="";
+                        }else{
+                            sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
                         }
-                        if(useddice){
-                            sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
-                            exit=true;
-                            toolok=true;
-                        }
-                        message="";
-                        break;
-                    case 7:
-                        while(!toolok) {
-                            if(greenCarpet.getTurn()==2 && !useddice) {
-                                sendMessageOut("@TOOL-7");
-                                while (!(message.equals("@TOOLUSED7")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {
-                                    sleep(200);
-                                }
-                                if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                    return 0;
-                                if (!message.equals("@TOOLEXIT")) {
-                                    toolok=toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
-                                } else {
-                                    exit = true;
-                                    toolok = true;
-                                }
-                                message = "";
-                            }else{
-                                sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.");
-                                toolok=true;
-                                exit=true;
-                            }
-                            message="";
-                        }
-                        message="";
-                        break;
-                    case 8:
-                        while(!toolok) {
-                            if(greenCarpet.getTurn()==1 && useddice) {
-                                sendMessageOut("@TOOL-8");
-                                while (!(message.equals("@TOOLUSED8")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")&& !message.equals("@TIMEROUT")){sleep(200) ;}
-                                if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                    return 0;
-                                if(!message.equals("@TOOLEXIT")){
-                                    toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
-                                }else{
-                                    toolok=true;
-                                    exit=true;
-                                }
-
-                            }else {
-                                sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.  Ricordati di piazzare un dado prima di utilizzarla!");
-                                toolok=true;
-                                exit=true;
-                            }
-                            message="";
-                        }
-                        message="";
-                        break;
-                    case 9:
-                        if (!useddice) {
-                            while(!toolok) {
-                                sendMessageOut("@TOOL-8");
-                                while (!(message.equals("@TOOLUSED8")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){ sleep(200);}
-                                System.out.println(message);
-                                if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                    return 0;
-                                if(!message.equals("@TOOLEXIT")){
-                                    toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
-                                }else{
-                                    toolok=true;
-                                    exit=true;
-                                }
-                                message="";
-                            }
-
-                        } else
-                            sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                        message="";
-                        tooldice=true;
-                        break;
-                    case 10:
-                        while(!toolok) {
-                            sendMessageOut("@TOOL-6");
-                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
-                            if(message.equals("@DEAD") || arrOfMsg[1].equals("@TIMEROUT"))
-                                return 0;
-                            if(!(message.equals("@TOOLEXIT")))
-                                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, stringToInt(arrOfMsg[1]), 0);
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message="";
-                        }
-                        message="";
-                        break;
-                    case 11:
-                        ruler = new Ruler();
-                        checkcorrdice=false;
-                        dice=null;
-                        while(!toolok && !useddice) {
-                            sendMessageOut("@TOOL-6");
-                            while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
-                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                return 0;
-                            if(!message.equals("@TOOLEXIT")) {
-                                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), choice, 0);
-                                int dicepos = stringToInt(arrOfMsg[1]);
-                                if(dice!=null) {
-                                    while (!checkcorrdice) {
-                                        dice.setFace("");
-                                        String dicejson = gson.toJson(dice);
-                                        sendMessageOut("@TOOL-91-" + dicejson);
-                                        while (!(message.equals("@TOOLUSED91")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {
-                                            sleep(200);
-                                        }
-                                        if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                            return 0;
-                                        dice.setFace(ruler.intToString(stringToInt(arrOfMsg[3])));
-                                        if(ruler.checkAvailableDice(dice, player.getScheme())) {
-                                            checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
-                                            if(checkcorrdice) {
-                                                greenCarpet.getDiceFromStock(dicepos);
-                                                player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
-                                                tooldice = true;
-                                            }
-                                        }
-                                        else {
-                                            checkcorrdice = true;
-                                            greenCarpet.setDiceInStock(dice);
-                                        }
-                                        message = "";
-                                    }
-
-
-                                    toolok = true;
-                                }else{
-                                    sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
-                                    toolok=true;
-                                    exit=true;
-                                }
-                            }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message="";
-                        }
-                        if(useddice){
-                            sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dado!");
-                            exit=true;
-                            toolok=true;
-                        }
-                        message="";
-                        break;
-                    case 12:
-                        while (!toolok) {
-                            sendMessageOut("@TOOL-3");
-                            while (!(message.equals("@TOOLUSED3")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) {sleep(300);}
-                            if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                                return 0;
-                            if(!(message.equals("@TOOLEXIT"))) {
-                                int numOfDices = stringToInt(arrOfMsg[1]);
-                                int[] allcoordinates = new int[11];
-                                for (int k = 0; k < 11; k++) {
-                                    if (k < 8)
-                                        allcoordinates[k] = stringToInt(arrOfMsg[k + 2]);
-                                    else if (k == 8)
-                                        allcoordinates[k] = 0;
-                                    else
-                                        allcoordinates[k] = stringToInt(arrOfMsg[k + 1]);
-                                }
-                                toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, numOfDices, allcoordinates);
-                            }
-                            else {
-                                exit = true;
-                                toolok = true;
-                            }
-                            message = "";
-                        }
-                        break;
-                }
-            }else{
-                sendMessageOut("@ERROR-Hai inserito un valore sbagliato!");
-                message="";
+                    }else
+                        sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dado in questo turno.");
+                    message="";
+                    break;
+                case 12:
+                    sendMessageOut("@TOOL-3");
+                    while (!(message.equals("@TOOLUSED3"))&& !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) {sleep(300);}
+                    if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                        return 0;
+                    int numOfDices = stringToInt(arrOfMsg[1]);
+                    int[] allcoordinates = new int[11];
+                    for (int k = 0; k < 11; k++) {
+                        if (k < 8)
+                            allcoordinates[k] = stringToInt(arrOfMsg[k + 2]);
+                        else if (k == 8)
+                            allcoordinates[k] = 0;
+                        else
+                            allcoordinates[k] = stringToInt(arrOfMsg[k + 1]);
+                    }
+                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, numOfDices, allcoordinates);
+                    if(!toolok)
+                        sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+                    message = "";
+                    break;
             }
+        }else{
+            sendMessageOut("@ERROR-Hai inserito un valore sbagliato!");
+            message="";
         }
         String greencarpetupd = gson.toJson(greenCarpet);
         String playerupd = gson.toJson(player);

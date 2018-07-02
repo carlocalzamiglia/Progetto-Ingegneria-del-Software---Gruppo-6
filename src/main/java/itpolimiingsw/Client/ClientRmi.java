@@ -453,16 +453,20 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 case 7:
                     if(greenCarpet.getTurn()==2 && !usedDice)
                         toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
+                    else
+                        clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
                     if(!toolok){
                         clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
                     }
                     break;
                 case 8:
                     if(greenCarpet.getTurn()==1 && usedDice){
-                        tool89method(player, greenCarpet, choice);
+                        toolok = tool89method(player, greenCarpet, choice);
                     }else {
                         clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile. Ricordati di piazzare un dado prima di utilizzarla!");
                     }
+                    if(toolok)
+                        tooldice=true;
                     break;
                 case 9:
                     //se 0 exit true e toolok true
@@ -470,9 +474,11 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     //se 2 ho usato la tool --> toolok=true e tooldice=true;
                     //se 3 --> toolok=false;
                     if(!usedDice)
-                        tool89method(player, greenCarpet, choice);
+                        toolok = tool89method(player, greenCarpet, choice);
                     else
                         clientInt.showError("Errore-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                    if(toolok)
+                        tooldice=true;
                     break;
                 case 10:
                     int ndice = clientInt.chooseDice();
@@ -492,12 +498,18 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                             return 1;
                         dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice, choice, 0);
                         if(dice!=null) {
+                            dice.setFace("");
+                            String dicejson = gson.toJson(dice);
+                            int[] value = clientInt.tool11Messages(dicejson);
+                            if(value[0]==99) {
+                                Random rnd = new Random();
+                                int val = rnd.nextInt(6) + 1;
+                                dice.setFace(ruler.intToString(val));
+                                greenCarpet.getDiceFromStock(ndice);
+                                greenCarpet.setDiceInStock(dice);
+                                return 1;
+                            }
                             while (!checkcorrdice) {
-                                dice.setFace("");
-                                String dicejson = gson.toJson(dice);
-                                int[] value = clientInt.tool11Messages(dicejson);
-                                if(value[0]==99)
-                                    return 1;
                                 dice.setFace(ruler.intToString(value[2]));
                                 if(ruler.checkAvailableDice(dice, player.getScheme())) {
                                     checkcorrdice = ruler.checkCorrectPlacement(value[0], value[1], dice, player.getScheme());
@@ -507,10 +519,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                         tooldice = true;
                                     }
                                 }
-                                else {
+                                else
                                     checkcorrdice = true;
-                                    greenCarpet.setDiceInStock(dice);
-                                }
                             }
                         }else{
                             clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
@@ -545,18 +555,19 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     //-----------------------------------------TOOL METHODS-------
 
-    private void tool89method(Player player, GreenCarpet greenCarpet, int choice) throws IOException, InterruptedException {
+    private boolean tool89method(Player player, GreenCarpet greenCarpet, int choice) throws IOException, InterruptedException {
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
+        boolean toolok89;
         int vdice = clientInt.chooseDice();
         if (vdice == 99)
-            return;
+            return false;
         int[] dicepos = clientInt.chooseCoordinates();
         if (dicepos[0] == 99)
-            return;
-        boolean toolok = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
-        if(!toolok){
+            return false;
+        toolok89 = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
+        if(!toolok89)
             clientInt.showError("Non è stato possibile utilizzare la tool.");
-        }
+        return toolok89;
     }
 
 

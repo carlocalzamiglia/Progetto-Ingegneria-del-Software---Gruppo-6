@@ -339,7 +339,7 @@ public class ClientSocket {
                     }
 
                     else if(arrOfStr[0].equals("@ERROR")){
-                        clientInt.showError("errore-"+ arrOfStr[1]);
+                        clientInt.showError("Errore-"+ arrOfStr[1]);
                     }
 
                     else if(arrOfStr[0].equals("@SHOWSCORE")){
@@ -351,19 +351,7 @@ public class ClientSocket {
                     }
 
                     else if(arrOfStr[0].equals("@TOOL")){
-                        String choose;
-                        if(!(arrOfStr[1].equals("61")) && !(arrOfStr[1].equals("91"))) {       //avoids a double check.
-                            choose=clientInt.goOnTool();
-                            if (choose.equals("0")){
-                                arrOfStr[0]="";
-                                arrOfStr[1]="";
-                                msg="";
-                                return;
-                            }
-                        }else
-                            choose="y";
                         //--------------------USE TOOL CARDS------------------------
-                        if(choose.equals("y")) {
                             if (arrOfStr[1].equals("1")) {
                                 int[] coordinates;
                                 coordinates=clientInt.tool23Messages();
@@ -434,8 +422,6 @@ public class ClientSocket {
                                     return;
                                 sendMessage("@TOOLUSED91-"+value[0]+"-"+value[1]+"-"+value[2]);
                             }
-                        }else
-                            sendMessage("@TOOLEXIT");
 
                     } else if(arrOfStr[0].equals("@ENDGAMEACTION")){
                         boolean choose;
