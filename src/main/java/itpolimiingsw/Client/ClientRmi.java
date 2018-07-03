@@ -166,6 +166,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
             }
 */
+
         }
     }
 
