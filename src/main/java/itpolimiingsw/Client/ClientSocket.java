@@ -176,8 +176,8 @@ public class ClientSocket {
     private void play(String[] logindata) throws IOException, InterruptedException {
         //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
         //this is for the client part
-        new ListenFromServer(this, logindata).run();
-        //while(10>1){
+        new ListenFromServer(this, logindata).start();
+        while(10>1){
            /* outVideo.println("Cosa vuoi fare?");
             outVideo.println("0)manda messaggio");
             outVideo.println("1)chiudi");
@@ -199,8 +199,8 @@ public class ClientSocket {
                     break;
                      }
 */
-        //    sleep(300);
-        //}
+            sleep(30000);
+        }
     }
 
     //---------------------------------------------class for server messages--------------------------------------------

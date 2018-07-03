@@ -606,7 +606,9 @@ public class GUIController extends Application {
         vBox.setAlignment(Pos.CENTER);
         pane2=new StackPane(vBox);
         pane2.setBackground(new Background(myBI));
-        scene2=new Scene(pane2);
+        try {
+            scene2 = new Scene(pane2);
+        }catch (IllegalArgumentException e){}
     }
 
     public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
