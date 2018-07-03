@@ -731,7 +731,6 @@ public class GUIController extends Application {
         Label cost2=new Label();
         Label cost3=new Label();
         HBox markers=new HBox(5);
-        HBox hboxcost=new HBox(40);
         if(flag==1) {
             scheme=setScheme(player.getScheme(),60,300,240);
             markers=setDifficulty(player.getMarkers().size());
@@ -757,10 +756,15 @@ public class GUIController extends Application {
                 scheme=myscheme;
             else
                 scheme=setScheme(empty,60,300,240);
+            vboxTool1.getChildren().clear();
+            vboxTool2.getChildren().clear();
+            vboxTool3.getChildren().clear();
             vboxTool1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost1);
             vboxTool2.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost2);
             vboxTool3.getChildren().addAll( imageToImageV(numbToTool(0), 350, 250),cost3);
+            hboxTool.getChildren().clear();
             hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
+            hBox2.getChildren().clear();
             hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250));
         }
 
@@ -768,21 +772,27 @@ public class GUIController extends Application {
         im2.prefHeightProperty().bind(vbox2.heightProperty());
         scheme.prefHeightProperty().bind(vbox2.heightProperty());
 
+        vbox2.getChildren().clear();
         vbox2.getChildren().addAll(vbox4,scheme,name,im2);
 
         HBox hbox3=new HBox(10);
+        hbox3.getChildren().clear();
         hbox3.getChildren().setAll(setScheme(schemes[0],35,200,140),setScheme(schemes[1],35,200,140),setScheme(schemes[2],35,200,140));
-        VBox vBox1=new VBox(10,hboxTool,hBox2,hbox3);
+        VBox vBox1=new VBox(10);
+        vBox1.getChildren().clear();
+        vBox1.getChildren().addAll(hboxTool, hBox2, hbox3);
         HBox hboxgrande=new HBox(20);
 
-        VBox vbox5=new VBox(20,grc,markers);
+        VBox vbox5=new VBox(20);
+        vbox5.getChildren().clear();
+        vbox5.getChildren().addAll(grc,markers);
 
         //set vbox 2 heigh prop.
 
         vbox2.prefHeightProperty().bind(hboxgrande.heightProperty());
         hboxgrande.prefHeightProperty().bind(scene1.heightProperty());
         hboxgrande.prefWidthProperty().bind(scene1.widthProperty());
-
+        hboxgrande.getChildren().clear();
         hboxgrande.getChildren().setAll(vbox5,vbox2,vBox1);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
@@ -1110,8 +1120,6 @@ public class GUIController extends Application {
                         });
                     } catch (NullPointerException e) {
                     }
-
-
                 }
                 else if(scenechoose==2){        //set scene 4 without buttons
                     try {

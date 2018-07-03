@@ -636,6 +636,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
 
     @Override
     public void showScore(String[] score) {
+        System.out.println("La partita è terminata. Stampo la classifica.");
         clientInt.showScore(score);
     }
 }

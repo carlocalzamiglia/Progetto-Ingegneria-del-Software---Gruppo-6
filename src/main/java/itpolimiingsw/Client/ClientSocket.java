@@ -344,6 +344,7 @@ public class ClientSocket {
                     }
 
                     else if(arrOfStr[0].equals("@SHOWSCORE")){
+                        System.out.println("La partita è terminata. Stampo la classifica.");
                         String s=new String();
                         for (int i=1;i<arrOfStr.length;i++)
                             s=s+arrOfStr[i]+"-";

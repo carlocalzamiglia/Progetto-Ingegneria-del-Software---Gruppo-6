@@ -43,3 +43,9 @@ error print socket gui when score are negative (-)!!!!
 
 
 error scheme choose       //DONE
+
+
+
+//TODO Ricordarsi di controllare se si disconnette un player mentre c'è il countdown!!!
+//TODO Ricordarsi di mettere il messaggio di benvenuto utente come nuovo popup
+//TODO nel caso aggiungere anche messaggio di disconnessione client come popup

@@ -14,6 +14,8 @@ import java.util.Random;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import static java.lang.Thread.sleep;
+
 public class Game implements Serializable {
     private ArrayList<User> users;
     private ArrayList<Player> player;
@@ -70,7 +72,7 @@ public class Game implements Serializable {
                 }
             }
             try {
-                GameStartonTime.sleep(10000);
+                sleep(10000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -203,6 +205,7 @@ public class Game implements Serializable {
     public void calculate_result(int singleplayer) throws IOException, InterruptedException {       //AGGIUNGERE SHOWSCORE
         Calculator calculator = new Calculator(player, greenCarpet);
         //------------start calculating------------
+        sleep(2000);
         if(singleplayer==5) {
             for (int i = 0; i < numUser; i++)
                 player.get(i).setPoints(calculator.calculate(i));       //set points to each player
