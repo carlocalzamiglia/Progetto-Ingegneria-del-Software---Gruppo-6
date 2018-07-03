@@ -9,6 +9,8 @@ public interface ClientInterface {
 
     void showError(String message);
 
+    void showConnDiscPopup(String message);
+
     int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4, String privategoal) throws IOException, InterruptedException;
 
     void printCarpetFirst(String greenCarpetjson, String playerjson);

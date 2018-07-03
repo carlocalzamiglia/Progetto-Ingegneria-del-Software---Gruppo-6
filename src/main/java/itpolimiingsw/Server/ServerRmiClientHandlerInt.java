@@ -12,8 +12,8 @@ public interface ServerRmiClientHandlerInt extends Remote {
     public void publish(String us)throws RemoteException;
     public int login(String us,String psw) throws RemoteException, InterruptedException;
     public boolean manageDisconnection(String nickname) throws RemoteException;
-    public boolean clientAlive(String nickname) throws RemoteException;
-    public void newUserMessage(String nickname) throws IOException;
+    public boolean clientAlive(String nickname) throws IOException;
+    public void newUserMessage(String nickname, String message) throws IOException;
     public void addToMatches(String username) throws IOException, InterruptedException;
     public boolean reconnectUser(String username, ClientRmiInt client) throws RemoteException;
     public boolean serverConnected() throws RemoteException;

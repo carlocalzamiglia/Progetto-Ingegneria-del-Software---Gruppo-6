@@ -42,12 +42,20 @@ public class Game implements Serializable {
             numUserOnline++;
             this.users.add(user);
         }
-        if(numUser==4){
+        if(numUserOnline==4){
             new GameStart().start();
         }
-        if(numUser==2)
+        if(numUserOnline==2)
             new GameStartonTime().start();
 
+    }
+
+    public void reconnectUser(){
+        if(numUserOnline==4){
+            new GameStart().start();
+        }
+        if(numUserOnline==2)
+            new GameStartonTime().start();
     }
 
     class GameStart extends Thread{
@@ -62,28 +70,35 @@ public class Game implements Serializable {
         }
     }
     class GameStartonTime extends Thread{
+        int time;
         public void run(){
+            try{
+                time = Integer.parseInt(readTime())/3;
+            }catch(IOException | NumberFormatException e){time = 60;}
             for(User u:users) {
                 try {
-                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra 10 secondi!");
+                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/3+" secondi!");
                 } catch (IOException | NullPointerException e) {
                     u.setOnline(false);
                     numUserOnline--;
                 }
             }
             try {
-                sleep(10000);
+                sleep(time/3);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            try {
-                if(isPlaying==false && numUser>1)
-                    startGame();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            if(numUserOnline>1) {
+                try {
+                    if (!isPlaying)
+                        startGame();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }else
+                System.out.println("Non posso avviare la partita!!!!!");
         }
     }
 
@@ -306,6 +321,8 @@ public class Game implements Serializable {
     public void playerDisconnect(){
         numUserOnline--;
     }
+
+    public void playerConnect() {numUserOnline++;}
 
 
 

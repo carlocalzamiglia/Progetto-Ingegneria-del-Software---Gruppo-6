@@ -46,7 +46,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }
         catch(Exception e)
         {
-            System.out.println("Exception: "+e);
+            System.out.println("aaException: "+e);
             e.printStackTrace();
         }
 
@@ -63,7 +63,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             //chiudi();
         }
         catch(Exception e) {
-            System.out.println("Exception: " + e);
+            System.out.println("bbException: " + e);
             e.printStackTrace();
         }
     }
@@ -87,7 +87,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }
         catch(Exception e)
         {
-            System.out.println("Exception: "+e);
+            System.out.println("ccException: "+e);
             e.printStackTrace();
         }
     }
@@ -126,7 +126,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }
         catch(Exception e)
         {
-            clientInt.showError("Eccezione-Exception: "+e);
+            clientInt.showError("Eccezione-ddException: "+e);
         }
     }
 
@@ -337,7 +337,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }
     }
 
-    private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean usedDice) throws IOException, InterruptedException {
+    private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
         String message;
         boolean flag;
         int choice;
@@ -426,7 +426,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     boolean checkcorrdice=false;
                     Dice dice=null;
                     coordinates = new int[2];
-                    if(!usedDice) {
+                    if(!useddice) {
                         int ndice = clientInt.chooseDice();
                         if(ndice==99)
                             return 1;
@@ -451,7 +451,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 7:
-                    if(greenCarpet.getTurn()==2 && !usedDice)
+                    if(greenCarpet.getTurn()==2 && !useddice)
                         toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
                     else
                         clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
@@ -460,7 +460,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }
                     break;
                 case 8:
-                    if(greenCarpet.getTurn()==1 && usedDice){
+                    if(greenCarpet.getTurn()==1 && useddice){
                         toolok = tool89method(player, greenCarpet, choice);
                     }else {
                         clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile. Ricordati di piazzare un dado prima di utilizzarla!");
@@ -473,7 +473,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     //se 1 return 1
                     //se 2 ho usato la tool --> toolok=true e tooldice=true;
                     //se 3 --> toolok=false;
-                    if(!usedDice)
+                    if(!useddice)
                         toolok = tool89method(player, greenCarpet, choice);
                     else
                         clientInt.showError("Errore-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
@@ -492,7 +492,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 case 11:
                     ruler = new Ruler();
                     checkcorrdice=false;
-                    if(!usedDice){
+                    if(!useddice){
                         ndice = clientInt.chooseDice();
                         if(ndice==99)
                             return 1;
@@ -544,7 +544,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }
         String greenupd = gson.toJson(greenCarpet);
         String playerupd = gson.toJson(player);
-        clientInt.updateView(greenupd, playerupd);
+        if(!tooldice || !(useddice && toolok))
+            clientInt.updateView(greenupd, playerupd);
         if(tooldice)
             return 1;
         else
@@ -638,5 +639,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     public void showScore(String[] score) {
         System.out.println("La partita è terminata. Stampo la classifica.");
         clientInt.showScore(score);
+    }
+
+    @Override
+    public void sendConnDiscMessage(String message) throws RemoteException {
+        clientInt.showConnDiscPopup(message);
     }
 }

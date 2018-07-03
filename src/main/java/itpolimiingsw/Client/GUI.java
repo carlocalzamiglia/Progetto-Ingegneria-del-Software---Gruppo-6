@@ -60,6 +60,11 @@ public class GUI implements ClientInterface {
     }
 
     @Override
+    public void showConnDiscPopup(String message) {
+        GUIController.showConnDiscPopup(message);
+    }
+
+    @Override
     public int schemeMessages(String scheme1, String scheme2, String scheme3, String scheme4, String privategoljson) throws IOException, InterruptedException {
         //need method to create GUI schemes.
         GUIController.setLogin(false);

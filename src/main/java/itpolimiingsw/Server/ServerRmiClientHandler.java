@@ -29,7 +29,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     public void addRmi(ClientRmiInt client, String nickname) throws RemoteException {
         DB.getUser(nickname).setRmiClient(client);
         try {
-            newUserMessage(nickname);
+            newUserMessage(nickname, " ha appena effettuato il login ed è pronto a giocare.");
             DB.getUser(nickname).getConnectionType().sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,14 +42,21 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     }
 
     public boolean reconnectUser(String username, ClientRmiInt client) throws RemoteException{
-        if(matches.getGame(username)!=null){
-            matches.getPlayer(username).setOnline(true);
-            matches.getUser(username).setRmiClient(client);
-            matches.getUser(username).setOnline(true);
-            return true;
-        }else{
-            return false;
+        try {
+            if (matches.getGame(username) != null) {
+                matches.getGame(username).playerConnect();
+                if(matches.getPlayer(username)!=null)
+                    matches.getPlayer(username).setOnline(true);
+                matches.getUser(username).setRmiClient(client);
+                matches.getUser(username).setOnline(true);
+                matches.getGame(username).reconnectUser();
+                return true;
+            } else {
+                return false;
+            }
+        }catch(NullPointerException e){
         }
+        return false;
     }
 
 
@@ -85,7 +92,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
 
 
     //--------------------------------------check if client is connected yet--------------------------------------------
-    public boolean clientAlive(String nickname) throws RemoteException{
+    public boolean clientAlive(String nickname) throws IOException {
         boolean flag=false;
         if(DB.getUser(nickname).isOnline()==true){
             try{
@@ -97,11 +104,12 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
                 if(matches.getGame(nickname)!=null) {
                     if(matches.getGame(nickname).getPlaying()) {
                         matches.getUser(nickname).setOnline(false);
-                        matches.getGame(nickname).playerDisconnect();
                         if (matches.getPlayer(nickname) != null)
                             matches.getPlayer(nickname).setOnline(false);
                     }
+                    matches.getGame(nickname).playerDisconnect();
                 }
+                newUserMessage(nickname, " è uscito dalla partita.");
                 System.out.println(nickname+" ha perso la connessione ed è stato rimosso dal server");
             }
         }else
@@ -116,12 +124,12 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
 
 
     //--------------------------------------new client connected message------------------------------------------------
-    public void newUserMessage(String nickname) throws IOException {
+    public void newUserMessage(String nickname, String message) throws IOException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
                 if (DB.getUser(i).getConnectionType() != null) {
                     try {
-                        DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                        DB.getUser(i).getConnectionType().sendConnDiscMessage(nickname + message);
                     }catch(RemoteException | SocketException e) {}
                 }
             }

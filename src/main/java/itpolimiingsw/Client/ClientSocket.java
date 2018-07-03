@@ -352,6 +352,10 @@ public class ClientSocket {
                         clientInt.showScore(scores);
                     }
 
+                    else if(arrOfStr[0].equals("@CONNDISC")) {
+                        clientInt.showConnDiscPopup(arrOfStr[1]);
+                    }
+
                     else if(arrOfStr[0].equals("@TOOL")){
                         //--------------------USE TOOL CARDS------------------------
                             if (arrOfStr[1].equals("1")) {

@@ -69,9 +69,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             String nickname = in.nextLine();
             if(check==1) {
                 if(matches.getGame(user)!=null) {
-                    matches.getPlayer(user).setOnline(true);
+                    matches.getGame(user).playerConnect();
+                    if(matches.getPlayer(user)!=null)
+                        matches.getPlayer(user).setOnline(true);
                     matches.getUser(user).setClientHandler(this);
                     matches.getUser(user).setOnline(true);
+                    matches.getGame(user).reconnectUser();
                 }else {
                     matches.addUser(DB.getUser(user));
                 }
@@ -82,7 +85,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
             new ListenFromClient(user).start();
             System.out.println(nickname + " loggato con connessione socket");
-            newUserMessage(nickname);
+            newUserMessage(nickname, " ha appena effettuato il login ed è pronto a giocare.");
             sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -119,7 +122,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         clientAlive(this.nickname);
                     }
                 } catch (IOException e) {
-                    clientAlive(this.nickname);
+                    try {
+                        clientAlive(this.nickname);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                     break;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -131,7 +138,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
     //-----------------------------------------check if client is online yet--------------------------------------------
-    public void clientAlive(String nickname) {
+    public void clientAlive(String nickname) throws IOException {
         //if (DB.getUser(nickname).isOnline()) {
          //       try {
          //           sendMessageOut("@ALIVE");
@@ -140,13 +147,14 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         DB.getUser(nickname).setOnline(false);
         DB.getUser(nickname).setClientHandler(null);
         if(matches.getGame(nickname)!=null) {
+            matches.getGame(nickname).playerDisconnect();
             if (matches.getGame(nickname).getPlaying()) {
                 matches.getUser(nickname).setOnline(false);
-                matches.getGame(nickname).playerDisconnect();
                 if (matches.getPlayer(nickname) != null)
                     matches.getPlayer(nickname).setOnline(false);
             }
         }
+        sendConnDiscMessage(nickname+" è uscito dalla partita.");
         System.out.println(nickname + " ha probabilmente perso la connessione.");
         message="@DEAD";
         return;
@@ -158,13 +166,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
     //-----------------------------------------new client connected message---------------------------------------------
-    public void newUserMessage(String nickname) throws IOException, InterruptedException {
+    public void newUserMessage(String nickname, String message) throws IOException, InterruptedException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
                 if (DB.getUser(i).getConnectionType() != null) {
                     sleep(1000);
                     try {
-                        DB.getUser(i).getConnectionType().sendMessageOut(nickname + " ha appena effettuato il login ed è pronto a giocare.");
+                        DB.getUser(i).getConnectionType().sendConnDiscMessage(nickname + message);
                     }catch(RemoteException | SocketException e){}
                 }
             }
@@ -173,9 +181,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     //--------------------------------------------send message to the user----------------------------------------------
     public void sendMessageOut(String message) throws IOException {
-        ObjectOutputStream outs;
-        outs = new ObjectOutputStream(socket.getOutputStream());
-        outs.writeObject(message);
+        try {
+            ObjectOutputStream outs;
+            outs = new ObjectOutputStream(socket.getOutputStream());
+            outs.writeObject(message);
+        }catch(IOException e){}
     }
 
 
@@ -204,8 +214,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
 
-
-
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
         Game game =new Game(time, null);
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i, time);
@@ -216,23 +224,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return null;
         return game;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -264,6 +255,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
     }
 
+    @Override
+    public void sendConnDiscMessage(String message) throws IOException {
+        sendMessageOut("@CONNDISC-"+message);
+    }
 
 
     class HandleTurn extends Thread implements Serializable {
@@ -530,7 +525,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             }
             String greencarpetupd = gson.toJson(greenCarpet);
             String playerupd = gson.toJson(player);
-            sendMessageOut("@AFTERTOOLUPDATE-"+greencarpetupd+"-"+playerupd);
+            if(!tooldice || !(useddice && toolok))
+                sendMessageOut("@AFTERTOOLUPDATE-"+greencarpetupd+"-"+playerupd);
             if(tooldice)      //return 1 if the tool card include dice placement
                 return 1;
             else

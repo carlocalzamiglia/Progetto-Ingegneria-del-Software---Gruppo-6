@@ -56,6 +56,11 @@ public class CLI implements ClientInterface {
     }
 
     @Override
+    public void showConnDiscPopup(String message) {
+        System.out.println(message);
+    }
+
+    @Override
     public int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4, String privategoal) throws IOException, InterruptedException {
         String message;
         Scheme scheme1class=gson.fromJson(scheme1, Scheme.class);

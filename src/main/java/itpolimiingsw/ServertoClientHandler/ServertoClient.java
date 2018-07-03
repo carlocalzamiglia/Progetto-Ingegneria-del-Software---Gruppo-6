@@ -16,4 +16,5 @@ public interface ServertoClient {
     Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException;
     Boolean newMatch() throws IOException, InterruptedException;
     void showScore(String[] score) throws RemoteException;
+    void sendConnDiscMessage(String message) throws IOException;
 }

@@ -968,6 +968,16 @@ public class GUIController extends Application {
 
     }
 
+    public static void showConnDiscPopup(String message){
+        Platform.runLater(() ->{
+            setLogin(false);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Info");
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+
     public static String handleTurnMenu() {
         return menuaction;
     }
@@ -978,9 +988,6 @@ public class GUIController extends Application {
 
     public static void endTurn() {
         scenechoose=2;
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) { }
     }
 
 
