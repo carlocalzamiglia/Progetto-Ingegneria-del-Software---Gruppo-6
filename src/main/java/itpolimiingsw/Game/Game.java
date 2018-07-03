@@ -73,18 +73,18 @@ public class Game implements Serializable {
         int time;
         public void run(){
             try{
-                time = Integer.parseInt(readTime())/3;
+                time = (Integer.parseInt(readTime())/3)*1000;
             }catch(IOException | NumberFormatException e){time = 60;}
             for(User u:users) {
                 try {
-                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/3+" secondi!");
+                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/1000+" secondi!");
                 } catch (IOException | NullPointerException e) {
                     u.setOnline(false);
                     numUserOnline--;
                 }
             }
             try {
-                sleep(time/3);
+                sleep(time);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -98,7 +98,7 @@ public class Game implements Serializable {
                     Thread.currentThread().interrupt();
                 }
             }else
-                System.out.println("Non posso avviare la partita!!!!!");
+                System.out.println("Non posso avviare la partita!");
         }
     }
 
