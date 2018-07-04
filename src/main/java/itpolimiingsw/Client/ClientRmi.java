@@ -3,7 +3,6 @@ package itpolimiingsw.Client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import itpolimiingsw.Game.Game;
 import itpolimiingsw.Game.GreenCarpet;
 import itpolimiingsw.Game.Ruler;
