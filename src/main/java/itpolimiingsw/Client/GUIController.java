@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -89,8 +90,8 @@ public class GUIController extends Application {
     AnchorPane im2=new AnchorPane();
     GridPane scheme = new GridPane();
     GridPane grc=new GridPane();
-    HBox hBox2=new HBox(40);
-    VBox vbox2=new VBox(10);
+    HBox hBoxPubGoal=new HBox(40);
+    VBox vboxScheme=new VBox(10);
     HBox hboxTool=new HBox(40);
     VBox vboxTool1=new VBox(5);
     VBox vboxTool2=new VBox(5);
@@ -98,11 +99,11 @@ public class GUIController extends Application {
 
 
     HBox markers=new HBox(5);
-    HBox hbox3=new HBox(10);
-    VBox vBox1=new VBox(10);
+    HBox hboxOpponentScheme=new HBox(10);
+    VBox vBoxCardItems=new VBox(10);
     HBox hboxgrande=new HBox(20);
-    VBox vbox5=new VBox(20);
-    VBox vbox4=new VBox(20);
+    VBox vboxGC=new VBox(20);
+    VBox vboxButton=new VBox(20);
 
     //SCENE 4 END DECLARATION
 
@@ -405,6 +406,16 @@ public class GUIController extends Application {
         //messageThread.start();
         window.setScene(scene1);
         current=1;
+
+        window.setResizable(false);
+        window.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
         window.show();
 
 
@@ -728,13 +739,13 @@ public class GUIController extends Application {
        // vboxTool2.getChildren().clear();
        // vboxTool3.getChildren().clear();
        // hboxTool.getChildren().clear();
-      //  hBox2.getChildren().clear();
-        vbox2.getChildren().clear();
-        hbox3.getChildren().clear();
-        vbox5.getChildren().clear();
-        vBox1.getChildren().clear();
+      //  hBoxPubGoal.getChildren().clear();
+        vboxScheme.getChildren().clear();
+        hboxOpponentScheme.getChildren().clear();
+        vboxGC.getChildren().clear();
+        vBoxCardItems.getChildren().clear();
         hboxgrande.getChildren().clear();
-        vbox4.getChildren().clear();
+        vboxButton.getChildren().clear();
 
 
         if(gc.getRound()==0 && isin){
@@ -744,7 +755,7 @@ public class GUIController extends Application {
             vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
             hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
 
-            hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
+            hBoxPubGoal.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
 
             imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
             im2=new AnchorPane(imageView2);
@@ -768,7 +779,7 @@ public class GUIController extends Application {
         pass.setAlignment(Pos.CENTER);
         pass.setVisible(visible);
 
-        vbox4.getChildren().addAll(play,useTool,pass);
+        vboxButton.getChildren().addAll(play,useTool,pass);
         Label name=new Label();
         Label cost1=new Label();
         Label cost2=new Label();
@@ -777,8 +788,9 @@ public class GUIController extends Application {
 
         scheme.getChildren().clear();
         scheme=setScheme(player.getScheme(),60,300,240);
-        /*
+
         markers=setDifficulty(player.getMarkers().size());
+        /*
         cost1.setText("Costo: "+gc.getToolCard(1).getCost());
         cost1.setFont(Font.font(null,FontWeight.BOLD,30));
         cost2.setText("Costo: "+gc.getToolCard(2).getCost());
@@ -793,23 +805,23 @@ public class GUIController extends Application {
         name.setFont(Font.font(null,FontWeight.BOLD,35));
 
 
-        vbox4.prefHeightProperty().bind(vbox2.heightProperty());
-        im2.prefHeightProperty().bind(vbox2.heightProperty());
-        scheme.prefHeightProperty().bind(vbox2.heightProperty());
+        vboxButton.prefHeightProperty().bind(vboxScheme.heightProperty());
+        im2.prefHeightProperty().bind(vboxScheme.heightProperty());
+        scheme.prefHeightProperty().bind(vboxScheme.heightProperty());
 
-        vbox2.getChildren().addAll(vbox4,scheme,name,im2);
+        vboxScheme.getChildren().addAll(vboxButton,scheme,name,im2);
         for(int i=0;i<gc.getnPlayers()-1;i++)
-            hbox3.getChildren().add(setScheme(schemes[i],35,200,140));
-        vBox1.getChildren().addAll(hboxTool, hBox2, hbox3);
+            hboxOpponentScheme.getChildren().add(setScheme(schemes[i],35,200,140));
+        vBoxCardItems.getChildren().addAll(hboxTool, hBoxPubGoal, hboxOpponentScheme);
 
-        vbox5.getChildren().addAll(grc,markers);
+        vboxGC.getChildren().addAll(grc,markers);
 
         //set vbox 2 heigh prop.
 
-        vbox2.prefHeightProperty().bind(hboxgrande.heightProperty());
+        vboxScheme.prefHeightProperty().bind(hboxgrande.heightProperty());
         hboxgrande.prefHeightProperty().bind(scene1.heightProperty());
         hboxgrande.prefWidthProperty().bind(scene1.widthProperty());
-        hboxgrande.getChildren().setAll(vbox5,vbox2,vBox1);
+        hboxgrande.getChildren().setAll(vboxGC,vboxScheme,vBoxCardItems);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
         scene4 = new Scene(pane4);
