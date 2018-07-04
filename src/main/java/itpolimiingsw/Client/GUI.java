@@ -248,15 +248,12 @@ public class GUI implements ClientInterface {
     }
 
     @Override
-    public int[] tool11Messages(String dice) throws IOException, InterruptedException {
+    public int tool11Messages(String dice) throws IOException, InterruptedException {
         Gson gson = new Gson();
         Dice dice1 = gson.fromJson(dice, Dice.class);
-        int[] tool11 = new int[3];
-        tool11[2] = GUIController.getTool11(dice1.getItalianColour());
-        int[] tmp = chooseCoordinates();
-        tool11[0]=tmp[0];
-        tool11[1]=tmp[1];
-        return tool11;
+        int face;
+        face = GUIController.getTool11(dice1.getItalianColour());
+        return face;
     }
 
     @Override

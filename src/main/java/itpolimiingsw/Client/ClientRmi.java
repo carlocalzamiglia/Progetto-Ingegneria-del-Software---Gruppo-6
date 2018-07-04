@@ -501,8 +501,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(dice!=null) {
                             dice.setFace("");
                             String dicejson = gson.toJson(dice);
-                            int[] value = clientInt.tool11Messages(dicejson);
-                            if(value[0]==99) {
+                            int value = clientInt.tool11Messages(dicejson);
+                            if(value==99) {
                                 Random rnd = new Random();
                                 int val = rnd.nextInt(6) + 1;
                                 dice.setFace(ruler.intToString(val));
@@ -510,13 +510,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                                 greenCarpet.setDiceInStock(dice);
                                 return 1;
                             }
+                            dice.setFace(ruler.intToString(value));
                             while (!checkcorrdice) {
-                                dice.setFace(ruler.intToString(value[2]));
+                                int[] coord = clientInt.chooseCoordinates();
                                 if(ruler.checkAvailableDice(dice, player.getScheme())) {
-                                    checkcorrdice = ruler.checkCorrectPlacement(value[0], value[1], dice, player.getScheme());
+                                    checkcorrdice = ruler.checkCorrectPlacement(coord[0], coord[1], dice, player.getScheme());
                                     if(checkcorrdice) {
                                         greenCarpet.getDiceFromStock(ndice);
-                                        player.getScheme().setBoxes(dice, value[0], value[1]);
+                                        player.getScheme().setBoxes(dice, coord[0], coord[1]);
                                         tooldice = true;
                                     }
                                 }

@@ -430,24 +430,17 @@ public class CLI implements ClientInterface {
     }
 
     @Override
-    public int[] tool11Messages(String dicejson) throws IOException, InterruptedException {
-        int[] coordinates = new int[3];
-        int[] tmp;
+    public int tool11Messages(String dicejson) throws IOException, InterruptedException {
+        int face;
         Dice dice = gson.fromJson(dicejson, Dice.class);
         System.out.println("Il colore del dado estratto è: "+dice+". Sei pregato di scegliere il valore.\n");
-        coordinates[2]=chooseValue();
-        if (coordinates[2]==99) {
-            coordinates[0] = 99;
-            return coordinates;
+        face=chooseValue();
+        if (face==99) {
+            return face;
         }
-        tmp=chooseCoordinates();
-        if (tmp[0]==99){
-            return tmp;
-        }
-        coordinates[0]=tmp[0];
-        coordinates[1]=tmp[1];
-        return coordinates;
+        return face;
     }
+
 
     public void timerOut(boolean end){
         c=end;

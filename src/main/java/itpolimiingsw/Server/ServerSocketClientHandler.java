@@ -126,9 +126,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         clientAlive(this.nickname);
                     } catch (IOException e1) {
                         e1.printStackTrace();
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
                     }
                     break;
                 } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -138,7 +142,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
     //-----------------------------------------check if client is online yet--------------------------------------------
-    public void clientAlive(String nickname) throws IOException {
+    public void clientAlive(String nickname) throws IOException, InterruptedException {
         //if (DB.getUser(nickname).isOnline()) {
          //       try {
          //           sendMessageOut("@ALIVE");
@@ -154,7 +158,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                     matches.getPlayer(nickname).setOnline(false);
             }
         }
-        sendConnDiscMessage(nickname+" è uscito dalla partita.");
+        newUserMessage(nickname, " è uscito dalla partita.");
         System.out.println(nickname + " ha probabilmente perso la connessione.");
         message="@DEAD";
         return;
@@ -405,12 +409,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         }
                         if(flagTool==2 && !usedDice) {   //just used a toolcard
                             usedTool = true;
-                            arrOfMsg[1] = "";
                             message="";
                         }
                         if(flagTool==3){
                             usedTool = false;
-                            arrOfMsg[1] = "";
                             message="";
                         }
                     }else {
@@ -753,7 +755,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             ret[1]=false;       //placed dice
             if(!useddice) {
                 sendMessageOut("@TOOL-6");
-                while (!(message.equals("@TOOLUSED6")) && !(message.equals("@TOOLEXIT")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                while (!(message.equals("@TOOLUSED6"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
                 if(message.equals("@DEAD") || message.equals("@TIMEROUT")) {
                     return ret;
                 }
@@ -775,8 +777,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         ret[0]=true;
                         return ret;
                     }
-                    dice.setFace(ruler.intToString(stringToInt(arrOfMsg[3])));
+                    dice.setFace(ruler.intToString(stringToInt(arrOfMsg[1])));
                     while (!checkcorrdice) {
+                        sendMessageOut("@TOOL-92");
+                        while (!(message.equals("@TOOLUSED92")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
+                        if(message.equals("@DEAD") || message.equals("@TIMEROUT")) {
+                            ret[0]=true;
+                            return ret;
+                        }
+                        message="";
                         if(ruler.checkAvailableDice(dice, player.getScheme())) {
                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
                             if(checkcorrdice) {

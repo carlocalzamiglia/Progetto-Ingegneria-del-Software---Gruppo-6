@@ -97,7 +97,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         if(DB.getUser(nickname).isOnline()==true){
             try{
                 flag=DB.getUser(nickname).getConnectionType().aliveMessage();
-            }catch (Exception e){
+            }catch (ConnectException e){
                 flag=false;
                 DB.getUser(nickname).setOnline(false);
                 DB.getUser(nickname).setRmiClient(null);

@@ -43,7 +43,7 @@ public interface ClientInterface {
     int[] tool4Messages() throws IOException, InterruptedException;
     int[] tool12Messages() throws IOException, InterruptedException;
     int[] tool6Messages(String dice) throws IOException, InterruptedException;
-    int[] tool11Messages(String dice) throws IOException, InterruptedException;
+    int tool11Messages(String dice) throws IOException, InterruptedException;
 
 
     void timerOut(boolean end);

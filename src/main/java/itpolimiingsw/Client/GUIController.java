@@ -83,6 +83,32 @@ public class GUIController extends Application {
     public static int[] pathVal = new int[2];
 
 
+    //SCENE 4 DECLARATION
+    boolean isin = true;
+    ImageView imageView2;
+    AnchorPane im2=new AnchorPane();
+    GridPane scheme = new GridPane();
+    GridPane grc=new GridPane();
+    HBox hBox2=new HBox(40);
+    VBox vbox2=new VBox(10);
+    HBox hboxTool=new HBox(40);
+    VBox vboxTool1=new VBox(5);
+    VBox vboxTool2=new VBox(5);
+    VBox vboxTool3=new VBox(5);
+
+
+    HBox markers=new HBox(5);
+    HBox hbox3=new HBox(10);
+    VBox vBox1=new VBox(10);
+    HBox hboxgrande=new HBox(20);
+    VBox vbox5=new VBox(20);
+    VBox vbox4=new VBox(20);
+
+    //SCENE 4 END DECLARATION
+
+
+
+
 
 
 
@@ -375,8 +401,8 @@ public class GUIController extends Application {
 
         SceneThread sceneThread = new SceneThread(this);
         sceneThread.start();
-        MessageThread messageThread=new MessageThread(this);
-        messageThread.start();
+        //MessageThread messageThread=new MessageThread(this);
+        //messageThread.start();
         window.setScene(scene1);
         current=1;
         window.show();
@@ -593,10 +619,10 @@ public class GUIController extends Application {
     }
 
 
-    public void setScene2(String messages ){
+    public void setScene2(String messages, String title ){
 
         //object second layout
-        Label match=new Label("MATCHMAKING...");
+        Label match=new Label(title);
         Label message=new Label();
         message.setText(messages);
         match.setFont(Font.font(null, FontWeight.BOLD,80));
@@ -613,7 +639,6 @@ public class GUIController extends Application {
 
     public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
         //object third layout
-
         HBox hBox= new HBox(100);
         VBox vbox = new VBox(20);
 
@@ -661,56 +686,71 @@ public class GUIController extends Application {
                 schemechose=4;
                 myscheme.getChildren().add(pane.getChildren().get(9));
             }
-            String string1="first";
-            String string2="first";
-            try {
-                setScene4(string1,string2,0,false);
-            } catch (IOException e1) { }
-            window.setScene(scene4);
-            current=4;
+            setScene2("", "ATTENDI IL TUO TURNO...");
+            window.setScene(scene2);
+            current=2;
             setLogin(true);
         });
 
     }
 
     public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
-        Scheme empty = new Scheme(0);
-        GreenCarpet gc = new GreenCarpet(0);
+        pane2.getChildren().clear();
+        pane3.getChildren().clear();
+        GreenCarpet gc;
         int first=0;
         int second=0;
         int third=0;
-        Player player = new Player("tmp");
-        if (flag == 1) {
-                Gson gson = new Gson();
-                gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
-                first=gc.getToolCard(1).getSerialNumber();
-                second=gc.getToolCard(2).getSerialNumber();
-                third=gc.getToolCard(3).getSerialNumber();
-                player = gson.fromJson(playerJson, Player.class);
-        }
+        Player player;
+
+        Gson gson = new Gson();
+        gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
+        first=gc.getToolCard(1).getSerialNumber();
+        second=gc.getToolCard(2).getSerialNumber();
+        third=gc.getToolCard(3).getSerialNumber();
+        player = gson.fromJson(playerJson, Player.class);
+
         int k=0;
         Scheme [] schemes=new Scheme[3];
-        for(int i=0;i<3;i++)
-            schemes[i]=empty;
-        if(flag==1){
-            for(int i=0;i<gc.getnPlayers();i++){
-                if(!gc.getPlayer().get(i).getNickname().equals(player.getNickname())){
-                    schemes[k]=gc.getPlayer().get(i).getScheme();
-                    k++;
-                }
+        for(int i=0; i<3; i++){
+            schemes[i]=new Scheme(0);
+        }
+
+        for(int i=0;i<gc.getnPlayers();i++){
+            if(!gc.getPlayer().get(i).getNickname().equals(player.getNickname())){
+                schemes[k]=gc.getPlayer().get(i).getScheme();
+                k++;
             }
         }
-        //layout4
-        ImageView imageView2;
-        AnchorPane im2=new AnchorPane();
-        GridPane scheme;
-        GridPane grc=new GridPane();
-        HBox hBox2=new HBox(40);
-        VBox vbox2=new VBox(10);
-        HBox hboxTool=new HBox(40);
-        VBox vboxTool1=new VBox(5);
-        VBox vboxTool2=new VBox(5);
-        VBox vboxTool3=new VBox(5);
+
+        //clear
+       // vboxTool1.getChildren().clear();
+       // vboxTool2.getChildren().clear();
+       // vboxTool3.getChildren().clear();
+       // hboxTool.getChildren().clear();
+      //  hBox2.getChildren().clear();
+        vbox2.getChildren().clear();
+        hbox3.getChildren().clear();
+        vbox5.getChildren().clear();
+        vBox1.getChildren().clear();
+        hboxgrande.getChildren().clear();
+        vbox4.getChildren().clear();
+
+
+        if(gc.getRound()==0 && isin){
+            //IMAGES
+            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250));
+            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250));
+            vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
+            hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
+
+            hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
+
+            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
+            im2=new AnchorPane(imageView2);
+            isin=false;
+        }
+
 
         Button play=new Button("Piazza dado");
         play.setFont(new Font(30));
@@ -727,66 +767,41 @@ public class GUIController extends Application {
         pass.setFont(new Font(30));
         pass.setAlignment(Pos.CENTER);
         pass.setVisible(visible);
-        VBox vbox4=new VBox(20,play,useTool,pass);
+
+        vbox4.getChildren().addAll(play,useTool,pass);
         Label name=new Label();
         Label cost1=new Label();
         Label cost2=new Label();
         Label cost3=new Label();
-        HBox markers=new HBox(5);
-        if(flag==1) {
-            scheme=setScheme(player.getScheme(),60,300,240);
-            markers=setDifficulty(player.getMarkers().size());
-            cost1.setText("Costo: "+gc.getToolCard(1).getCost());
-            cost1.setFont(Font.font(null,FontWeight.BOLD,30));
-            cost2.setText("Costo: "+gc.getToolCard(2).getCost());
-            cost2.setFont(Font.font(null,FontWeight.BOLD,30));
-            cost3.setText("Costo: "+gc.getToolCard(3).getCost());
-            cost3.setFont(Font.font(null,FontWeight.BOLD,30));
-            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250),cost1);
-            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250),cost2);
-            vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250),cost3);
-            hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
-            hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
-            grc=setStockAndRound(gc);
-            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
-            im2=new AnchorPane(imageView2);
-            name.setText(player.getScheme().getName()+"\tDifficoltà "+player.getScheme().getDifficulty());
-            name.setFont(Font.font(null,FontWeight.BOLD,35));
-        }
-        else{
-            if(myscheme!=null)
-                scheme=myscheme;
-            else
-                scheme=setScheme(empty,60,300,240);
-            vboxTool1.getChildren().clear();
-            vboxTool2.getChildren().clear();
-            vboxTool3.getChildren().clear();
-            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost1);
-            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(0), 350, 250),cost2);
-            vboxTool3.getChildren().addAll( imageToImageV(numbToTool(0), 350, 250),cost3);
-            hboxTool.getChildren().clear();
-            hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
-            hBox2.getChildren().clear();
-            hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250),imageToImageV(numbToImage_PuG(0), 350, 250));
-        }
+
+
+        scheme.getChildren().clear();
+        scheme=setScheme(player.getScheme(),60,300,240);
+        /*
+        markers=setDifficulty(player.getMarkers().size());
+        cost1.setText("Costo: "+gc.getToolCard(1).getCost());
+        cost1.setFont(Font.font(null,FontWeight.BOLD,30));
+        cost2.setText("Costo: "+gc.getToolCard(2).getCost());
+        cost2.setFont(Font.font(null,FontWeight.BOLD,30));
+        cost3.setText("Costo: "+gc.getToolCard(3).getCost());
+        cost3.setFont(Font.font(null,FontWeight.BOLD,30));*/
+
+        grc.getChildren().clear();
+        grc=setStockAndRound(gc);
+
+        name.setText(player.getScheme().getName()+"\tDifficoltà "+player.getScheme().getDifficulty());
+        name.setFont(Font.font(null,FontWeight.BOLD,35));
+
 
         vbox4.prefHeightProperty().bind(vbox2.heightProperty());
         im2.prefHeightProperty().bind(vbox2.heightProperty());
         scheme.prefHeightProperty().bind(vbox2.heightProperty());
 
-        vbox2.getChildren().clear();
         vbox2.getChildren().addAll(vbox4,scheme,name,im2);
-
-        HBox hbox3=new HBox(10);
-        hbox3.getChildren().clear();
-        hbox3.getChildren().setAll(setScheme(schemes[0],35,200,140),setScheme(schemes[1],35,200,140),setScheme(schemes[2],35,200,140));
-        VBox vBox1=new VBox(10);
-        vBox1.getChildren().clear();
+        for(int i=0;i<gc.getnPlayers()-1;i++)
+            hbox3.getChildren().add(setScheme(schemes[i],35,200,140));
         vBox1.getChildren().addAll(hboxTool, hBox2, hbox3);
-        HBox hboxgrande=new HBox(20);
 
-        VBox vbox5=new VBox(20);
-        vbox5.getChildren().clear();
         vbox5.getChildren().addAll(grc,markers);
 
         //set vbox 2 heigh prop.
@@ -794,7 +809,6 @@ public class GUIController extends Application {
         vbox2.prefHeightProperty().bind(hboxgrande.heightProperty());
         hboxgrande.prefHeightProperty().bind(scene1.heightProperty());
         hboxgrande.prefWidthProperty().bind(scene1.widthProperty());
-        hboxgrande.getChildren().clear();
         hboxgrande.getChildren().setAll(vbox5,vbox2,vBox1);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
@@ -912,6 +926,7 @@ public class GUIController extends Application {
     }
 
     public void setScene5(String [] score ){
+        pane4.getChildren().clear();
         Label scoreL[]=new Label[score.length];
         VBox vBoxscene5=new VBox(40);
         Label labelTop=new Label("CLASSIFICA");
@@ -937,7 +952,7 @@ public class GUIController extends Application {
             endgamechoose=true;
             newGame=true;
 
-            setScene2("");
+            setScene2("", "MATCHMAKING...");
             current=2;
             Platform.runLater(() ->{
                 window.setScene(scene2);
@@ -1078,7 +1093,7 @@ public class GUIController extends Application {
                 if (current==2) {
                     System.out.println("sono nel thread\t"+currentmessage);
                     Platform.runLater(()->{
-                        GUIController.setScene2(currentmessage);
+                        GUIController.setScene2(currentmessage, "MATCHMAKING...");
                         current=2;
                         window.setScene(scene2);
                     });
@@ -1131,36 +1146,38 @@ public class GUIController extends Application {
                     }
                 }
                 else if(scenechoose==2){        //set scene 4 without buttons
-                    try {
-                        GUIController.setScene4(greencarpetJsonSt,playerJsonSt,1, false);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     System.out.println("tavolo aggiornato");
                     Platform.runLater(()->{
+                        try {
+                            GUIController.setScene4(greencarpetJsonSt,playerJsonSt,1, false);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         window.setScene(scene4);
                         current=4;
                     });
                 }
                 else if (scenechoose == 3){
-                    GUIController.setScene2("");
+                    GUIController.setScene2("", "MATCHMAKING...");
                     current=2;
                     Platform.runLater(() ->{
                         window.setScene(scene2);
                     });
                 }
                 else if(scenechoose==4){      //set scene 4 with buttons
-                    try {
-                        GUIController.setScene4(greencarpetJsonSt, playerJsonSt,1 ,true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } Platform.runLater(()->{
+
+                    Platform.runLater(()->{
+                        try {
+                            GUIController.setScene4(greencarpetJsonSt, playerJsonSt,1 ,true);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         window.setScene(scene4);
                     });
                 }
                 else if(scenechoose==5){
-                    GUIController.setScene5(scorefinal);
                     Platform.runLater(() ->{
+                        GUIController.setScene5(scorefinal);
                         window.setScene(scene5);
                         current=5;
                     });
@@ -1183,12 +1200,9 @@ public class GUIController extends Application {
                 }
                 else if(scenechoose==7){
                     System.out.println("aaaa");
-                    try {
-                        GUIController.setScene4("first", "first",0 ,false);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } Platform.runLater(()->{
-                        window.setScene(scene4);
+                    GUIController.setScene2("", "ATTENDI IL TUO TURNO...");
+                    Platform.runLater(()->{
+                        window.setScene(scene2);
                     });
                 }
                 scenechoose = 0;

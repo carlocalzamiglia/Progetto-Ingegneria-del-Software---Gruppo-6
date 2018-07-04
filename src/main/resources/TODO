@@ -46,10 +46,13 @@ error scheme choose       //DONE
 
 
 
-//TODO Ricordarsi di controllare se si disconnette un player mentre c'è il countdown!!!
+//TODO Ricordarsi di controllare se si disconnette un player mentre c'è il countdown!!!     //DONE
 
 
 ricordarsi di aggiuengere numero player al game
 
 
 ricordarsi roba di albi
+
+
+testare passo automatico.

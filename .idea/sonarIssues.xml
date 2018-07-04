@@ -133,7 +133,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/Server/ServerRmiClientHandler.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/Server/ServerSocketClientHandler.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/ServertoClientHandler/ClientInterface.java">
           <value>
             <set />
           </value>

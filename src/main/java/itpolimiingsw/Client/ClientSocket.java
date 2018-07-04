@@ -425,10 +425,17 @@ public class ClientSocket {
                                     return;
                             }
                             if(arrOfStr[1].equals("91")){
-                                int[] value = clientInt.tool11Messages(arrOfStr[2]);
+                                int value = clientInt.tool11Messages(arrOfStr[2]);
+                                if (value==99)
+                                    return;
+                                sendMessage("@TOOLUSED91-"+value);
+                            }
+
+                            if(arrOfStr[1].equals("92")){
+                                int[] value = clientInt.chooseCoordinates();
                                 if (value[0]==99)
                                     return;
-                                sendMessage("@TOOLUSED91-"+value[0]+"-"+value[1]+"-"+value[2]);
+                                sendMessage("@TOOLUSED92-"+value[0]+"-"+value[1]);
                             }
 
                     } else if(arrOfStr[0].equals("@ENDGAMEACTION")){
