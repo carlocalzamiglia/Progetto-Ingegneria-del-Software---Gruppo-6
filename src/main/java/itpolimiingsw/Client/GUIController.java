@@ -1189,7 +1189,7 @@ public class GUIController extends Application {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Pennello per Pasta Salda");
                         alert.setHeaderText("Dado");
-                        alert.setContentText("Il dado è stato rilanciato, scegli dove piazzarlo.");
+                        alert.setContentText("Ecco il tuo dado rilanciato: "+dice.toString()+"Scegli dove piazzarlo.");
                         try {
                             alert.getDialogPane().getChildren().add(imageToImageV(diceToImage(dice),50,50));
                         } catch (FileNotFoundException e) {
