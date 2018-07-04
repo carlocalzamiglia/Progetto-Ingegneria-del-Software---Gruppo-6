@@ -3,6 +3,7 @@ package itpolimiingsw.Client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import itpolimiingsw.Game.Game;
 import itpolimiingsw.Game.GreenCarpet;
 import itpolimiingsw.Game.Ruler;
@@ -339,6 +340,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
     private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
+        boolean[] res = new boolean[2];
+        res[0]=false;
+        res[1]=false;
         String message;
         boolean flag;
         int choice;
@@ -368,97 +372,24 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 realchoice=2;
             switch (choice) {
                 case 1:     //no placement
-                    int vdice=clientInt.chooseDice();
-                    if(vdice==99)
-                        return 1;
-                    int selection=clientInt.tool1Messages();
-                    if(selection==99)
-                        return 1;
-                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice,vdice, selection);
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
-
+                    toolok = tool1(player, greenCarpet, toolCardsExecutor);
                     break;
-
-
                 case 2:     //used for tool 2 & 3
-                    int[] coordinates;
-                    coordinates=clientInt.tool23Messages();
-                    if(coordinates[0]==99)
-                        return 1;
-                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, realchoice, coordinates);
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
+                    toolok = tool23(player, greenCarpet, toolCardsExecutor, realchoice);
                     break;
-
                 case 4:
-                    coordinates=clientInt.tool4Messages();
-                    if(coordinates[0]==99)
-                        return 1;
-                    int[] coord1dice= new int[4];
-                    int[] coord2dice= new int[4];
-                    for (int k=0;k<coordinates.length;k++) {
-                        if (k<4)
-                            coord1dice[k] = coordinates[k];
-                        else
-                            coord2dice[k % 4] = coordinates[k];
-                    }
-                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, choice, coord1dice,coord2dice);
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
+                    toolok = tool4(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 5:
-                    vdice = clientInt.chooseDice();
-                    if(vdice==99)
-                        return 1;
-                    int[] dicepos = clientInt.chooseFromPath();
-                    if(dicepos[0]==99)
-                        return 1;
-                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, vdice, dicepos);
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
+                    toolok = tool5(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 6:
-                    Ruler ruler = new Ruler();
-                    boolean checkcorrdice=false;
-                    Dice dice=null;
-                    coordinates = new int[2];
-                    if(!useddice) {
-                        int ndice = clientInt.chooseDice();
-                        if(ndice==99)
-                            return 1;
-                        dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice,6,0);
-                        if (dice != null) {
-                            if (ruler.checkAvailableDice(dice, player.getScheme())) {
-                                String dicejson=gson.toJson(dice);
-                                while (!checkcorrdice) {
-                                    coordinates=clientInt.tool6Messages(dicejson);
-                                    if(coordinates[0]==99)
-                                        return 1;
-                                    checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
-                                }
-                                greenCarpet.getDiceFromStock(ndice);
-                                player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
-                                tooldice=true;
-                            }
-                        } else
-                            clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
-                    }else{
-                        clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
-                    }
+                    res = tool6(player, greenCarpet, toolCardsExecutor, useddice);
+                    toolok=res[0];
+                    tooldice=res[1];
                     break;
                 case 7:
-                    if(greenCarpet.getTurn()==2 && !useddice)
-                        toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice);
-                    else
-                        clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
+                    toolok = tool7(player, greenCarpet, toolCardsExecutor, useddice);
                     break;
                 case 8:
                     if(greenCarpet.getTurn()==1 && useddice){
@@ -482,63 +413,15 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         tooldice=true;
                     break;
                 case 10:
-                    int ndice = clientInt.chooseDice();
-                    if(ndice==99)
-                        return 1;
-                    toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, choice, ndice, 0);
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
+                    toolok = tool10(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 11:
-                    ruler = new Ruler();
-                    checkcorrdice=false;
-                    if(!useddice){
-                        ndice = clientInt.chooseDice();
-                        if(ndice==99)
-                            return 1;
-                        dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice, choice, 0);
-                        if(dice!=null) {
-                            dice.setFace("");
-                            String dicejson = gson.toJson(dice);
-                            int value = clientInt.tool11Messages(dicejson);
-                            if(value==99) {
-                                Random rnd = new Random();
-                                int val = rnd.nextInt(6) + 1;
-                                dice.setFace(ruler.intToString(val));
-                                greenCarpet.getDiceFromStock(ndice);
-                                greenCarpet.setDiceInStock(dice);
-                                return 1;
-                            }
-                            dice.setFace(ruler.intToString(value));
-                            while (!checkcorrdice) {
-                                int[] coord = clientInt.chooseCoordinates();
-                                if(ruler.checkAvailableDice(dice, player.getScheme())) {
-                                    checkcorrdice = ruler.checkCorrectPlacement(coord[0], coord[1], dice, player.getScheme());
-                                    if(checkcorrdice) {
-                                        greenCarpet.getDiceFromStock(ndice);
-                                        player.getScheme().setBoxes(dice, coord[0], coord[1]);
-                                        tooldice = true;
-                                    }
-                                }
-                                else
-                                    checkcorrdice = true;
-                            }
-                        }else{
-                            clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
-                        }
-                    }else
-                        clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
+                    res = tool11(player, greenCarpet, toolCardsExecutor, useddice);
+                    toolok=res[0];
+                    tooldice=res[1];
                     break;
                 case 12:
-                    int[] coordinates12 = clientInt.tool12Messages();
-                    if(coordinates12[0]==99)
-                        return 1;
-                    int numOfDices=coordinates12[8];
-                    toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,choice, numOfDices, coordinates12);
-                    if(!toolok){
-                        clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-                    }
+                    toolok = tool12(player, greenCarpet, toolCardsExecutor);
                     break;
             }
         }else{
@@ -556,7 +439,113 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
 
-    //-----------------------------------------TOOL METHODS-------
+    //-----------------------------------------TOOL METHODS-------------------------------------------------------------
+    private boolean tool1(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
+        int vdice=clientInt.chooseDice();
+        if(vdice==99)
+            return false;
+        int selection=clientInt.tool1Messages();
+        if(selection==99)
+            return false;
+        boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 1,vdice, selection);
+        if(!toolok){
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
+
+    private boolean tool23(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, int realchoice) throws IOException, InterruptedException {
+        int[] coordinates;
+        coordinates=clientInt.tool23Messages();
+        if(coordinates[0]==99)
+            return false;
+        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, realchoice, coordinates);
+        if(!toolok){
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
+
+    private boolean tool4(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
+        int[] coordinates=clientInt.tool4Messages();
+        if(coordinates[0]==99)
+            return false;
+        int[] coord1dice= new int[4];
+        int[] coord2dice= new int[4];
+        for (int k=0;k<coordinates.length;k++) {
+            if (k<4)
+                coord1dice[k] = coordinates[k];
+            else
+                coord2dice[k % 4] = coordinates[k];
+        }
+        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 4, coord1dice,coord2dice);
+        if(!toolok){
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
+
+    private boolean tool5(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+        int vdice = clientInt.chooseDice();
+        if (vdice == 99)
+            return false;
+        int[] dicepos = clientInt.chooseFromPath();
+        if (dicepos[0] == 99)
+            return false;
+        boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 5, vdice, dicepos);
+        if (!toolok) {
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
+
+    private boolean[] tool6(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException{
+        Ruler ruler = new Ruler();
+        boolean checkcorrdice=false;
+        Dice dice=null;
+        int [] coordinates = new int[2];
+        boolean[] ret = new boolean[2];
+        ret[0]=false;       //used the tool
+        ret[1]=false;       //placed dice
+        if(!useddice) {
+            int ndice = clientInt.chooseDice();
+            if(ndice==99)
+                return ret;
+            dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice,6,0);
+            if (dice != null) {
+                if (ruler.checkAvailableDice(dice, player.getScheme())) {
+                    String dicejson=gson.toJson(dice);
+                    while (!checkcorrdice) {
+                        coordinates=clientInt.tool6Messages(dicejson);
+                        if(coordinates[0]==99)
+                            return ret;
+                        checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
+                    }
+                    greenCarpet.getDiceFromStock(ndice);
+                    player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
+                    ret[0]=true;
+                    ret[1]=true;
+                }
+            } else
+                clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+        }else{
+            clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
+        }
+        return ret;
+    }
+
+
+    private boolean tool7(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException {
+        boolean toolok =  false;
+        if(greenCarpet.getTurn()==2 && !useddice)
+            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 7);
+        else
+            clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
+        if(!toolok){
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
 
     private boolean tool89method(Player player, GreenCarpet greenCarpet, int choice) throws IOException, InterruptedException {
         ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
@@ -572,6 +561,86 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             clientInt.showError("Non è stato possibile utilizzare la tool.");
         return toolok89;
     }
+
+
+    private boolean tool10(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+        int ndice = clientInt.chooseDice();
+        if(ndice==99)
+            return false;
+        boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 10, ndice, 0);
+        if(!toolok){
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
+
+    private boolean[] tool11(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException{
+        Ruler ruler = new Ruler();
+        boolean checkcorrdice=false;
+        boolean[] ret = new boolean[2];
+        ret[0]=false;       //used the tool
+        ret[1]=false;       //placed dice
+        if(!useddice){
+            int ndice = clientInt.chooseDice();
+            if(ndice==99)
+                return ret;
+            Dice dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice, 11, 0);
+            if(dice!=null) {
+                dice.setFace("");
+                String dicejson = gson.toJson(dice);
+                int value = clientInt.tool11Messages(dicejson);
+                if(value==99) {
+                    Random rnd = new Random();
+                    int val = rnd.nextInt(6) + 1;
+                    dice.setFace(ruler.intToString(val));
+                    greenCarpet.getDiceFromStock(ndice);
+                    greenCarpet.setDiceInStock(dice);
+                    ret[0]=true;
+                    return ret;
+                }
+                dice.setFace(ruler.intToString(value));
+                while (!checkcorrdice) {
+                    int[] coord = clientInt.chooseCoordinates();
+                    if(ruler.checkAvailableDice(dice, player.getScheme())) {
+                        checkcorrdice = ruler.checkCorrectPlacement(coord[0], coord[1], dice, player.getScheme());
+                        if(checkcorrdice) {
+                            greenCarpet.getDiceFromStock(ndice);
+                            player.getScheme().setBoxes(dice, coord[0], coord[1]);
+                            ret[0]=true;
+                            ret[1]=true;
+                        }
+                    }
+                    else{
+                        checkcorrdice = true;
+                        ret[0]=true;
+                    }
+                }
+            }else{
+                clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+            }
+        }else
+            clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
+
+        return ret;
+    }
+
+    private boolean tool12(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+        int[] coordinates12 = clientInt.tool12Messages();
+        if(coordinates12[0]==99)
+            return false;
+        int numOfDices=coordinates12[8];
+        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,12, numOfDices, coordinates12);
+        if(!toolok){
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+        }
+        return toolok;
+    }
+
+
+    //*****************************************TOOL METHODS***********************************+*************************
+
+
+
 
 
     private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"

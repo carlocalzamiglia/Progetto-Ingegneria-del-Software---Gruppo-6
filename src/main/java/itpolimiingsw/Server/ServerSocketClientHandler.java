@@ -462,6 +462,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
         private int placeTool(GreenCarpet greenCarpet, Player player, boolean useddice) throws IOException, InterruptedException {
             ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
+            boolean[] res = new boolean[2];
+            res[0]=false;
+            res[1]=false;
             boolean toolok=false;
             boolean flag;
             int choice;
@@ -496,7 +499,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         toolok = toolFive(player, greenCarpet, toolCardsExecutor);
                         break;
                     case 6:
-                        boolean[] res = toolSix(player, greenCarpet, toolCardsExecutor, useddice);
+                        res = toolSix(player, greenCarpet, toolCardsExecutor, useddice);
                         toolok = res[0];
                         tooldice = res[1];
                         break;
@@ -727,10 +730,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             } else
                 sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
             message="";
-            if(toolok)
-                return true;
-            else
-                return false;
+            return toolok;
         }
 
         private boolean toolTen(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
