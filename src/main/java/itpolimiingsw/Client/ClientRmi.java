@@ -318,18 +318,14 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (InterruptedException e) {return;}
-                        if (flagTool == 1) {     //used a toolcard which include dice placement
+                        if (flagTool==1 || (flagTool==2 && usedDice)) {     //used a toolcard which include dice placement
                             timerThread.setTime();
                             return;
                         }
-                        if (flagTool == 2) {
-                            if (!usedDice)
-                                usedTool = true;
-                            else {
-                                timerThread.setTime();
-                                return;
-                            }
-                        }
+                        if(flagTool==2 && !usedDice)
+                            usedTool = true;
+                        if(flagTool==3)
+                            usedTool = false;
                     }else
                         clientInt.showError("Scelta errata-Hai già utilizzato una carta tool in questo giro!");
                 }
@@ -431,10 +427,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         String playerupd = gson.toJson(player);
         if(!tooldice || !(useddice && toolok))
             clientInt.updateView(greenupd, playerupd);
-        if(tooldice)
+        if(tooldice)      //return 1 if the tool card include dice placement
             return 1;
         else
+        if(toolok)      //used a tool without placement
             return 2;
+        else            //no tool used
+            return 3;
 
     }
 
