@@ -11,9 +11,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -24,9 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -94,8 +89,8 @@ public class GUIController extends Application {
     AnchorPane im2=new AnchorPane();
     GridPane scheme = new GridPane();
     GridPane grc=new GridPane();
-    HBox hBoxPubGoal=new HBox(40);
-    VBox vBoxScheme=new VBox(10);
+    HBox hBox2=new HBox(40);
+    VBox vbox2=new VBox(10);
     HBox hboxTool=new HBox(40);
     VBox vboxTool1=new VBox(5);
     VBox vboxTool2=new VBox(5);
@@ -103,13 +98,11 @@ public class GUIController extends Application {
 
 
     HBox markers=new HBox(5);
-    HBox hboxOpponentScheme=new HBox(10);
-    VBox vBoxCardItems=new VBox(10);
+    HBox hbox3=new HBox(10);
+    VBox vBox1=new VBox(10);
     HBox hboxgrande=new HBox(20);
-    VBox vBoxGCMarkers=new VBox(20);
-
-    VBox vBoxButton=new VBox(20);
-    VBox vBoxButtonAndPG=new VBox(70);
+    VBox vbox5=new VBox(20);
+    VBox vbox4=new VBox(20);
 
     //SCENE 4 END DECLARATION
 
@@ -354,14 +347,11 @@ public class GUIController extends Application {
     BackgroundFill myBF = new BackgroundFill(Color.rgb(0, 0, 0, 0), new CornerRadii(1),
             new Insets(0.0, 0.0, 0.0, 0.0));
 
-    BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/screen3.jpg")),
+    BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/screen.jpg")),
             BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
             BackgroundSize.DEFAULT);
     //final double initialSceneWidth = 2000;
     //final double initialSceneHeight = 1000;
-    Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-    double width = screenSize.getWidth() / 3;
-    double height = screenSize.getHeight() / 2;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -415,14 +405,6 @@ public class GUIController extends Application {
         //messageThread.start();
         window.setScene(scene1);
         current=1;
-        window.setResizable(false);
-        window.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
         window.show();
 
 
@@ -522,7 +504,7 @@ public class GUIController extends Application {
         return pane;
 
     }
-    public GridPane setScheme(Scheme scheme,int sizeIm,double width,double height) throws IOException {
+    public GridPane setScheme(Scheme scheme,int sizeIm,int width,int height) throws IOException {
 
         GridPane gridPane = new GridPane();
 
@@ -712,29 +694,31 @@ public class GUIController extends Application {
 
     }
 
-    public void setScene4(String greenCarpetJson,String playerJson, boolean visible) throws IOException {
+    public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
         pane2.getChildren().clear();
         pane3.getChildren().clear();
+        GreenCarpet gc;
+        int first=0;
+        int second=0;
+        int third=0;
+        Player player;
 
         Gson gson = new Gson();
-        GreenCarpet gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
-        int first=gc.getToolCard(1).getSerialNumber();
-        int second=gc.getToolCard(2).getSerialNumber();
-        int third=gc.getToolCard(3).getSerialNumber();
-        Player player = gson.fromJson(playerJson, Player.class);
-        Scheme [] opponentSchemes=new Scheme[3];
-
+        gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
+        first=gc.getToolCard(1).getSerialNumber();
+        second=gc.getToolCard(2).getSerialNumber();
+        third=gc.getToolCard(3).getSerialNumber();
+        player = gson.fromJson(playerJson, Player.class);
 
         int k=0;
-        /*
+        Scheme [] schemes=new Scheme[3];
         for(int i=0; i<3; i++){
-            opponentSchemes[i]=new Scheme(0);
+            schemes[i]=new Scheme(0);
         }
-        */
 
         for(int i=0;i<gc.getnPlayers();i++){
             if(!gc.getPlayer().get(i).getNickname().equals(player.getNickname())){
-                opponentSchemes[k]=gc.getPlayer().get(i).getScheme();
+                schemes[k]=gc.getPlayer().get(i).getScheme();
                 k++;
             }
         }
@@ -744,71 +728,58 @@ public class GUIController extends Application {
        // vboxTool2.getChildren().clear();
        // vboxTool3.getChildren().clear();
        // hboxTool.getChildren().clear();
-      //  hBoxPubGoal.getChildren().clear();
-
-        //clear all pane
-        vBoxScheme.getChildren().clear();
-        hboxOpponentScheme.getChildren().clear();
-        vBoxGCMarkers.getChildren().clear();
-        vBoxCardItems.getChildren().clear();
+      //  hBox2.getChildren().clear();
+        vbox2.getChildren().clear();
+        hbox3.getChildren().clear();
+        vbox5.getChildren().clear();
+        vBox1.getChildren().clear();
         hboxgrande.getChildren().clear();
-        vBoxButton.getChildren().clear();
-        vBoxButtonAndPG.getChildren().clear();
+        vbox4.getChildren().clear();
 
-        //first time i set this immage... this are the only items that will never change anymore during the play
+
         if(gc.getRound()==0 && isin){
+            //IMAGES
             vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250));
             vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250));
             vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
             hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
-            hboxTool.setPrefWidth(width/12);
-            hboxTool.setPrefWidth(height/3);
-            hBoxPubGoal.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
-            hBoxPubGoal.setPrefWidth(width/12);
-            hBoxPubGoal.setPrefWidth(height/3);
-            imageView2=new ImageView(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()));
-            imageView2.setFitWidth(width/4);
-            imageView2.setFitHeight(height/3);
+
+            hBox2.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
+
+            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
             im2=new AnchorPane(imageView2);
             isin=false;
         }
 
-        //Button Play
+
         Button play=new Button("Piazza dado");
         play.setFont(new Font(30));
-        play.setPrefSize(width/4,50);
+        play.setPrefSize(300,50);
         play.setVisible(visible);
         play.setAlignment(Pos.CENTER);
-
-        //Button PUseTool
         Button useTool=new Button("Usa carta");
         useTool.setFont(new Font(30));
-        useTool.setPrefSize(width/4,50);
+        useTool.setPrefSize(300,50);
         useTool.setAlignment(Pos.CENTER);
         useTool.setVisible(visible);
-
-        //Button Pass
         Button pass=new Button("Passa");
-        pass.setPrefSize(width/4,50);
+        pass.setPrefSize(300,50);
         pass.setFont(new Font(30));
         pass.setAlignment(Pos.CENTER);
         pass.setVisible(visible);
 
-        vBoxButton.getChildren().addAll(play,useTool,pass);
-
+        vbox4.getChildren().addAll(play,useTool,pass);
         Label name=new Label();
-        Label difficulty=new Label();
         Label cost1=new Label();
         Label cost2=new Label();
         Label cost3=new Label();
 
 
         scheme.getChildren().clear();
-        scheme=setScheme(player.getScheme(),60,width/4,height/3);
-        markers.getChildren().clear();
+        scheme=setScheme(player.getScheme(),60,300,240);
+        /*
         markers=setDifficulty(player.getMarkers().size());
-
-        /*cost1.setText("Costo: "+gc.getToolCard(1).getCost());
+        cost1.setText("Costo: "+gc.getToolCard(1).getCost());
         cost1.setFont(Font.font(null,FontWeight.BOLD,30));
         cost2.setText("Costo: "+gc.getToolCard(2).getCost());
         cost2.setFont(Font.font(null,FontWeight.BOLD,30));
@@ -818,44 +789,33 @@ public class GUIController extends Application {
         grc.getChildren().clear();
         grc=setStockAndRound(gc);
 
-        name.setText(player.getScheme().getName());
-        difficulty.setText("Difficoltà "+player.getScheme().getDifficulty());
+        name.setText(player.getScheme().getName()+"\tDifficoltà "+player.getScheme().getDifficulty());
         name.setFont(Font.font(null,FontWeight.BOLD,35));
-        difficulty.setFont(Font.font(null,FontWeight.BOLD,35));
-
-        Label message=new Label("AAAAAAAAAAAAAAA");
-        message.setFont(Font.font(null,FontWeight.BOLD,30));
 
 
-        vBoxButtonAndPG.getChildren().addAll(vBoxButton,im2);
-        vBoxScheme.getChildren().addAll(message,scheme,name,difficulty);
+        vbox4.prefHeightProperty().bind(vbox2.heightProperty());
+        im2.prefHeightProperty().bind(vbox2.heightProperty());
+        scheme.prefHeightProperty().bind(vbox2.heightProperty());
+
+        vbox2.getChildren().addAll(vbox4,scheme,name,im2);
         for(int i=0;i<gc.getnPlayers()-1;i++)
-            hboxOpponentScheme.getChildren().add(setScheme(opponentSchemes[i],35,width/12,height/3));
-        vBoxCardItems.getChildren().addAll(hboxTool, hBoxPubGoal, hboxOpponentScheme);
+            hbox3.getChildren().add(setScheme(schemes[i],35,200,140));
+        vBox1.getChildren().addAll(hboxTool, hBox2, hbox3);
 
-        vBoxGCMarkers.getChildren().addAll(grc,markers);
+        vbox5.getChildren().addAll(grc,markers);
 
         //set vbox 2 heigh prop.
 
-        vBoxScheme.prefHeight(height);
-        vBoxScheme.prefWidth(width/4);
-        vBoxGCMarkers.prefHeight(height);
-        vBoxGCMarkers.prefWidth(width/4);
-        vBoxButtonAndPG.prefHeight(height);
-        vBoxButtonAndPG.prefWidth(width/4);
-        vBoxCardItems.prefHeight(height);
-        vBoxCardItems.prefWidth(width/4);
-        hboxgrande.getChildren().addAll(vBoxGCMarkers,vBoxScheme,vBoxButtonAndPG,vBoxCardItems);
-        hboxgrande.setPrefWidth(width);
-        hboxgrande.setPrefHeight(height);
+        vbox2.prefHeightProperty().bind(hboxgrande.heightProperty());
+        hboxgrande.prefHeightProperty().bind(scene1.heightProperty());
+        hboxgrande.prefWidthProperty().bind(scene1.widthProperty());
+        hboxgrande.getChildren().setAll(vbox5,vbox2,vBox1);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
-        pane4.setPrefWidth(width);
-        pane4.setPrefHeight(height);
         scene4 = new Scene(pane4);
-
-        GridPane tmp = (GridPane) grc.getChildren().get(1);     //STOCK
-        tmp.getChildren().forEach(item -> {
+        if(flag==1) {
+            GridPane tmp = (GridPane) grc.getChildren().get(1);     //STOCK
+            tmp.getChildren().forEach(item -> {
                 item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI RISERVA
                     @Override
                     public void handle(MouseEvent event) {
@@ -869,8 +829,8 @@ public class GUIController extends Application {
             });
 
 
-        GridPane tmp2 = (GridPane) grc.getChildren().get(0);
-        tmp2.getChildren().forEach(item -> {
+            GridPane tmp2 = (GridPane) grc.getChildren().get(0);
+            tmp2.getChildren().forEach(item -> {
                 item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI PATH
                     @Override
                     public void handle(MouseEvent event) {
@@ -885,7 +845,7 @@ public class GUIController extends Application {
             });
 
 
-        scheme.getChildren().forEach(item2 -> {
+            scheme.getChildren().forEach(item2 -> {
                 item2.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent event) {
@@ -909,6 +869,8 @@ public class GUIController extends Application {
                     }
                 });
             });
+
+        }
         pass.setOnAction(e ->{
             menuaction="1";
             setLogin(true);
@@ -964,6 +926,7 @@ public class GUIController extends Application {
     }
 
     public void setScene5(String [] score ){
+        pane4.getChildren().clear();
         Label scoreL[]=new Label[score.length];
         VBox vBoxscene5=new VBox(40);
         Label labelTop=new Label("CLASSIFICA");
@@ -1186,7 +1149,7 @@ public class GUIController extends Application {
                     System.out.println("tavolo aggiornato");
                     Platform.runLater(()->{
                         try {
-                            GUIController.setScene4(greencarpetJsonSt,playerJsonSt, false);
+                            GUIController.setScene4(greencarpetJsonSt,playerJsonSt,1, false);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -1205,7 +1168,7 @@ public class GUIController extends Application {
 
                     Platform.runLater(()->{
                         try {
-                            GUIController.setScene4(greencarpetJsonSt, playerJsonSt,true);
+                            GUIController.setScene4(greencarpetJsonSt, playerJsonSt,1 ,true);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -1216,7 +1179,6 @@ public class GUIController extends Application {
                     Platform.runLater(() ->{
                         GUIController.setScene5(scorefinal);
                         window.setScene(scene5);
-                        //pane4.getChildren().clear();
                         current=5;
                     });
                 }
@@ -1227,7 +1189,7 @@ public class GUIController extends Application {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Pennello per Pasta Salda");
                         alert.setHeaderText("Dado");
-                        alert.setContentText("Il dado è stato rilanciato, scegli dove piazzarlo.");
+                        alert.setContentText("Ecco il tuo dado rilanciato: "+dice.toString()+"Scegli dove piazzarlo.");
                         try {
                             alert.getDialogPane().getChildren().add(imageToImageV(diceToImage(dice),50,50));
                         } catch (FileNotFoundException e) {
