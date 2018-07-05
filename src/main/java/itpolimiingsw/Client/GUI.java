@@ -286,6 +286,11 @@ public class GUI implements ClientInterface {
         GUIController.showScore(score);
     }
 
+    @Override
+    public void sendTimer(int i) {
+
+    }
+
     public int[] handleCoordinates(int num) throws IOException, InterruptedException {
         int[] allcoordinates = new int[num];
         int[] oldcoordinates;

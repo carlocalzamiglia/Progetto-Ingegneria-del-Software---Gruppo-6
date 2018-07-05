@@ -518,6 +518,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         if(coordinates[0]==99)
                             return ret;
                         checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
+                        if(!checkcorrdice)
+                            clientInt.showError("Errore-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
                     }
                     greenCarpet.getDiceFromStock(ndice);
                     player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
@@ -606,7 +608,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                             player.getScheme().setBoxes(dice, coord[0], coord[1]);
                             ret[0]=true;
                             ret[1]=true;
-                        }
+                        }else
+                            clientInt.showError("Errore-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
                     }
                     else{
                         checkcorrdice = true;

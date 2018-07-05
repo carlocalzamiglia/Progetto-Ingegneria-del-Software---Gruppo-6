@@ -227,6 +227,7 @@ public class ClientSocket {
                 while (i < time) {
                     sleep(1000);
                     i++;
+                    clientInt.sendTimer(time-i);
                 }
                 try {
                     clientInt.timerOut(true);

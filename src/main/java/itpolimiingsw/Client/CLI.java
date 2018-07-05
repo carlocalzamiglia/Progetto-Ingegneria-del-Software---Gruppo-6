@@ -477,5 +477,10 @@ public class CLI implements ClientInterface {
         }
     }
 
+    @Override
+    public void sendTimer(int i) {
+
+    }
+
 
 }

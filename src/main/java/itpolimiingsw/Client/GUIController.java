@@ -732,11 +732,11 @@ public class GUIController extends Application {
         }
 
         //clear
-        vboxTool1.getChildren().clear();
-        vboxTool2.getChildren().clear();
-        vboxTool3.getChildren().clear();
-        hboxTool.getChildren().clear();
-        hBoxPubGoal.getChildren().clear();
+        //vboxTool1.getChildren().clear();
+        //vboxTool2.getChildren().clear();
+        //vboxTool3.getChildren().clear();
+        //hboxTool.getChildren().clear();
+        //hBoxPubGoal.getChildren().clear();
         vboxScheme.getChildren().clear();
         hboxOpponentScheme.getChildren().clear();
         vboxGC.getChildren().clear();
@@ -752,16 +752,28 @@ public class GUIController extends Application {
         cost2.setFont(Font.font(null, FontWeight.BOLD, 30));
         cost3.setFont(Font.font(null, FontWeight.BOLD, 30));
 
-        //IMAGES
-        vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 320, 230), cost1);
-        vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 320, 230), cost2);
-        vboxTool3.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 320, 230), cost3);
-        hboxTool.getChildren().addAll(vboxTool1, vboxTool2, vboxTool3);
+        if(gc.getRound()==0 && isin){
+            //IMAGES
+            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 320, 230), cost1);
+            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 320, 230), cost2);
+            vboxTool3.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 320, 230), cost3);
+            hboxTool.getChildren().addAll(vboxTool1, vboxTool2, vboxTool3);
 
-        hBoxPubGoal.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 320, 230), imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 320, 230), imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 320, 230));
+            hBoxPubGoal.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 320, 230), imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 320, 230), imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 320, 230));
 
-        imageView2 = imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()), 350, 250);
-        im2 = new AnchorPane(imageView2);
+            imageView2 = imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()), 350, 250);
+            im2 = new AnchorPane(imageView2);
+            isin = false;
+        }
+
+        vboxTool1.getChildren().remove(1);
+        vboxTool2.getChildren().remove(1);
+        vboxTool3.getChildren().remove(1);
+        vboxTool1.getChildren().add(1, cost1);
+        vboxTool2.getChildren().add(1, cost2);
+        vboxTool3.getChildren().add(1, cost3);
+
+
 
 
         Button play = new Button("Piazza dado");
@@ -788,7 +800,7 @@ public class GUIController extends Application {
         scheme.getChildren().clear();
         scheme = setScheme(player.getScheme(), 350, 280);
 
-        markers = setDifficulty(player.getMarkers().size());
+        //markers = setDifficulty(player.getMarkers().size());
 
 
         grcRoundTr.getChildren().clear();
@@ -896,7 +908,7 @@ public class GUIController extends Application {
         });
 
         int finalFirst = first;
-        vboxTool1.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
+        vboxTool1.getChildren(). get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
                 if (toolUsable) {
@@ -1196,12 +1208,8 @@ public class GUIController extends Application {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Pennello per Pasta Salda");
                         alert.setHeaderText("Dado");
-                        alert.setContentText("Ecco il tuo dado rilanciato: "+dice.toString()+"Scegli dove piazzarlo.");
-                        try {
-                            alert.getDialogPane().getChildren().add(imageToImageV(diceToImage(dice),50,50));
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        alert.setContentText("Il dado è stato lanciato, ora scegli dove piazzarlo.");
+                        alert.getDialogPane().getChildren().add(getDiceDraws(null, dice, 50.0, 50.0, false));
                         alert.showAndWait();
                     });
                 }

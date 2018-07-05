@@ -57,5 +57,5 @@ public interface ClientInterface {
     void showScore(String[] score);
 
 
-
+    void sendTimer(int i);
 }

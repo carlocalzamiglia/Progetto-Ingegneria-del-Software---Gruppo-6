@@ -665,6 +665,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
                                 return ret;
                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
+                            if(!checkcorrdice)
+                                sendMessageOut("@ERROR-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
                             message = "";
                         }
                         greenCarpet.getDiceFromStock(dicepos);
@@ -794,6 +796,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                                 ret[0]=true;
                                 ret[1]=true;
                             }
+                            else
+                                sendMessageOut("@ERROR-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
                         }else {
                             checkcorrdice = true;
                             ret[0]=true;
