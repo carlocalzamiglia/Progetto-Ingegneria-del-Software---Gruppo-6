@@ -19,9 +19,6 @@ public class Calculator implements Serializable {
         this.greenCarpet = greenCarpet;
     }
 
-    public void setPlayers(ArrayList<Player> players) {
-        this.players = players;
-    }
 
     //---------------------------------Returns the points of the player-------------------------------------------------
     public int calculate(int i) {

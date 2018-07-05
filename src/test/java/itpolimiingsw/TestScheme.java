@@ -47,15 +47,7 @@ public class TestScheme {
         box1.dump();
         box2.dump();
     }
-    @org.junit.jupiter.api.Test
-    public void testBridge(){
-        Bridge bridge=new Bridge(3);
-        Colour colour=bridge.getColour();
-        Scheme scheme=new Scheme(4);
-        bridge.setScheme(scheme);
-        int n=bridge.getSerialNumber();
-        Scheme scheme1=bridge.getScheme();
-    }
+
 
 }
 

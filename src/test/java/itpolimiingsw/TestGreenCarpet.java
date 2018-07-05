@@ -1,6 +1,8 @@
 package itpolimiingsw;
 
 import itpolimiingsw.Game.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 
@@ -81,6 +83,36 @@ public class TestGreenCarpet {
 
 
 
+    }
+
+    @Test
+    public void checkEmptyRPTrue(){
+        GreenCarpet greenCarpet = new GreenCarpet(4);
+        assertEquals(false, greenCarpet.checkEmptyRoundpath());
+    }
+
+    @Test
+    public void checkEmptyRPFalse(){
+        GreenCarpet greenCarpet = new GreenCarpet(4);
+        greenCarpet.setStock(4);
+        greenCarpet.setRoundPath(1);
+        assertEquals(true, greenCarpet.checkEmptyRoundpath());
+    }
+
+    @Test
+    public void toolIsInFalse(){
+        GreenCarpet greenCarpet = new GreenCarpet(4);
+        Inventory inventory = new Inventory();
+        greenCarpet.setToolCards(inventory.getToolCard(1), inventory.getToolCard(2), inventory.getToolCard(3));
+        assertEquals(false, greenCarpet.toolIsIn(4));
+    }
+
+    @Test
+    public void toolIsInTrue(){
+        GreenCarpet greenCarpet = new GreenCarpet(4);
+        Inventory inventory = new Inventory();
+        greenCarpet.setToolCards(inventory.getToolCard(1), inventory.getToolCard(2), inventory.getToolCard(3));
+        assertEquals(true, greenCarpet.toolIsIn(1));
     }
 
 }

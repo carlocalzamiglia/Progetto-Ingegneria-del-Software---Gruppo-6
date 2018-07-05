@@ -209,7 +209,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             Random random = new Random();
             return random.nextInt(4) + 1;
         }
-        timerThread.interrupt();
+        timerThread.setTime();
         return choose;
     }
 
@@ -678,7 +678,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         clientInt.timerOut(true);
         sleep(300);
         clientInt.endTurn();
-        timerThread.interrupt();
+        timerThread.setTime();  //TODO era interrupt prima
         return game;
     }
 

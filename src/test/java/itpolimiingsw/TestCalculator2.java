@@ -1,11 +1,9 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.Dice;
-import itpolimiingsw.Game.GreenCarpet;
-import itpolimiingsw.Game.Inventory;
-import itpolimiingsw.Game.Player;
-import itpolimiingsw.Game.Calculator;
+import itpolimiingsw.Game.*;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,7 +14,6 @@ class TestCalculator2 {
     public void test() {
         int n=1;
         int r=10-n;
-        Random random= new Random();
         Inventory inventory=new Inventory();
         GreenCarpet greenCarpet=new GreenCarpet(1);
         ArrayList<Player> players=new ArrayList<Player>();
@@ -27,46 +24,48 @@ class TestCalculator2 {
         players.get(0).setBridge(inventory.getBridge(1));
         players.get(0).setOnline(true);
 
-        int a = random.nextInt(r)+n;
-        int b=random.nextInt(r)+n;
-        int c=random.nextInt(r)+n;
+        Dice dice = new Dice(Colour.ANSI_RED);
+        dice.setFace("\u2680");
+        Dice dice1 = new Dice(Colour.ANSI_BLUE);
+        dice1.setFace("\u2681");
+        Dice dice2 = new Dice(Colour.ANSI_YELLOW);
+        dice2.setFace("\u2682");
+        Dice dice3 = new Dice(Colour.ANSI_GREEN);
+        dice3.setFace("\u2683");
+        Dice dice4 = new Dice(Colour.ANSI_PURPLE);
+        dice4.setFace("\u2684");
+        Dice dice5 = new Dice(Colour.ANSI_GREEN);
+        dice5.setFace("\u2685");
 
-        while(b==a || b==c || a==c) {
-            if (b == a)
-                b=random.nextInt(r)+n;
-            if(a==c)
-                c=random.nextInt(r)+n;
-            if(b==c)
-                c=random.nextInt(r)+n;
-        }
+        players.get(0).getScheme().setBoxes(dice, 0, 0);
+        players.get(0).getScheme().setBoxes(dice1, 0, 1);
+        players.get(0).getScheme().setBoxes(dice2, 0, 2);
+        players.get(0).getScheme().setBoxes(dice3, 0, 3);
+        players.get(0).getScheme().setBoxes(dice4, 0, 4);
+        players.get(0).getScheme().setBoxes(dice1, 1, 0);
+        players.get(0).getScheme().setBoxes(dice2, 2, 0);
+        players.get(0).getScheme().setBoxes(dice3, 3, 0);
+        players.get(0).getScheme().setBoxes(dice, 1, 1);
+        players.get(0).getScheme().setBoxes(dice, 2, 2);
+        players.get(0).getScheme().setBoxes(dice1, 1, 2);
+        players.get(0).getScheme().setBoxes(dice5, 3, 4);
 
 
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(5), inventory.getPublicGoal(6), inventory.getPublicGoal(7));
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
-                if ((i+j)!=7 && (i*j)!=15 && i+j!=1) {
-                    Dice d = inventory.getDiceBucket().educe();
-                    d.roll();
-                    players.get(0).getScheme().setBoxes(d, i, j);
-                }
-            }
-        }
-        greenCarpet.dump();
-        players.get(0).dump();
+
+
+
+
         Calculator calculator = new Calculator(players, greenCarpet);
-        int pointPlayerCesna = calculator.calculate(0);
-        System.out.println(pointPlayerCesna);
+        greenCarpet.setPublicGoals(inventory.getPublicGoal(5),inventory.getPublicGoal(6),inventory.getPublicGoal(7));
+
+        assertEquals(14, calculator.calculate(0));
         greenCarpet.setPublicGoals(inventory.getPublicGoal(8),inventory.getPublicGoal(9),inventory.getPublicGoal(10));
-        greenCarpet.dump();
         calculator.setGreenCarpet(greenCarpet);
-        pointPlayerCesna=calculator.calculate(0);
-        System.out.println(pointPlayerCesna);
+        assertEquals(17, calculator.calculate(0));
         greenCarpet.setPublicGoals(inventory.getPublicGoal(4),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
         calculator.setGreenCarpet(greenCarpet);
-        greenCarpet.dump();
-        pointPlayerCesna=calculator.calculate(0);
-        players.get(0).setPoints(pointPlayerCesna);
-        System.out.println(players.get(0).getPoints());
+        assertEquals(16, calculator.calculate(0));
+
 
 
 

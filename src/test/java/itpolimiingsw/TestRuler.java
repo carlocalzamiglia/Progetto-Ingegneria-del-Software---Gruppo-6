@@ -1,63 +1,222 @@
 package itpolimiingsw;
 
 
-import itpolimiingsw.Game.Dice;
-import itpolimiingsw.Game.DiceBucket;
-import itpolimiingsw.Game.Inventory;
-import itpolimiingsw.Game.Player;
-import itpolimiingsw.Game.Colour;
-import itpolimiingsw.Game.Ruler;
+import itpolimiingsw.Game.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRuler {
-    @org.junit.jupiter.api.Test
-    public void tRuler() {
-        Inventory inventory = new Inventory();
-        DiceBucket diceBucket = new DiceBucket();
-        Dice dice = new Dice(Colour.ANSI_YELLOW);
-        Player player1 = new Player("Cesna");
-        player1.setScheme(inventory.getScheme(5));
-        player1.setMarkers();
-        player1.setBridge(inventory.getBridge(2));
-        player1.setPrivateGoal(inventory.getPrivateGoal(4));
-        player1.setOnline(true);
-        player1.dump();
+    @Test
+    public void  testPlacementIncorrect(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
         Ruler ruler = new Ruler();
-        boolean bool;
-        dice = diceBucket.educe();
-        dice.roll();
-        dice.dump();
-        bool = ruler.checkCorrectPlacement(0, 2, dice, player1.getScheme());
-        if (bool) {
-            player1.getScheme().setBoxes(dice, 0, 2);
-            player1.getScheme().dump();
-        }
-        dice = diceBucket.educe();
-        dice.roll();
-        dice.dump();
-        bool = ruler.checkCorrectPlacement(1, 3, dice, player1.getScheme());
-        if (bool) {
-            player1.getScheme().setBoxes(dice, 1, 3);
-            player1.getScheme().dump();
-        }
-        dice = diceBucket.educe();
-        dice.roll();
-        dice.dump();
-        bool = ruler.checkCorrectPlacement(2, 4, dice, player1.getScheme());
-        if (bool) {
-            player1.getScheme().setBoxes(dice, 2, 4);
-            player1.getScheme().dump();
-        }
-        dice = diceBucket.educe();
-        dice.roll();
-        dice.dump();
-        int count =ruler.schemeCount(player1.getScheme());
-        System.out.println(count);
-        System.out.println(ruler.stringtoInt(dice.getFace()));
-        bool = ruler.checkCorrectPlacement(1, 4, dice, player1.getScheme());
-        if (bool) {
-            player1.getScheme().setBoxes(dice, 1, 4);
-            player1.getScheme().dump();
-        }
+        assertEquals(false, ruler.checkCorrectPlacement(0, 0, dice, scheme));
     }
 
+    @Test
+    public void testPlacementCorrect(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2683");
+        Dice dice1 = new Dice(Colour.ANSI_GREEN);
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        assertEquals(true, ruler.checkCorrectPlacement(0, 0, dice, scheme));
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(true, ruler.checkCorrectPlacement(1, 1, dice1, scheme));
+    }
+
+    @Test
+    public void  testPlacementInCenter(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        assertEquals(false, ruler.checkCorrectPlacement(1, 1, dice, scheme));
+    }
+
+    @Test
+    public void testAvailableTrue(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+
+        Dice dice1 = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2681");
+
+        Dice dice2 = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2682");
+
+        Scheme scheme = new Scheme(1);
+
+        Ruler ruler = new Ruler();
+
+        GreenCarpet greenCarpet = new GreenCarpet(1);
+
+        greenCarpet.setStock(1);
+        greenCarpet.setDiceInStock(dice);
+        greenCarpet.setDiceInStock(dice1);
+        greenCarpet.setDiceInStock(dice2);
+        assertEquals(true, ruler.checkAvailable(greenCarpet, scheme));
+    }
+
+    @Test
+    public void testAvailableFalse(){
+        Scheme scheme = new Scheme(1);
+
+        Ruler ruler = new Ruler();
+
+        GreenCarpet greenCarpet = new GreenCarpet(1);
+
+        greenCarpet.setStock(0);
+
+        assertEquals(false, ruler.checkAvailable(greenCarpet, scheme));
+    }
+
+    @Test
+    public void TestAvailableDiceTrue(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        assertEquals(true, ruler.checkAvailableDice(dice, scheme));
+    }
+
+    @Test
+    public void  testPlacementIncorrectBox(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        assertEquals(false, ruler.checkCorrectPlacement(0, 4, dice, scheme));
+    }
+
+    @Test
+    public void  testNeighborsTrue(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(true, ruler.checkEmptyNeighbors(0, 0, scheme));
+    }
+
+    @Test
+    public void  testNeighborsFalse(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_YELLOW);
+        dice.setFace("\u2683");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        scheme.setBoxes(dice1, 0, 1);
+        assertEquals(false, ruler.checkEmptyNeighbors(0, 0, scheme));
+    }
+    @Test
+    public void  testDiagonallyNeighborsTrue(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(true, ruler.checkCorrectPlacement(1, 1,dice, scheme));
+    }
+    @Test
+    public void  testDiagonallyNeighborsFalse(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(false, ruler.checkEmptyNeighbors(1, 1, scheme));
+    }
+
+    @Test
+    public void  testNeighborsFaceFalse(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_YELLOW);
+        dice1.setFace("\u2684");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        scheme.dump();
+        assertEquals(false, ruler.checkNeighborsFaces(0, 1, dice1, scheme));
+    }
+
+    @Test
+    public void  testNeighborsFaceTrue(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_YELLOW);
+        dice1.setFace("\u2683");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(true, ruler.checkNeighborsFaces(0, 1, dice1, scheme));
+    }
+
+    @Test
+    public void  testNeighborsColourFalse(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_BLUE);
+        dice1.setFace("\u2683");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(false, ruler.checkNeighborsColours(0, 1, dice1, scheme));
+    }
+
+    @Test
+    public void  testNeighborsColourTrue(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_YELLOW);
+        dice1.setFace("\u2683");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        assertEquals(true, ruler.checkNeighborsColours(0, 1, dice1, scheme));
+    }
+
+    @Test
+    public void  testDiceNumberMulti(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_YELLOW);
+        dice1.setFace("\u2683");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        scheme.setBoxes(dice, 0, 0);
+        scheme.setBoxes(dice1, 0, 1);
+        assertEquals(2, ruler.schemeCount(scheme));
+    }
+
+    @Test
+    public void  testDiceNumberZero(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Dice dice1 = new Dice(Colour.ANSI_YELLOW);
+        dice1.setFace("\u2683");
+        Scheme scheme = new Scheme(1);
+        Ruler ruler = new Ruler();
+        assertEquals(0, ruler.schemeCount(scheme));
+    }
+
+    @Test
+    public void  stringToIntTest(){
+        Dice dice = new Dice(Colour.ANSI_BLUE);
+        dice.setFace("\u2684");
+        Ruler ruler = new Ruler();
+        assertEquals(5, ruler.stringtoInt(dice.getFace()));
+    }
+
+    @Test
+    public void  intToString(){
+        Ruler ruler = new Ruler();
+        assertEquals("\u2684", ruler.intToString(5));
+    }
 }

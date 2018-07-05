@@ -42,7 +42,6 @@ public class GUI implements ClientInterface {
         GUIController.setLogin(false);
         //salviamo user e pass
         String[] dati = GUIController.getLoginData();
-        System.out.println(dati[0]);
         return dati;
     }
 
@@ -175,14 +174,14 @@ public class GUI implements ClientInterface {
         while(!GUIController.getToolCoordDone() && !c){
             sleep(200);
         }
-
         if(c){
             int[] ret = new int[2];
             ret[0]=99;
             ret[1]=0;
             return ret;
         }
-        return GUIController.getToolCoord();
+        int[] coord = GUIController.getToolCoord();
+        return coord;
     }
 
     @Override
@@ -251,9 +250,7 @@ public class GUI implements ClientInterface {
     public int tool11Messages(String dice) throws IOException, InterruptedException {
         Gson gson = new Gson();
         Dice dice1 = gson.fromJson(dice, Dice.class);
-        int face;
-        face = GUIController.getTool11(dice1.getItalianColour());
-        return face;
+        return GUIController.getTool11(dice1.getItalianColour());
     }
 
     @Override

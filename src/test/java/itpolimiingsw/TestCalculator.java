@@ -4,6 +4,8 @@ import itpolimiingsw.Game.Calculator;
 import itpolimiingsw.Game.GreenCarpet;
 import itpolimiingsw.Game.Inventory;
 import itpolimiingsw.Game.Player;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 
 import java.util.ArrayList;
@@ -34,33 +36,18 @@ public class TestCalculator {
         player1.setBridge(inventory.getBridge(2));
         player1.setPrivateGoal(inventory.getPrivateGoal(4));
         player1.setOnline(true);
-        Player player2=new Player("ElCcciarelloz");
-        player2.setScheme(inventory.getScheme(2));
-        player2.setMarkers();
-        player2.setBridge(inventory.getBridge(1));
-        player2.setPrivateGoal(inventory.getPrivateGoal(2));
-        player2.setOnline(true);
-        greenCarpet.dump();
-        player1.dump();
-        player2.dump();
+
         player1.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),0,1);
-        player2.getScheme().setBoxes(greenCarpet.getDiceFromStock(1),1,1);
-        greenCarpet.dump();
         player1.dump();
-        player2.dump();
+
 
         players.add(player1);
-        players.add(player2);
 
 
         calculator=new Calculator(players, greenCarpet);
-        for(int i=0; i<players.size();i++) {
-            punteggio1 = calculator.calculate(i);
-            System.out.println("punteggio: " + punteggio1);
-        }
 
 
-
+        assertEquals(-14, calculator.calculate(0));
 
 
     }

@@ -18,18 +18,30 @@ public class CLI implements ClientInterface {
     Gson gson = new GsonBuilder().create();
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     boolean c = false;
+    boolean flag=false;
     @Override
     public String[] loginMessages() throws IOException {
         String[] logindata = new String[2];
         System.out.println("Inserire nickname:");
         logindata[0]=in.readLine();
+        for(int j = 0; j<logindata[0].length(); j++){
+            if(logindata[0].charAt(j)=='-'){
+                flag=true;
+            }
+        }
         while(logindata[0].length()==0) {logindata[0]=in.readLine();}
         char s = logindata[0].charAt(0);
-        while (s == ' ') {
-            System.out.println("Nickname non valido. Inserire nickname:");
+        while (s == ' ' || flag) {
+            System.out.println("Username non valido. Inserire username:");
             logindata[0] = in.readLine();
             while(logindata[0].length()==0) {logindata[0]=in.readLine();}
             s = logindata[0].charAt(0);
+            flag=false;
+            for(int j = 0; j< logindata[0].length(); j++){
+                if(logindata[0].charAt(j)=='-'){
+                    flag=true;
+                }
+            }
         }
         System.out.println("Inserire password:");
         logindata[1]=in.readLine();

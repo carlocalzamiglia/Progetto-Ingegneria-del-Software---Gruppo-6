@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -356,6 +357,7 @@ public class GUIController extends Application {
 
     public static void setToolCoord(){
         toolCoord =true;
+        toolCoordDone = false;
     }
 
 
@@ -452,27 +454,41 @@ public class GUIController extends Application {
 
 
 
+
         login.setOnAction(event -> {
-            //prova connessione
-            if(!username_t.getText().trim().isEmpty() && !password_t.getText().trim().isEmpty()){
-                loginData[0] = username_t.getText();
-                loginData[1] = password_t.getText();
-                setLogin(true);
-            }
+            loginAction(username_t.getText(), password_t.getText());
         });
 
         scene1.setOnKeyPressed(e->{
             if(e.getCode() == KeyCode.ENTER){
-                if(!username_t.getText().trim().isEmpty() && !password_t.getText().trim().isEmpty()){
-                    loginData[0]=username_t.getText();
-                    loginData[1]=password_t.getText();
-                    setLogin(true);
-                }
+                loginAction(username_t.getText(), password_t.getText());
             }
         });
 
 
 
+    }
+
+    private void loginAction(String username, String password){
+        //prova connessione
+        if(!username.isEmpty() && !password.isEmpty()){
+            boolean flag = false;
+            for(int j = 0; j<username.length(); j++){
+                if(username.charAt(j)=='-'){
+                    flag=true;
+                }
+            }
+            if(username.charAt(0)!=' ' && !flag) {
+                loginData[0] = username;
+                loginData[1] = password;
+                setLogin(true);
+            }else{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("ERRORE");
+                alert.setContentText("Hai inserito dei caratteri non validi.");
+                alert.showAndWait();
+            }
+        }
     }
     public ImageView imageToImageV(Image image,int h,int w){
         ImageView imageView=new ImageView(image);
@@ -549,14 +565,6 @@ public class GUIController extends Application {
         gridPane.setGridLinesVisible(true);
         gridPane.setAlignment(Pos.CENTER);
         return gridPane;
-    }
-    public HBox setDifficulty(int num) throws FileNotFoundException {
-        HBox pane=new HBox(5);
-        for(int i=0;i<num;i++){
-            ImageView imageV =imageToImageV (new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/markers.png")),50,50);
-            pane.getChildren().add(imageV);
-        }
-        return pane;
     }
 
 
@@ -676,38 +684,48 @@ public class GUIController extends Application {
         pane3.setBackground(new Background(myBI));
         scene3 = new Scene(pane3);
 
+        RadioButton r1=(RadioButton)pane.getChildren().get(4);
+        RadioButton r2=(RadioButton)pane.getChildren().get(5);
+        RadioButton r3=(RadioButton)pane.getChildren().get(10);
+        RadioButton r4=(RadioButton)pane.getChildren().get(11);
         play.setOnAction(e -> {
-            RadioButton r1=(RadioButton)pane.getChildren().get(4);
-            RadioButton r2=(RadioButton)pane.getChildren().get(5);
-            RadioButton r3=(RadioButton)pane.getChildren().get(10);
-            RadioButton r4=(RadioButton)pane.getChildren().get(11);
 
-            if(r1.isSelected()){
-                System.out.println("1");
-                schemechose=1;
-                myscheme.getChildren().add(pane.getChildren().get(2));
-            }
-            else if(r2.isSelected()){
-                System.out.println("2");
-                schemechose=2;
-                myscheme.getChildren().add(pane.getChildren().get(3));
-            }
-            else if(r3.isSelected()){
-                System.out.println("3");
-                schemechose=3;
-                myscheme.getChildren().add(pane.getChildren().get(8));
-            }
-            else if(r4.isSelected()){
-                System.out.println("4");
-                schemechose=4;
-                myscheme.getChildren().add(pane.getChildren().get(9));
-            }
-            setScene2("", "ATTENDI IL TUO TURNO...");
-            window.setScene(scene2);
-            current=2;
-            setLogin(true);
+            schemeChosenDone(r1, r2, r3, r4);
         });
 
+        scene3.setOnKeyPressed(e->{
+            if(e.getCode() == KeyCode.ENTER){
+                schemeChosenDone(r1, r2, r3, r4);
+            }
+        });
+
+    }
+
+    public void schemeChosenDone(RadioButton r1, RadioButton r2, RadioButton r3, RadioButton r4){
+        if(r1.isSelected()){
+            System.out.println("1");
+            schemechose=1;
+            myscheme.getChildren().add(pane.getChildren().get(2));
+        }
+        else if(r2.isSelected()){
+            System.out.println("2");
+            schemechose=2;
+            myscheme.getChildren().add(pane.getChildren().get(3));
+        }
+        else if(r3.isSelected()){
+            System.out.println("3");
+            schemechose=3;
+            myscheme.getChildren().add(pane.getChildren().get(8));
+        }
+        else if(r4.isSelected()){
+            System.out.println("4");
+            schemechose=4;
+            myscheme.getChildren().add(pane.getChildren().get(9));
+        }
+        setScene2("", "ATTENDI IL TUO TURNO...");
+        window.setScene(scene2);
+        current=2;
+        setLogin(true);
     }
 
     public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
@@ -991,6 +1009,7 @@ public class GUIController extends Application {
     }
 
     public static void showPopup(String[] message) {
+        System.out.println(message[1]);
         Platform.runLater(() ->{
             dicechoose=false;
             dicePlaceable=true;
@@ -1010,7 +1029,7 @@ public class GUIController extends Application {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Info");
             alert.setContentText(message);
-            alert.showAndWait();
+            alert.show();
         });
     }
 
@@ -1040,9 +1059,6 @@ public class GUIController extends Application {
     }
 
     public static void showMessages(String messages) {
-        currentmessage=messages;
-        System.out.println("ho impostato new message"+current+messages);
-        newmessage=true;
     }
 
     private String toStr(int numb){
@@ -1091,37 +1107,6 @@ public class GUIController extends Application {
             string=string+"*";
         }
         return string;
-    }
-
-
-
-    public class MessageThread extends Thread {
-        private GUIController GUIController;
-        private MessageThread(GUIController GUIController) {
-            this.GUIController = GUIController;
-        }
-
-        @Override
-        public void run() {
-            while (10 > 0) {
-                while (!newmessage) {
-                    try {
-                        sleep(200);
-                    } catch (InterruptedException e) { }
-                }
-                if (current==2) {
-                    System.out.println("sono nel thread\t"+currentmessage);
-                    Platform.runLater(()->{
-                        GUIController.setScene2(currentmessage, "MATCHMAKING...");
-                        current=2;
-                        window.setScene(scene2);
-                    });
-                    System.out.println("ho fatto la run later");
-
-                }
-                newmessage=false;
-            }
-        }
     }
 
 

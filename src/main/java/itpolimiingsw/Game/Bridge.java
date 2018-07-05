@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class Bridge implements Serializable {
     private Colour colour;
     private int serialNumber;
-    private Scheme scheme;
 
 
     //-----------------------------------------------Constructor--------------------------------------------------------
@@ -40,12 +39,7 @@ public class Bridge implements Serializable {
     public int getSerialNumber() {
         return serialNumber;
     }
-    public Scheme getScheme() {
-        return scheme;
-    }
-    public void setScheme(Scheme scheme) {
-        this.scheme = scheme;
-    }
+
 
 
 
@@ -54,8 +48,6 @@ public class Bridge implements Serializable {
     public String toString() {
         String s=new String();
         s=s+colour.escape()+"VETRATA"+Colour.RESET+"\n";
-        if(scheme!=null)
-            s=s+scheme.toString();
         return s;
     }
     public void dump(){
