@@ -10,7 +10,12 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,6 +28,21 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+
+
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
+import javafx.stage.Stage;
+
+
+
+
+import java.awt.*;
+import java.awt.font.GraphicAttribute;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -89,7 +109,8 @@ public class GUIController extends Application {
     ImageView imageView2;
     AnchorPane im2=new AnchorPane();
     GridPane scheme = new GridPane();
-    GridPane grc=new GridPane();
+    GridPane grcRoundTr=new GridPane();
+    GridPane grcStock=new GridPane();
     HBox hBoxPubGoal=new HBox(40);
     VBox vboxScheme=new VBox(10);
     HBox hboxTool=new HBox(40);
@@ -467,10 +488,10 @@ public class GUIController extends Application {
         Scheme s2 = gson.fromJson(js2, Scheme.class);
         Scheme s3 = gson.fromJson(js3, Scheme.class);
         Scheme s4 = gson.fromJson(js4, Scheme.class);
-        GridPane sc1 = setScheme(s1,50,350,250);
-        GridPane sc2 = setScheme(s2,50,350,250);
-        GridPane sc3 = setScheme(s3,50,350,250);
-        GridPane sc4 = setScheme(s4,50,350,250);
+        GridPane sc1 = setScheme(s1,350,280);
+        GridPane sc2 = setScheme(s2,350,280);
+        GridPane sc3 = setScheme(s3,350,280);
+        GridPane sc4 = setScheme(s4,350,280);
         Label label1=new Label(s1.getName());
         label1.setFont(Font.font(null,FontWeight.BOLD,40));
         Label label2=new Label(s2.getName());
@@ -515,29 +536,13 @@ public class GUIController extends Application {
         return pane;
 
     }
-    public GridPane setScheme(Scheme scheme,int sizeIm,int width,int height) throws IOException {
+    public GridPane setScheme(Scheme scheme,double width,double height) throws IOException {
 
         GridPane gridPane = new GridPane();
-
         for(int i=0;i<4;i++){
             for(int j=0;j<5;j++){
-                Button b = new Button();
-                ImageView testImageView = new ImageView();
-                if(scheme.getBox(i,j).getAddedDice()==null){
-                    if(scheme.getBox(i,j).getRestrictionColour()!=null){
-                        testImageView = new ImageView(colorToImage(scheme.getBox(i,j).getRestrictionColour()));
-                    }
-                    else if(scheme.getBox(i,j).getRestrictionValue()!=null){
-                        testImageView = new ImageView(valueToImage(scheme.getBox(i,j).getRestrictionValue()));
-                    }
-                }
-                else{
-                    testImageView=new ImageView(diceToImage(scheme.getBox(i,j).getAddedDice()));
-                }
-                testImageView.setFitWidth(sizeIm);
-                testImageView.setFitHeight(sizeIm);
-                b.setGraphic(testImageView);
-                gridPane.add(b,j,i);
+                Canvas canvas = getDiceDraws(scheme.getBox(i, j), scheme.getBox(i, j).getAddedDice(), height/4, width/5, true);
+                gridPane.add(canvas, j, i);
             }
         }
         gridPane.setMinSize(width, height);
@@ -555,38 +560,38 @@ public class GUIController extends Application {
     }
 
 
-    public GridPane setStockAndRound(GreenCarpet gc) throws FileNotFoundException {
-        GridPane roundTr=new GridPane();
+    public GridPane setStock(GreenCarpet gc) throws FileNotFoundException {
         GridPane stock=new GridPane();
-        GridPane grc=new GridPane();
+        stock.setVgap(8.0);
         for(int i=0;i<gc.getStock().size();i++){
-            Button b=new Button();
-            ImageView imageView = new ImageView(diceToImage(gc.checkDiceFromStock(i+1)));
-            imageView.setFitWidth(50);
-            imageView.setFitHeight(50);
-            b.setBackground(new Background(myBF));
-            b.setGraphic(imageView);
-            stock.add(b,0,i);
+            Canvas canvas = getDiceDraws(null, gc.checkDiceFromStock(i+1), 60.0, 60.0, false);
+            GraphicsContext gcc = canvas.getGraphicsContext2D();
+            gcc.setFill(Color.TRANSPARENT);
+            gcc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            stock.add(canvas,0,i);
         }
+        return  stock;
+
+    }public GridPane setRound(GreenCarpet gc) throws FileNotFoundException {
+        GridPane roundTr=new GridPane();
+        roundTr.setHgap(4.0);
+        roundTr.setVgap(4.0);
         for(int i=0;i<gc.getnPlayers()*2+1;i++){
             for(int j=0;j<10;j++){
-                Button b=new Button();
-                ImageView imageView = new ImageView();
+                Canvas canvas = new Canvas(40, 40);
                 if(gc.getDiceFromRoundPath(i+1,j+1)!=null) {
-                    imageView = new ImageView(diceToImage(gc.getDiceFromRoundPath(i+1,j+1)));
+                    canvas = getDiceDraws(null, gc.getDiceFromRoundPath(i+1, j+1), 40.0, 40.0, false);
+                    GraphicsContext gcc = canvas.getGraphicsContext2D();
+                    gcc.setFill(Color.TRANSPARENT);
+                    gcc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
-                imageView.setFitWidth(25);
-                imageView.setFitHeight(25);
-                b.setBackground(new Background(myBF));
-                b.setGraphic(imageView);
-                roundTr.add(b,j,i);
+                roundTr.add(canvas,j,i);
             }
         }
-        grc.add(roundTr,0,0);
-        grc.add(stock,0,1);
-        return  grc;
+        return roundTr;
 
     }
+
 
     public Image valueToImage(String string) throws IOException {
         Image image=new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/restriction/dado"+string+".png"));
@@ -708,38 +713,30 @@ public class GUIController extends Application {
     public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
         pane2.getChildren().clear();
         pane3.getChildren().clear();
-        GreenCarpet gc;
-        int first=0;
-        int second=0;
-        int third=0;
-        Player player;
 
         Gson gson = new Gson();
-        gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
-        first=gc.getToolCard(1).getSerialNumber();
-        second=gc.getToolCard(2).getSerialNumber();
-        third=gc.getToolCard(3).getSerialNumber();
-        player = gson.fromJson(playerJson, Player.class);
+        GreenCarpet gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
+        int first = gc.getToolCard(1).getSerialNumber();
+        int second = gc.getToolCard(2).getSerialNumber();
+        int third = gc.getToolCard(3).getSerialNumber();
+        Player player = gson.fromJson(playerJson, Player.class);
+        Scheme[] schemes = new Scheme[3];
 
-        int k=0;
-        Scheme [] schemes=new Scheme[3];
-        for(int i=0; i<3; i++){
-            schemes[i]=new Scheme(0);
-        }
 
-        for(int i=0;i<gc.getnPlayers();i++){
-            if(!gc.getPlayer().get(i).getNickname().equals(player.getNickname())){
-                schemes[k]=gc.getPlayer().get(i).getScheme();
+        int k = 0;
+        for (int i = 0; i < gc.getnPlayers(); i++) {
+            if (!gc.getPlayer().get(i).getNickname().equals(player.getNickname())) {
+                schemes[k] = gc.getPlayer().get(i).getScheme();
                 k++;
             }
         }
 
         //clear
-       // vboxTool1.getChildren().clear();
-       // vboxTool2.getChildren().clear();
-       // vboxTool3.getChildren().clear();
-       // hboxTool.getChildren().clear();
-      //  hBoxPubGoal.getChildren().clear();
+        vboxTool1.getChildren().clear();
+        vboxTool2.getChildren().clear();
+        vboxTool3.getChildren().clear();
+        hboxTool.getChildren().clear();
+        hBoxPubGoal.getChildren().clear();
         vboxScheme.getChildren().clear();
         hboxOpponentScheme.getChildren().clear();
         vboxGC.getChildren().clear();
@@ -747,155 +744,154 @@ public class GUIController extends Application {
         hboxgrande.getChildren().clear();
         vboxButton.getChildren().clear();
 
+        Label cost1 = new Label("Costo: " + gc.getToolCard(1).getCost());
+        Label cost2 = new Label("Costo: " + gc.getToolCard(2).getCost());
+        Label cost3 = new Label("Costo: " + gc.getToolCard(3).getCost());
 
-        if(gc.getRound()==0 && isin){
-            //IMAGES
-            vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 350, 250));
-            vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 350, 250));
-            vboxTool3.getChildren().addAll( imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 350, 250));
-            hboxTool.getChildren().addAll(vboxTool1,vboxTool2,vboxTool3);
+        cost1.setFont(Font.font(null, FontWeight.BOLD, 30));
+        cost2.setFont(Font.font(null, FontWeight.BOLD, 30));
+        cost3.setFont(Font.font(null, FontWeight.BOLD, 30));
 
-            hBoxPubGoal.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 350, 250),imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 350, 250));
+        //IMAGES
+        vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 320, 230), cost1);
+        vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 320, 230), cost2);
+        vboxTool3.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(3).getSerialNumber()), 320, 230), cost3);
+        hboxTool.getChildren().addAll(vboxTool1, vboxTool2, vboxTool3);
 
-            imageView2=imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()),350, 250);
-            im2=new AnchorPane(imageView2);
-            isin=false;
-        }
+        hBoxPubGoal.getChildren().addAll(imageToImageV(numbToImage_PuG(gc.getPublicGoal(0).getSerialNumber()), 320, 230), imageToImageV(numbToImage_PuG(gc.getPublicGoal(1).getSerialNumber()), 320, 230), imageToImageV(numbToImage_PuG(gc.getPublicGoal(2).getSerialNumber()), 320, 230));
+
+        imageView2 = imageToImageV(numbToImage_PrG(player.getPrivateGoal().getSerialNumber()), 350, 250);
+        im2 = new AnchorPane(imageView2);
 
 
-        Button play=new Button("Piazza dado");
+        Button play = new Button("Piazza dado");
         play.setFont(new Font(30));
-        play.setPrefSize(300,50);
+        play.setPrefSize(300, 50);
         play.setVisible(visible);
         play.setAlignment(Pos.CENTER);
-        Button useTool=new Button("Usa carta");
+
+        Button useTool = new Button("Usa carta");
         useTool.setFont(new Font(30));
-        useTool.setPrefSize(300,50);
+        useTool.setPrefSize(300, 50);
         useTool.setAlignment(Pos.CENTER);
         useTool.setVisible(visible);
-        Button pass=new Button("Passa");
-        pass.setPrefSize(300,50);
+
+        Button pass = new Button("Passa");
+        pass.setPrefSize(300, 50);
         pass.setFont(new Font(30));
         pass.setAlignment(Pos.CENTER);
         pass.setVisible(visible);
 
-        vboxButton.getChildren().addAll(play,useTool,pass);
-        Label name=new Label();
-        Label cost1=new Label();
-        Label cost2=new Label();
-        Label cost3=new Label();
+        vboxButton.getChildren().addAll(play, useTool, pass);
 
 
         scheme.getChildren().clear();
-        scheme=setScheme(player.getScheme(),60,300,240);
+        scheme = setScheme(player.getScheme(), 350, 280);
 
-        markers=setDifficulty(player.getMarkers().size());
-        /*
-        cost1.setText("Costo: "+gc.getToolCard(1).getCost());
-        cost1.setFont(Font.font(null,FontWeight.BOLD,30));
-        cost2.setText("Costo: "+gc.getToolCard(2).getCost());
-        cost2.setFont(Font.font(null,FontWeight.BOLD,30));
-        cost3.setText("Costo: "+gc.getToolCard(3).getCost());
-        cost3.setFont(Font.font(null,FontWeight.BOLD,30));*/
+        markers = setDifficulty(player.getMarkers().size());
 
-        grc.getChildren().clear();
-        grc=setStockAndRound(gc);
 
-        name.setText(player.getScheme().getName()+"\tDifficoltà "+player.getScheme().getDifficulty());
-        name.setFont(Font.font(null,FontWeight.BOLD,35));
+        grcRoundTr.getChildren().clear();
+        grcStock.getChildren().clear();
+        grcRoundTr = setRound(gc);
+        grcStock = setStock(gc);
+
+
+        Label name = new Label();
+        name.setText(player.getScheme().getName() + "  " + player.getScheme().difficultyToString());
+        name.setFont(Font.font(null, FontWeight.BOLD, 20));
 
 
         vboxButton.prefHeightProperty().bind(vboxScheme.heightProperty());
         im2.prefHeightProperty().bind(vboxScheme.heightProperty());
         scheme.prefHeightProperty().bind(vboxScheme.heightProperty());
 
-        vboxScheme.getChildren().addAll(vboxButton,scheme,name,im2);
-        for(int i=0;i<gc.getnPlayers()-1;i++)
-            hboxOpponentScheme.getChildren().add(setScheme(schemes[i],35,200,140));
+        vboxScheme.getChildren().addAll(vboxButton, scheme, name, im2);
+        for (int i = 0; i < gc.getnPlayers() - 1; i++)
+            hboxOpponentScheme.getChildren().add(setScheme(schemes[i], 250, 200));
         vBoxCardItems.getChildren().addAll(hboxTool, hBoxPubGoal, hboxOpponentScheme);
 
-        vboxGC.getChildren().addAll(grc,markers);
 
-        //set vbox 2 heigh prop.
+        Label stock = new Label("RISERVA");
+        stock.setFont(Font.font(null, FontWeight.BOLD, 30));
+        Label roundTr = new Label("TRACCIATO DEI ROUND");
+        roundTr.setFont(Font.font(null, FontWeight.BOLD, 30));
+        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, markers);
+
 
         vboxScheme.prefHeightProperty().bind(hboxgrande.heightProperty());
         hboxgrande.prefHeightProperty().bind(scene1.heightProperty());
         hboxgrande.prefWidthProperty().bind(scene1.widthProperty());
-        hboxgrande.getChildren().setAll(vboxGC,vboxScheme,vBoxCardItems);
+        hboxgrande.getChildren().setAll(vboxGC, vboxScheme, vBoxCardItems);
         pane4 = new StackPane(hboxgrande);
         pane4.setBackground(new Background(myBI));
         scene4 = new Scene(pane4);
-        if(flag==1) {
-            GridPane tmp = (GridPane) grc.getChildren().get(1);     //STOCK
-            tmp.getChildren().forEach(item -> {
-                item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI RISERVA
-                    @Override
-                    public void handle(MouseEvent event) {
-                        if(dicePlaceable) {
-                            Node source = (Node) event.getSource();
-                            placedice[0] = GridPane.getRowIndex(source) + 1;
-                            dicechoose = true;
-                        }
-                    }
-                });
-            });
 
 
-            GridPane tmp2 = (GridPane) grc.getChildren().get(0);
-            tmp2.getChildren().forEach(item -> {
-                item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI PATH
-                    @Override
-                    public void handle(MouseEvent event) {
+        grcStock.getChildren().forEach(item -> {
+            item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI RISERVA
+                @Override
+                public void handle(MouseEvent event) {
+                    if (dicePlaceable) {
                         Node source = (Node) event.getSource();
-                        pathVal[1] = GridPane.getRowIndex(source) + 1;
-                        pathVal[0] = GridPane.getColumnIndex(source) + 1;
-                        dicePath=true;
-                        System.out.println("path:"+pathVal[0]+".."+pathVal[1]);
+                        placedice[0] = GridPane.getRowIndex(source) + 1;
+                        dicechoose = true;
                     }
-                });
+                }
+            });
+        });
 
+        grcRoundTr.getChildren().forEach(item -> {
+            item.setOnMouseClicked(new EventHandler<MouseEvent>() {                 //BOTTONI PATH
+                @Override
+                public void handle(MouseEvent event) {
+                    Node source = (Node) event.getSource();
+                    pathVal[1] = GridPane.getRowIndex(source) + 1;
+                    pathVal[0] = GridPane.getColumnIndex(source) + 1;
+                    dicePath = true;
+                    System.out.println("path:" + pathVal[0] + ".." + pathVal[1]);
+                }
             });
 
+        });
 
-            scheme.getChildren().forEach(item2 -> {
-                item2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        if(dicechoose) {
-                            Node source2 = (Node) event.getSource();
-                            placedice[1]=GridPane.getRowIndex(source2);
-                            placedice[2]=GridPane.getColumnIndex(source2);
-                            System.out.println("dado:"+placedice[0]+"   riga:"+placedice[1]+"   col:"+placedice[2]);
-                            dicechoose=false;
-                            dicePlaceable=false;
-                            setLogin(true);
-                        }
-                        if(toolCoord){
-                            Node source2 = (Node) event.getSource();
-                            dicetoolpos[0]=GridPane.getRowIndex(source2);
-                            dicetoolpos[1]=GridPane.getColumnIndex(source2);
-                            toolCoordDone =true;
-                            toolCoord =false;
-                            System.out.println("primo dado");
-                        }
+        scheme.getChildren().forEach(item2 -> {
+            item2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    if (dicechoose) {
+                        Node source2 = (Node) event.getSource();
+                        placedice[1] = GridPane.getRowIndex(source2);
+                        placedice[2] = GridPane.getColumnIndex(source2);
+                        System.out.println("dado:" + placedice[0] + "   riga:" + placedice[1] + "   col:" + placedice[2]);
+                        dicechoose = false;
+                        dicePlaceable = false;
+                        setLogin(true);
                     }
-                });
+                    if (toolCoord) {
+                        Node source2 = (Node) event.getSource();
+                        dicetoolpos[0] = GridPane.getRowIndex(source2);
+                        dicetoolpos[1] = GridPane.getColumnIndex(source2);
+                        toolCoordDone = true;
+                        toolCoord = false;
+                        System.out.println("primo dado");
+                    }
+                }
             });
+        });
 
-        }
-        pass.setOnAction(e ->{
-            menuaction="1";
+        pass.setOnAction(e -> {
+            menuaction = "1";
             setLogin(true);
         });
-        play.setOnAction(e ->{
+        play.setOnAction(e -> {
             menuaction = "2";
-            dicePlaceable=true;
+            dicePlaceable = true;
             setLogin(true);
         });
-
         useTool.setOnAction(e -> {
-            menuaction="3";
-            toolUsable=true;
+            menuaction = "3";
+            toolUsable = true;
             setLogin(true);
         });
 
@@ -903,10 +899,10 @@ public class GUIController extends Application {
         vboxTool1.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
-                if(toolUsable) {
+                if (toolUsable) {
                     toolchose = finalFirst;
                     toolchoose = true;
-                    toolUsable=false;
+                    toolUsable = false;
                 }
             }
         });
@@ -914,10 +910,10 @@ public class GUIController extends Application {
         vboxTool2.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
-                if(toolUsable) {
+                if (toolUsable) {
                     toolchose = finalSecond;
                     toolchoose = true;
-                    toolUsable=false;
+                    toolUsable = false;
                 }
             }
         });
@@ -925,14 +921,13 @@ public class GUIController extends Application {
         vboxTool3.getChildren().get(0).setOnMouseClicked(new EventHandler<MouseEvent>() {               //SCELTA TOOL
             @Override
             public void handle(MouseEvent event) {
-                if(toolUsable) {
+                if (toolUsable) {
                     toolchose = finalThird;
                     toolchoose = true;
-                    toolUsable=false;
+                    toolUsable = false;
                 }
             }
         });
-
 
 
     }
@@ -1219,6 +1214,83 @@ public class GUIController extends Application {
                 }
                 scenechoose = 0;
             }
+
+        }
+    }
+
+    //METHODS FOR DICE's DRAWING
+    private Canvas getDiceDraws(Box box, Dice dice,Double h,Double w, boolean flag) {
+        Canvas canvas = new Canvas(w, h);
+        GraphicsContext gc =  canvas.getGraphicsContext2D();
+        if(box!=null) {
+            if (box.getAddedDice() == null) {
+                if (box.getRestrictionColour() != null) {   //JUST COLOR
+                    gc.setFill(box.getRestrictionColour().getfxColor());
+                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                } else if (box.getRestrictionValue() != null) {   //JUST VALUES
+                    gc.setFill(Color.LIGHTGREY);
+                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                    diceDraw(gc, Integer.parseInt(box.getRestrictionValue()), canvas.getHeight(), canvas.getWidth());
+                }
+                else{
+                    gc.setFill(Color.WHITE);
+                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                }
+            }
+        }
+        if(dice!=null) {   //THE ALL DICE
+            if(flag) {
+                gc.setFill(Color.WHITE);
+                gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            }
+            gc.setFill(dice.getColour().getfxColor());
+            gc.fillRoundRect(canvas.getWidth()/24, canvas.getHeight()/24, canvas.getWidth()-(canvas.getWidth()/12), canvas.getHeight()-(canvas.getHeight()/12), canvas.getWidth()/4, canvas.getHeight()/4);
+            diceDraw(gc, Integer.parseInt(dice.faceToNo()), canvas.getHeight(), canvas.getWidth());
+        }
+        return canvas;
+    }
+
+    private void diceDraw(GraphicsContext gc, int i, double h, double w){
+        switch (i){
+            case 1:
+                gc.setFill(Color.BLACK);
+                gc.fillOval((w-(w/5))/2, (h-(h/5))/2, w/5, h/5);
+                break;
+            case 2:
+                gc.setFill(Color.BLACK);
+                gc.fillOval(w/10, h/10, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10)*7, w/5, h/5);
+                break;
+            case 3:
+                gc.setFill(Color.BLACK);
+                gc.fillOval(w/10, h/10, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10)*7, w/5, h/5);
+                gc.fillOval((w-(w/5))/2, (h-(h/5))/2, w/5, h/5);
+                break;
+            case 4:
+                gc.setFill(Color.BLACK);
+                gc.fillOval(w/10, h/10, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10)*7, w/5, h/5);
+                gc.fillOval(w/10, (h/10)*7, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10), w/5, h/5);
+                break;
+            case 5:
+                gc.setFill(Color.BLACK);
+                gc.fillOval(w/10, h/10, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10)*7, w/5, h/5);
+                gc.fillOval(w/10, (h/10)*7, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10), w/5, h/5);
+                gc.fillOval((w-(w/5))/2, (h-(h/5))/2, w/5, h/5);
+                break;
+            case 6:
+                gc.setFill(Color.BLACK);
+                gc.fillOval(w/10, h/10, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10)*7, w/5, h/5);
+                gc.fillOval(w/10, (h/10)*7, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10), w/5, h/5);
+                gc.fillOval(w/10, (h/10)*4, w/5, h/5);
+                gc.fillOval((w/10)*7, (h/10)*4, w/5, h/5);
+                break;
 
         }
     }

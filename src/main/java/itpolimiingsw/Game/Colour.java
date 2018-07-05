@@ -1,4 +1,6 @@
 package itpolimiingsw.Game;
+import javafx.scene.paint.Color;
+
 import java.io.Serializable;
 import java.lang.*;
 
@@ -17,5 +19,19 @@ public enum Colour implements Serializable {
     }
     public String escape() {
         return escape;
+    }
+
+    public Color getfxColor(){
+        if(this.equals(ANSI_RED))
+            return Color.RED;
+        else if(this.equals(ANSI_GREEN))
+            return Color.FORESTGREEN;
+        else if(this.equals(ANSI_YELLOW))
+            return Color.rgb(249, 235, 39);
+        else if(this.equals(ANSI_BLUE))
+            return Color.DODGERBLUE;
+        else if(this.equals(ANSI_PURPLE))
+            return Color.MEDIUMORCHID;
+        return Color.RED;
     }
 }

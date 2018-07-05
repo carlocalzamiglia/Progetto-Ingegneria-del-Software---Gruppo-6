@@ -92,7 +92,13 @@ public class Scheme implements Serializable {
         }
         return s;
     }
-
+    public String difficultyToString(){
+        String s=new String();
+        for (int i = 0; i < difficulty; i++) {
+            s = s + "•";
+        }
+        return s;
+    }
     public void dump() {
         System.out.println(this);
     }
