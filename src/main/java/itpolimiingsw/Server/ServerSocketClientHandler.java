@@ -447,7 +447,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 if(dice!=null) {
                     checkdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]), dice, player.getScheme());
                     if (!checkdice)
-                        sendMessageOut("@ERROR-Il dado non può essere inserito");
+                        sendMessageOut("@ERRORPLACEDICE-Il dado non può essere inserito");
                 }else
                     sendMessageOut("@ERROR-Hai scelto un dado non valido");
 

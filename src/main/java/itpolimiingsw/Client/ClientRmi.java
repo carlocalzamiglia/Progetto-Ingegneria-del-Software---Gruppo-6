@@ -35,6 +35,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     private int PORT;
     ClientInterface clientInt;
     Gson gson = new GsonBuilder().create();
+    private boolean pass;
 
     //-----------------------------------------launch execute method---------------------------------------------
     public ClientRmi(ClientInterface clientInt)         throws RemoteException{
@@ -228,25 +229,30 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             while (i<time) {
                 try {
                     sleep(1000);
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException e) {return; }
                 i++;
-            }clientInt.timerOut(true);
+                clientInt.sendTimer(time-i);
+            }
+            clientInt.timerOut(true);
             return;
         }
         public int getTime() {
             return i;
         }
         public void setTime(){
-            i=time;
+            pass=true;
+            this.interrupt();
         }
         public int getMaxTime() {return time;}
     }
 
-    class HandleTurn extends Thread implements Serializable {
+    class HandleTurn implements Serializable {
         GreenCarpet greenCarpet;
         Player player;
         int i;
         TimerThread timerThread;
+        Boolean usedDice = false;
+        boolean usedTool = false;
 
         public HandleTurn(GreenCarpet greenCarpet, Player player, int i,TimerThread timerThread) {
             this.greenCarpet = greenCarpet;
@@ -259,6 +265,11 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             return greenCarpet;
         }
 
+        public void setUsedDice(){
+            usedDice=false;
+            usedTool = false;
+        }
+
         public Player getPlayer() {
             return player;
         }
@@ -267,29 +278,31 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             return i;
         }
 
-        @Override
+
         public void run()  {
             clientInt.timerOut(false);
-            Game game = new Game(0, null);
-            boolean usedDice = false;
-            boolean flag = true;
-            int flagTool = 0;
-            boolean usedTool = false;
+            usedDice = false;
+            usedTool = false;
+            int flagTool=0;
             Ruler ruler = new Ruler();
             String value=null;
             String greencarpetjson = gson.toJson(greenCarpet);
             String playerjson = gson.toJson(player);
             clientInt.printCarpetFirst(greencarpetjson, playerjson);
+            int k = timerThread.getMaxTime();
             while (true) {
                 try {
                     value = clientInt.handleTurnMenu();
-                    if(value.equals("4")) {
-                        timerThread.setTime();
-                        return;
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) {return;}
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(value.equals("4")) {
+                    System.out.println("Timer terminato");
+                    timerThread.setTime();
+                    return;
+                }
                 if (value.equals("1")) {
                     timerThread.setTime();
                     return;
@@ -328,7 +341,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                     }else
                         clientInt.showError("Scelta errata-Hai già utilizzato una carta tool in questo giro!");
                 }
-                if (timerThread.getTime()==timerThread.getMaxTime())
+                if (timerThread.getTime()==k)
                     return;
             }
         }
@@ -422,6 +435,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         }else{
             clientInt.showError("Errore-Hai inserito un valore sbagliato!");
         }
+        if(!toolok)
+            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
         String greenupd = gson.toJson(greenCarpet);
         String playerupd = gson.toJson(player);
         if(!tooldice || !(useddice && toolok))
@@ -446,40 +461,36 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         if(selection==99)
             return false;
         boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 1,vdice, selection);
-        if(!toolok){
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
         return toolok;
     }
 
     private boolean tool23(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, int realchoice) throws IOException, InterruptedException {
         int[] coordinates;
+        if(player.getScheme().isEmpty())
+            return false;
         coordinates=clientInt.tool23Messages();
         if(coordinates[0]==99)
             return false;
         boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, realchoice, coordinates);
-        if(!toolok){
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
         return toolok;
     }
 
     private boolean tool4(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
-        int[] coordinates=clientInt.tool4Messages();
-        if(coordinates[0]==99)
+        Ruler ruler = new Ruler();
+        if(ruler.schemeCount(player.getScheme())<2)
             return false;
-        int[] coord1dice= new int[4];
-        int[] coord2dice= new int[4];
-        for (int k=0;k<coordinates.length;k++) {
-            if (k<4)
+        int[] coordinates = clientInt.tool4Messages();
+        if (coordinates[0] == 99)
+            return false;
+        int[] coord1dice = new int[4];
+        int[] coord2dice = new int[4];
+        for (int k = 0; k < coordinates.length; k++) {
+            if (k < 4)
                 coord1dice[k] = coordinates[k];
             else
                 coord2dice[k % 4] = coordinates[k];
         }
-        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 4, coord1dice,coord2dice);
-        if(!toolok){
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
+        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 4, coord1dice, coord2dice);
         return toolok;
     }
 
@@ -491,9 +502,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         if (dicepos[0] == 99)
             return false;
         boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 5, vdice, dicepos);
-        if (!toolok) {
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
         return toolok;
     }
 
@@ -541,9 +549,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 7);
         else
             clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
-        if(!toolok){
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
         return toolok;
     }
 
@@ -557,8 +562,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         if (dicepos[0] == 99)
             return false;
         toolok89 = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
-        if(!toolok89)
-            clientInt.showError("Non è stato possibile utilizzare la tool.");
         return toolok89;
     }
 
@@ -568,9 +571,6 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         if(ndice==99)
             return false;
         boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 10, ndice, 0);
-        if(!toolok){
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
         return toolok;
     }
 
@@ -626,14 +626,13 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
     private boolean tool12(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+        if(player.getScheme().isEmpty())
+            return false;
         int[] coordinates12 = clientInt.tool12Messages();
         if(coordinates12[0]==99)
             return false;
         int numOfDices=coordinates12[8];
         boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,12, numOfDices, coordinates12);
-        if(!toolok){
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        }
         return toolok;
     }
 
@@ -656,7 +655,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             if(dice!=null) {
                 checkdice = ruler.checkCorrectPlacement(dicecoord[1], dicecoord[2], dice, player.getScheme());
                 if (!checkdice)
-                    clientInt.showError("Errore-Il dado non può essere inserito");
+                    clientInt.showPlacementeError("Errore-Il dado non può essere inserito");
             }else
                 clientInt.showError("Errore-Hai scelto un dado non valido");
 
@@ -668,17 +667,21 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
         Game game =new Game(0, null);
+        pass = false;
         TimerThread timerThread=new TimerThread(time);
         timerThread.start();
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i,timerThread);
-        handleTurn.start();
-        while (timerThread.getTime()<time){sleep(200);}
+        handleTurn.run();
+        System.out.println("Ho finito");
+        //while (timerThread.getTime()<time && !pass){sleep(100);}
         game.setGreenCarpet(handleTurn.getGreenCarpet());
         game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
-        clientInt.timerOut(true);
+        handleTurn.setUsedDice();
+        handleTurn = null;
         sleep(300);
         clientInt.endTurn();
-        timerThread.setTime();  //TODO era interrupt prima
+        System.out.println("End turn");
+        timerThread.interrupt();
         return game;
     }
 

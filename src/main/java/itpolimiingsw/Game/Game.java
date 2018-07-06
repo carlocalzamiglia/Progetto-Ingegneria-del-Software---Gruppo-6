@@ -129,7 +129,7 @@ public class Game implements Serializable {
         this.greenCarpet = new GreenCarpet(numUser);
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
-        greenCarpet.setToolCards(new ToolCards(11),new ToolCards(6),new ToolCards(5));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
         PrivateGoal[] privateGoals = getRndPrivateGoals(numUser);
         Scheme[] schemes = getRndSchemes(numUser);
         Bridge[] bridges = getRndBridges(numUser);
@@ -158,7 +158,7 @@ public class Game implements Serializable {
         for (int j = 0; j < 10; j++) {
             greenCarpet.setRound(j);
             greenCarpet.setPlayer(player);
-            for (int i = 0; i < numUser; i++) {
+            for (int i = 0; i < player.size(); i++) {
                 player.get(i).setSecondTurn(true);
             }
             System.out.println("ROUND " + (j + 1));

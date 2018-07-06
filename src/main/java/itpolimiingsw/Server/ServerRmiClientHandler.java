@@ -31,6 +31,8 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         try {
             newUserMessage(nickname, " ha appena effettuato il login ed è pronto a giocare.");
             DB.getUser(nickname).getConnectionType().sendMessageOut("Benvenuto, "+nickname+". La partita inizierà a breve!");
+        } catch (ConnectException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -59,6 +59,14 @@ public class GUI implements ClientInterface {
     }
 
     @Override
+    public void showPlacementeError(String message) {
+        String[] messages = message.split("-");
+        GUIController.showPopupDicePlaceWrong(messages);
+    }
+
+
+
+    @Override
     public void showConnDiscPopup(String message) {
         GUIController.showConnDiscPopup(message);
     }
@@ -94,11 +102,14 @@ public class GUI implements ClientInterface {
     public String handleTurnMenu() throws IOException, InterruptedException {
         GUIController.setLogin(false);
         GUIController.chooseAction(4);
-        while(!GUIController.getLogin()){
-            sleep(200);
+        while(!GUIController.getLogin() && !c){
+            try {
+                sleep(200);
+            }catch(InterruptedException e){}
         }
-        if(c)
+        if(c) {
             return "4";
+        }
 
         GUIController.setLogin(false);
         String action = GUIController.handleTurnMenu();
@@ -126,6 +137,7 @@ public class GUI implements ClientInterface {
 
         if(c){
             placedice[0]=99;
+            GUIController.setLogin(false);
             return placedice;
         }
         GUIController.setLogin(false);
@@ -151,10 +163,6 @@ public class GUI implements ClientInterface {
         return toolnumber;
     }
 
-    @Override
-    public String goOnTool() throws IOException, InterruptedException {
-        return GUIController.goOn();
-    }
 
     @Override
     public int chooseDice() throws IOException, InterruptedException {      //DONE
@@ -229,8 +237,11 @@ public class GUI implements ClientInterface {
         int numofdices= GUIController.getndice12();
         if(numofdices==1){
             tmpcoord=tool23Messages();
-        }else{
+        }else if (numofdices==2){
             tmpcoord=tool4Messages();
+        }else{
+            allcoordinates[0]=99;
+            return allcoordinates;
         }
         for(int j=0; j<tmpcoord.length; j++)
             allcoordinates[j]=tmpcoord[j];
@@ -255,6 +266,7 @@ public class GUI implements ClientInterface {
 
     @Override
     public void timerOut(boolean end) {
+        GUIController.timerOut(end);
         c=end;
     }
 
@@ -285,7 +297,8 @@ public class GUI implements ClientInterface {
 
     @Override
     public void sendTimer(int i) {
-
+        if(i!=-1)
+            GUIController.showTimer(i);
     }
 
     public int[] handleCoordinates(int num) throws IOException, InterruptedException {

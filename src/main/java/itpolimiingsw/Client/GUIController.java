@@ -91,7 +91,10 @@ public class GUIController extends Application {
     private static String currentmessage;
     private static boolean newmessage=false;
 
+    private static boolean c = false;
 
+
+    private static boolean j = false;
     //TOOL VAR
 
 
@@ -103,6 +106,11 @@ public class GUIController extends Application {
     //tool5
     public static boolean dicePath = false;
     public static int[] pathVal = new int[2];
+
+
+
+    static Button play;
+    static Button playd;
 
 
     //SCENE 4 DECLARATION
@@ -126,6 +134,7 @@ public class GUIController extends Application {
     HBox hboxgrande=new HBox(20);
     VBox vboxGC=new VBox(20);
     VBox vboxButton=new VBox(20);
+    static Label timerlab;
 
     //SCENE 4 END DECLARATION
 
@@ -185,40 +194,6 @@ public class GUIController extends Application {
     }               //RITORNA DADO SCELTO + NUOVA POSIZIONE
 
 
-
-    //getter tool
-    public static String goOn() {   //SCEGLI SE CONTINUARE CON L'UTILIZZO DELLA TOOL
-        AtomicInteger tool1res= new AtomicInteger();
-        tool1res.set(0);
-        Platform.runLater(() ->{
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Sei sicuro di voler proseguire?");
-            alert.setContentText("Scegli un'opzione.");
-
-            ButtonType buttonTypeOne = new ButtonType("Continua");
-            ButtonType buttonTypeTwo = new ButtonType("Torna al menù");
-
-            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-            boolean tool1=true;
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeOne) {
-                tool1res.set(1);
-            } else if (result.get() == buttonTypeTwo) {
-                tool1res.set(2);
-            }
-        });
-        while(tool1res.get()==0){
-            try {
-                sleep(200);
-            } catch (InterruptedException e) { }
-        }
-        if(tool1res.get()==1)
-            return "y";
-        else
-            return "n";
-    }
-
-
     public static int getTool1Val() {   //TOOL1 VALORE INCREMENTATO O DECREMENTATO
         AtomicInteger tool1res= new AtomicInteger();
         tool1res.set(0);
@@ -239,11 +214,13 @@ public class GUIController extends Application {
                 tool1res.set(2);
             }
         });
-        while(tool1res.get()==0){
+        while(tool1res.get()==0 && !c){
             try {
                 sleep(200);
             } catch (InterruptedException e) { }
         }
+        if(c)
+            return 99;
         System.out.println("SCELTA: "+tool1res.get());
         return tool1res.get();
     }
@@ -252,7 +229,6 @@ public class GUIController extends Application {
         AtomicBoolean flag= new AtomicBoolean(false);
         AtomicInteger tool11res= new AtomicInteger();
         tool11res.set(0);
-        System.out.println("a");
         Platform.runLater(() ->{
             List<Integer> choices = new ArrayList<Integer>();
             choices.add(1);
@@ -275,11 +251,13 @@ public class GUIController extends Application {
             else
                 flag.set(true);
         });
-        while(tool11res.get()==0 && !flag.get()){
+        while(tool11res.get()==0 && !flag.get() && !c){
             try {
                 sleep(200);
             } catch (InterruptedException e) { }
         }
+        if(c)
+            return 99;
         if(flag.get())
             return getTool11(colour);
         return tool11res.get();
@@ -309,11 +287,13 @@ public class GUIController extends Application {
             }});
 
 
-        while(tool12res.get()==0){
+        while(tool12res.get()==0 && !c){
             try {
                 sleep(200);
             } catch (InterruptedException e) { }
         }
+        if(c)
+            return 99;
         return tool12res.get();
     }
 
@@ -361,6 +341,13 @@ public class GUIController extends Application {
     }
 
 
+
+    public static void showTimer(int i) {
+        Platform.runLater(() ->{
+                play.setText("Gioca (" + i + ")");
+                timerlab.setText("Timer: "+i);
+        });
+    }
 
 
     public void launchgui(){
@@ -566,7 +553,13 @@ public class GUIController extends Application {
         gridPane.setAlignment(Pos.CENTER);
         return gridPane;
     }
-
+    public HBox setMarkers(int num){
+        HBox hBox = new HBox(5);
+        for(int i=0; i<num; i++){
+            hBox.getChildren().add(getMarkerDraws(50, 50));
+        }
+        return hBox;
+    }
 
     public GridPane setStock(GreenCarpet gc) throws FileNotFoundException {
         GridPane stock=new GridPane();
@@ -662,11 +655,12 @@ public class GUIController extends Application {
     }
 
     public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
+        timerlab = new Label(); //FOR SCENE 4, TIMER
         //object third layout
         HBox hBox= new HBox(100);
         VBox vbox = new VBox(20);
-
-        Button play = new Button("Gioca");
+        play= new Button();
+        play.setText("Gioca");
         play.setPrefSize(300,100);
 
         play.setFont(new Font(30.0));
@@ -794,11 +788,11 @@ public class GUIController extends Application {
 
 
 
-        Button play = new Button("Piazza dado");
-        play.setFont(new Font(30));
-        play.setPrefSize(300, 50);
-        play.setVisible(visible);
-        play.setAlignment(Pos.CENTER);
+        playd = new Button("Piazza dado");
+        playd.setFont(new Font(30));
+        playd.setPrefSize(300, 50);
+        playd.setVisible(visible);
+        playd.setAlignment(Pos.CENTER);
 
         Button useTool = new Button("Usa carta");
         useTool.setFont(new Font(30));
@@ -812,13 +806,13 @@ public class GUIController extends Application {
         pass.setAlignment(Pos.CENTER);
         pass.setVisible(visible);
 
-        vboxButton.getChildren().addAll(play, useTool, pass);
+        vboxButton.getChildren().addAll(playd, useTool, pass);
 
 
         scheme.getChildren().clear();
         scheme = setScheme(player.getScheme(), 350, 280);
-
-        //markers = setDifficulty(player.getMarkers().size());
+        markers.getChildren().clear();
+        markers = setMarkers(player.getMarkers().size());
 
 
         grcRoundTr.getChildren().clear();
@@ -846,7 +840,15 @@ public class GUIController extends Application {
         stock.setFont(Font.font(null, FontWeight.BOLD, 30));
         Label roundTr = new Label("TRACCIATO DEI ROUND");
         roundTr.setFont(Font.font(null, FontWeight.BOLD, 30));
-        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, markers);
+        timerlab = new Label();
+        Label playerLabel = new Label();
+        playerLabel.setText("Giocatore: "+player.getNickname());
+        timerlab.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        playerLabel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        timerlab.setFont(Font.font(null, FontWeight.BOLD, 20));
+        playerLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
+
+        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, markers, playerLabel, timerlab);
 
 
         vboxScheme.prefHeightProperty().bind(hboxgrande.heightProperty());
@@ -866,6 +868,7 @@ public class GUIController extends Application {
                         Node source = (Node) event.getSource();
                         placedice[0] = GridPane.getRowIndex(source) + 1;
                         dicechoose = true;
+                        dicePlaceable=false;
                     }
                 }
             });
@@ -914,7 +917,7 @@ public class GUIController extends Application {
             menuaction = "1";
             setLogin(true);
         });
-        play.setOnAction(e -> {
+        playd.setOnAction(e -> {
             menuaction = "2";
             dicePlaceable = true;
             setLogin(true);
@@ -963,7 +966,6 @@ public class GUIController extends Application {
     }
 
     public void setScene5(String [] score ){
-        pane4.getChildren().clear();
         Label scoreL[]=new Label[score.length];
         VBox vBoxscene5=new VBox(40);
         Label labelTop=new Label("CLASSIFICA");
@@ -1012,13 +1014,28 @@ public class GUIController extends Application {
         System.out.println(message[1]);
         Platform.runLater(() ->{
             dicechoose=false;
-            dicePlaceable=true;
             setLogin(false);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERRORE");
             alert.setHeaderText(message[0]);
             alert.setContentText(message[1]);
             alert.showAndWait();
+        });
+
+    }
+
+    public static void showPopupDicePlaceWrong(String[] message) {
+        System.out.println(message[1]);
+        Platform.runLater(() ->{
+            dicechoose=false;
+            setLogin(false);
+            dicePlaceable=true;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERRORE");
+            alert.setHeaderText(message[0]);
+            alert.setContentText(message[1]);
+            alert.show();
+
         });
 
     }
@@ -1109,6 +1126,9 @@ public class GUIController extends Application {
         return string;
     }
 
+    public static void timerOut(boolean end) {
+        c = end;
+    }
 
 
     //---------------------------------------------TOOL METHODS---------------------------------------------------------
@@ -1240,6 +1260,16 @@ public class GUIController extends Application {
             gc.fillRoundRect(canvas.getWidth()/24, canvas.getHeight()/24, canvas.getWidth()-(canvas.getWidth()/12), canvas.getHeight()-(canvas.getHeight()/12), canvas.getWidth()/4, canvas.getHeight()/4);
             diceDraw(gc, Integer.parseInt(dice.faceToNo()), canvas.getHeight(), canvas.getWidth());
         }
+        return canvas;
+    }
+
+    private Canvas getMarkerDraws(double w, double h){
+        Canvas canvas = new Canvas(w, h);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.WHITE);
+        gc.fillOval(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.setFill(Color.LIGHTBLUE);
+        gc.fillOval((canvas.getWidth()-(2*canvas.getWidth()/3))/2, (canvas.getWidth()-2*(canvas.getWidth()/3))/2, 2*canvas.getWidth()/3, 2*canvas.getHeight()/3);
         return canvas;
     }
 

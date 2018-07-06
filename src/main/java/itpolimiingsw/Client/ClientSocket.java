@@ -345,6 +345,9 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@ERROR")){
                         clientInt.showError("Errore-"+ arrOfStr[1]);
                     }
+                    else if(arrOfStr[0].equals("@ERRORPLACEDICE")){
+                        clientInt.showPlacementeError("Errore-"+ arrOfStr[1]);
+                    }
 
                     else if(arrOfStr[0].equals("@SHOWSCORE")){
                         System.out.println("La partita è terminata. Stampo la classifica.");

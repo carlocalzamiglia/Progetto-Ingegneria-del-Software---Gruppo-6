@@ -66,6 +66,10 @@ public class CLI implements ClientInterface {
         String[] messages = message.split("-");
         System.out.println(messages[1]);
     }
+    @Override
+    public void showPlacementeError(String message){
+        showError(message);
+    }
 
     @Override
     public void showConnDiscPopup(String message) {
@@ -202,21 +206,6 @@ public class CLI implements ClientInterface {
         return tool;
     }
 
-    @Override
-    public String goOnTool() throws IOException, InterruptedException {
-        String goon="a";
-        while(!goon.equals("y") && !goon.equals("n")) {
-            System.out.println("Per utilizzare la carta tool inserisci 'y'. Per tornare al menù precedente inserisci 'n'");
-            while(!in.ready() && !c) {sleep(200);}
-            if (!c)
-                goon = in.readLine();
-            else
-                goon="y";
-        }
-        if (c)
-            goon="0";
-        return goon;
-    }
 
     @Override
     public int chooseDice() throws IOException, InterruptedException {

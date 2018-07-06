@@ -24,35 +24,36 @@ synchronize scoreTable with user order      //DONE
 
 block input when is not the turn        //IMPOSSIBLE
 
-update roundpath dump(do not dump empty boxes)
+//TODO update roundpath dump(do not dump empty boxes)
 
 update tool card dump(dump also the cost of the card)       //DONE
 
-set an error dump when toolcardExecutor returns false
+set an error dump when toolcardExecutor returns false       //DONE
 
 minor fix tool 6 doesn't have to place a dice if i place already a dice in the turn ///DONE
 
 
-Try/Catch usetoolcard!!!!
+//TODO Try/Catch usetoolcard!!!!
 
 
 Fix scegliazione!!!!!!!     //DONE
 
 
-error print socket gui when score are negative (-)!!!!
+error print socket gui when score are negative (-)!!!!      //DONE
 
 
 error scheme choose       //DONE
 
 
 
-//TODO Ricordarsi di controllare se si disconnette un player mentre c'è il countdown!!!     //DONE
+// Ricordarsi di controllare se si disconnette un player mentre c'è il countdown!!!     //DONE
 
 
-ricordarsi di aggiuengere numero player al game
+ricordarsi di aggiuengere numero player al game     //DONE
 
 
-ricordarsi roba di albi
+
+testare passo automatico.       //DONE
 
 
-testare passo automatico.
+//TODO scritta classifica in solo
