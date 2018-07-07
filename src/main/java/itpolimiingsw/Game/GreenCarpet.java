@@ -36,13 +36,13 @@ public class GreenCarpet implements Serializable {
 
     public void setRndPublicGoals(){
         Random rnd=new Random();
-        int index1=rnd.nextInt(9)+1;
-        int index2=rnd.nextInt(9)+1;
-        int index3=rnd.nextInt(9)+1;
+        int index1=rnd.nextInt(10)+1;
+        int index2=rnd.nextInt(10)+1;
+        int index3=rnd.nextInt(10)+1;
         while(index1==index2 || index2==index3 || index1==index3){
-            index1=rnd.nextInt(9)+1;
-            index2=rnd.nextInt(9)+1;
-            index3=rnd.nextInt(9)+1;
+            index1=rnd.nextInt(10)+1;
+            index2=rnd.nextInt(10)+1;
+            index3=rnd.nextInt(10)+1;
         }
         publicGoals[0]=new PublicGoal(index1);
         publicGoals[1]=new PublicGoal(index2);
@@ -61,13 +61,13 @@ public class GreenCarpet implements Serializable {
 
     public void setRndToolCards(){
         Random rnd=new Random();
-        int index1=rnd.nextInt(11)+1;
-        int index2=rnd.nextInt(11)+1;
-        int index3=rnd.nextInt(11)+1;
+        int index1=rnd.nextInt(12)+1;
+        int index2=rnd.nextInt(12)+1;
+        int index3=rnd.nextInt(12)+1;
         while(index1==index2 || index2==index3 || index1==index3){
-            index1=rnd.nextInt(11)+1;
-            index2=rnd.nextInt(11)+1;
-            index3=rnd.nextInt(11)+1;
+            index1=rnd.nextInt(12)+1;
+            index2=rnd.nextInt(12)+1;
+            index3=rnd.nextInt(12)+1;
         }
         toolCards[0]=new ToolCards(index1);
         toolCards[1]=new ToolCards(index2);
