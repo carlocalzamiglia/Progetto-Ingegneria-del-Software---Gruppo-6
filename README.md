@@ -1,3 +1,7 @@
+<p align="center"> 
+<img src="Deliverables/polimi_logo.png">
+</p>
+
 # Progetto di Ingegneria del Software relativo al gioco da tavolo "Sagrada".
 ### Gruppo: 6
 ### Componenti
