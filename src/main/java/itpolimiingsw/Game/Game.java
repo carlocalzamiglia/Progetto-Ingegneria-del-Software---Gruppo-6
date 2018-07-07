@@ -247,7 +247,7 @@ public class Game implements Serializable {
             player.get(singleplayer).setPoints(calculator.calculate(singleplayer));
             try {
                 String[] s=new String[1];
-                s[0]="Sei l'unico giocatore all'interno della partita. Hai vinto con " + player.get(singleplayer).getPoints() + " punti!";
+                s[0]="Sei l'unico giocatore all'interno della partita._Hai vinto con " + player.get(singleplayer).getPoints() + " punti!";
                 users.get(singleplayer).getConnectionType().showScore(s);
             } catch(NullPointerException | ConnectException e) { }
         }

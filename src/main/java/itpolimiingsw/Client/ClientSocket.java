@@ -352,8 +352,12 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@SHOWSCORE")){
                         System.out.println("La partita è terminata. Stampo la classifica.");
                         String s=new String();
-                        for (int i=1;i<arrOfStr.length;i++)
-                            s=s+arrOfStr[i]+"-";
+                        for (int i=1;i<arrOfStr.length;i++) {
+                            if (i != arrOfStr.length - 1)
+                                s = s + arrOfStr[i] + "-";
+                            else
+                                s = s + arrOfStr[i];
+                        }
                         String[] scores = s.split("_");
                         clientInt.showScore(scores);
                     }

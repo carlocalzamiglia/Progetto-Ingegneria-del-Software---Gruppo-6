@@ -568,11 +568,11 @@ public class GUIController extends Application {
         GridPane stock=new GridPane();
         stock.setVgap(8.0);
         for(int i=0;i<gc.getStock().size();i++){
-            Canvas canvas = getDiceDraws(null, gc.checkDiceFromStock(i+1), 60.0, 60.0, false);
+            Canvas canvas = getDiceDraws(null, gc.checkDiceFromStock(i+1), 55.0, 55.0, false);
             GraphicsContext gcc = canvas.getGraphicsContext2D();
             gcc.setFill(Color.TRANSPARENT);
             gcc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            stock.add(canvas,0,i);
+            stock.add(canvas,i,0);
         }
         return  stock;
 
@@ -584,7 +584,7 @@ public class GUIController extends Application {
             for(int j=0;j<10;j++){
                 Canvas canvas = new Canvas(40, 40);
                 if(gc.getDiceFromRoundPath(i+1,j+1)!=null) {
-                    canvas = getDiceDraws(null, gc.getDiceFromRoundPath(i+1, j+1), 40.0, 40.0, false);
+                    canvas = getDiceDraws(null, gc.getDiceFromRoundPath(i+1, j+1), 38.0, 38.0, false);
                     GraphicsContext gcc = canvas.getGraphicsContext2D();
                     gcc.setFill(Color.TRANSPARENT);
                     gcc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -736,12 +736,13 @@ public class GUIController extends Application {
         int third = gc.getToolCard(3).getSerialNumber();
         Player player = gson.fromJson(playerJson, Player.class);
         Scheme[] schemes = new Scheme[3];
-
+        String[] opname=new String[3];
 
         int k = 0;
         for (int i = 0; i < gc.getnPlayers(); i++) {
             if (!gc.getPlayer().get(i).getNickname().equals(player.getNickname())) {
                 schemes[k] = gc.getPlayer().get(i).getScheme();
+                opname[k]=gc.getPlayer().get(i).getNickname();
                 k++;
             }
         }
@@ -827,16 +828,7 @@ public class GUIController extends Application {
         Label name = new Label();
         name.setText(player.getScheme().getName() + "  " + player.getScheme().difficultyToString());
         name.setFont(Font.font(null, FontWeight.BOLD, 20));
-
-
-        vboxButton.prefHeightProperty().bind(vboxScheme.heightProperty());
-        im2.prefHeightProperty().bind(vboxScheme.heightProperty());
-        scheme.prefHeightProperty().bind(vboxScheme.heightProperty());
-
-        vboxScheme.getChildren().addAll(vboxButton, scheme, name, im2);
-        for (int i = 0; i < gc.getnPlayers() - 1; i++)
-            hboxOpponentScheme.getChildren().add(setScheme(schemes[i], 250, 200));
-        vBoxCardItems.getChildren().addAll(hboxTool, hBoxPubGoal, hboxOpponentScheme);
+        name.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
 
         Label stock = new Label("RISERVA");
@@ -853,9 +845,29 @@ public class GUIController extends Application {
         Label roundTurnLabel = new Label();
         roundTurnLabel.setText("ROUND: "+(gc.getRound()+1)+ "  TURNO: "+gc.getTurn());
         roundTurnLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
+        roundTurnLabel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        vboxButton.prefHeightProperty().bind(vboxScheme.heightProperty());
+        im2.prefHeightProperty().bind(vboxScheme.heightProperty());
+        scheme.prefHeightProperty().bind(vboxScheme.heightProperty());
+        vboxScheme.getChildren().addAll(timerlab, roundTurnLabel, playerLabel, scheme, name, markers, im2);
 
 
-        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, markers, roundTurnLabel, playerLabel, timerlab);
+        for (int i = 0; i < gc.getnPlayers() - 1; i++) {
+            VBox opponent = new VBox();
+            Label opponentname = new Label(opname[i]);
+            opponentname.setFont(Font.font(null, FontWeight.BOLD, 20));
+            opponent.getChildren().addAll(setScheme(schemes[i], 250, 200), opponentname);
+            hboxOpponentScheme.getChildren().add(opponent);
+
+        }
+
+        vBoxCardItems.getChildren().addAll(hboxTool, hBoxPubGoal, hboxOpponentScheme);
+
+
+
+
+        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, vboxButton);
 
 
         vboxScheme.prefHeightProperty().bind(hboxgrande.heightProperty());
@@ -873,7 +885,7 @@ public class GUIController extends Application {
                 public void handle(MouseEvent event) {
                     if (dicePlaceable) {
                         Node source = (Node) event.getSource();
-                        placedice[0] = GridPane.getRowIndex(source) + 1;
+                        placedice[0] = GridPane.getColumnIndex(source) + 1;
                         dicechoose = true;
                         dicePlaceable=false;
                     }
@@ -985,7 +997,7 @@ public class GUIController extends Application {
         hBoxscene5.getChildren().addAll(replay,quit);
         for(int i=0;i<score.length;i++){
             scoreL[i]=new Label();
-            scoreL[i].setFont(Font.font(null,FontWeight.BOLD,100-(i*25)));
+            scoreL[i].setFont(Font.font(null,FontWeight.BOLD,70-(i*10)));
             scoreL[i].setText(score[i]);
             vBoxscene5.getChildren().add(scoreL[i]);
         }
