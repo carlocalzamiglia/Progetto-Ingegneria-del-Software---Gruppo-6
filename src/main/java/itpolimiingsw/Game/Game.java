@@ -39,7 +39,8 @@ public class Game implements Serializable {
             this.users.add(user);
         }
         if(numUserOnline==4){
-            new GameStart().start();
+            if(!isPlaying)
+                new GameStart().start();
         }
         if(numUserOnline==2)
             new GameStartonTime().start();
@@ -48,7 +49,8 @@ public class Game implements Serializable {
 
     public void reconnectUser(){
         if(numUserOnline==4){
-            new GameStart().start();
+            if(!isPlaying)
+                new GameStart().start();
         }
         if(numUserOnline==2)
             new GameStartonTime().start();

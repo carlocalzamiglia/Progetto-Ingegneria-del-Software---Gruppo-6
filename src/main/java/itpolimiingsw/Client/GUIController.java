@@ -347,7 +347,9 @@ public class GUIController extends Application {
 
     public static void showTimer(int i) {
         Platform.runLater(() ->{
-                play.setText("Gioca (" + i + ")");
+                try {
+                    play.setText("Gioca (" + i + ")");
+                }catch(NullPointerException e){}
                 timerlab.setText("Timer: "+i);
         });
     }
@@ -726,8 +728,6 @@ public class GUIController extends Application {
     }
 
     public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
-        pane2.getChildren().clear();
-        pane3.getChildren().clear();
 
         Gson gson = new Gson();
         GreenCarpet gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
@@ -782,9 +782,12 @@ public class GUIController extends Application {
             isin = false;
         }
 
-        vboxTool1.getChildren().remove(1);
-        vboxTool2.getChildren().remove(1);
-        vboxTool3.getChildren().remove(1);
+
+        try {
+            vboxTool1.getChildren().remove(1);
+            vboxTool2.getChildren().remove(1);
+            vboxTool3.getChildren().remove(1);
+        }catch(ArrayIndexOutOfBoundsException e){}
         vboxTool1.getChildren().add(1, cost1);
         vboxTool2.getChildren().add(1, cost2);
         vboxTool3.getChildren().add(1, cost3);

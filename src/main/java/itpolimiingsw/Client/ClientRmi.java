@@ -727,7 +727,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     @Override
     public void showScore(String[] score) {
         System.out.println("La partita è terminata. Stampo la classifica.");
-        clientInt.showScore(score[0].split("_"));
+        clientInt.showScore(score);
     }
 
     @Override
