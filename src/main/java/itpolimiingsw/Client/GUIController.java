@@ -887,7 +887,7 @@ public class GUIController extends Application {
                         Node source = (Node) event.getSource();
                         placedice[0] = GridPane.getColumnIndex(source) + 1;
                         dicechoose = true;
-                        dicePlaceable=false;
+                        dicePlaceable = false;
                     }
                 }
             });
@@ -901,7 +901,6 @@ public class GUIController extends Application {
                     pathVal[1] = GridPane.getRowIndex(source) + 1;
                     pathVal[0] = GridPane.getColumnIndex(source) + 1;
                     dicePath = true;
-                    System.out.println("path:" + pathVal[0] + ".." + pathVal[1]);
                 }
             });
 
@@ -915,7 +914,6 @@ public class GUIController extends Application {
                         Node source2 = (Node) event.getSource();
                         placedice[1] = GridPane.getRowIndex(source2);
                         placedice[2] = GridPane.getColumnIndex(source2);
-                        System.out.println("dado:" + placedice[0] + "   riga:" + placedice[1] + "   col:" + placedice[2]);
                         dicechoose = false;
                         dicePlaceable = false;
                         setLogin(true);
@@ -926,7 +924,6 @@ public class GUIController extends Application {
                         dicetoolpos[1] = GridPane.getColumnIndex(source2);
                         toolCoordDone = true;
                         toolCoord = false;
-                        System.out.println("primo dado");
                     }
                 }
             });
