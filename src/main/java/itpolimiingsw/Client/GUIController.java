@@ -768,7 +768,7 @@ public class GUIController extends Application {
         cost2.setFont(Font.font(null, FontWeight.BOLD, 30));
         cost3.setFont(Font.font(null, FontWeight.BOLD, 30));
 
-        if(gc.getRound()==0 && isin){
+        if(isin){
             //IMAGES
             vboxTool1.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(1).getSerialNumber()), 320, 230), cost1);
             vboxTool2.getChildren().addAll(imageToImageV(numbToTool(gc.getToolCard(2).getSerialNumber()), 320, 230), cost2);
