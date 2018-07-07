@@ -15,6 +15,7 @@ public class ToolCards implements Serializable {
     private Colour colour;
     private String description1;
     private String description2;
+    private String usage;
     private int serialNumber;
     private int cost;
 
@@ -39,6 +40,7 @@ public class ToolCards implements Serializable {
             this.description2 = toolCardsFromJson.get(0).getDescription2();
             this.serialNumber=toolCardsFromJson.get(0).getSerialNumber();
             this.cost=toolCardsFromJson.get(0).getCost();
+            this.usage=toolCardsFromJson.get(0).getUsagetricks();
 
         } else {
             this.name = toolCardsFromJson.get(serialNumber).getName();
@@ -47,6 +49,7 @@ public class ToolCards implements Serializable {
             this.description2 = toolCardsFromJson.get(serialNumber).getDescription2();
             this.serialNumber=toolCardsFromJson.get(serialNumber).getSerialNumber();
             this.cost=toolCardsFromJson.get(serialNumber).getCost();
+            this.usage=toolCardsFromJson.get(serialNumber).getUsagetricks();
         }
 
     }
@@ -75,6 +78,8 @@ public class ToolCards implements Serializable {
     public int getCost(){
         return cost;
     }
+    public String getUsagetricks(){return usage;}
+
 
 
     //-----------------------------------------------Print methods------------------------------------------------------

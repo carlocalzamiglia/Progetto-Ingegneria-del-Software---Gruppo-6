@@ -1050,6 +1050,16 @@ public class GUIController extends Application {
         });
     }
 
+    public static void showToolPopup(String tool, String message){
+        Platform.runLater(() ->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Utilizzo della carta tool.");
+            alert.setHeaderText(tool);
+            alert.setContentText(message);
+            alert.show();
+        });
+    }
+
     public static String handleTurnMenu() {
         return menuaction;
     }

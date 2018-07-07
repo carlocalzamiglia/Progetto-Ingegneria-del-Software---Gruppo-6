@@ -3,12 +3,7 @@ package itpolimiingsw.Client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import itpolimiingsw.Game.Game;
-import itpolimiingsw.Game.GreenCarpet;
-import itpolimiingsw.Game.Ruler;
-import itpolimiingsw.Game.Player;
-import itpolimiingsw.Game.Dice;
-import itpolimiingsw.Game.ToolCardsExecutor;
+import itpolimiingsw.Game.*;
 
 import itpolimiingsw.Server.ServerRmiClientHandlerInt;
 import itpolimiingsw.ServertoClientHandler.ClientInterface;
@@ -380,26 +375,33 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 realchoice=2;
             switch (choice) {
                 case 1:     //no placement
+                    clientInt.showToolTricks(new ToolCards(1).getName(), new ToolCards(1).getUsagetricks());
                     toolok = tool1(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 2:     //used for tool 2 & 3
+                    clientInt.showToolTricks(new ToolCards(realchoice).getName(), new ToolCards(realchoice).getUsagetricks());
                     toolok = tool23(player, greenCarpet, toolCardsExecutor, realchoice);
                     break;
                 case 4:
+                    clientInt.showToolTricks(new ToolCards(4).getName(), new ToolCards(4).getUsagetricks());
                     toolok = tool4(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 5:
+                    clientInt.showToolTricks(new ToolCards(5).getName(), new ToolCards(5).getUsagetricks());
                     toolok = tool5(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 6:
+                    clientInt.showToolTricks(new ToolCards(6).getName(), new ToolCards(6).getUsagetricks());
                     res = tool6(player, greenCarpet, toolCardsExecutor, useddice);
                     toolok=res[0];
                     tooldice=res[1];
                     break;
                 case 7:
+                    clientInt.showToolTricks(new ToolCards(7).getName(), new ToolCards(7).getUsagetricks());
                     toolok = tool7(player, greenCarpet, toolCardsExecutor, useddice);
                     break;
                 case 8:
+                    clientInt.showToolTricks(new ToolCards(8).getName(), new ToolCards(8).getUsagetricks());
                     if(greenCarpet.getTurn()==1 && useddice){
                         toolok = tool89method(player, greenCarpet, choice);
                     }else {
@@ -409,6 +411,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         tooldice=true;
                     break;
                 case 9:
+                    clientInt.showToolTricks(new ToolCards(9).getName(), new ToolCards(9).getUsagetricks());
                     //se 0 exit true e toolok true
                     //se 1 return 1
                     //se 2 ho usato la tool --> toolok=true e tooldice=true;
@@ -421,14 +424,17 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                         tooldice=true;
                     break;
                 case 10:
+                    clientInt.showToolTricks(new ToolCards(10).getName(), new ToolCards(10).getUsagetricks());
                     toolok = tool10(player, greenCarpet, toolCardsExecutor);
                     break;
                 case 11:
+                    clientInt.showToolTricks(new ToolCards(11).getName(), new ToolCards(11).getUsagetricks());
                     res = tool11(player, greenCarpet, toolCardsExecutor, useddice);
                     toolok=res[0];
                     tooldice=res[1];
                     break;
                 case 12:
+                    clientInt.showToolTricks(new ToolCards(12).getName(), new ToolCards(12).getUsagetricks());
                     toolok = tool12(player, greenCarpet, toolCardsExecutor);
                     break;
             }

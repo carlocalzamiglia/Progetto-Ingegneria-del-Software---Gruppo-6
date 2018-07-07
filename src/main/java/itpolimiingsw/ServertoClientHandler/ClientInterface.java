@@ -13,6 +13,8 @@ public interface ClientInterface {
 
     void showConnDiscPopup(String message);
 
+    void showToolTricks(String message1, String message2);
+
     int schemeMessages(String scheme1, String scheme2, String scheme3,String scheme4, String privategoal) throws IOException, InterruptedException;
 
     void printCarpetFirst(String greenCarpetjson, String playerjson);
