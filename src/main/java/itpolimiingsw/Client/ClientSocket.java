@@ -1,5 +1,6 @@
 package itpolimiingsw.Client;
 
+import itpolimiingsw.Game.ToolCards;
 import itpolimiingsw.ServertoClientHandler.ClientInterface;
 
 import java.io.*;
@@ -348,23 +349,27 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@TOOL")){
                         //--------------------USE TOOL CARDS------------------------
                             if (arrOfStr[1].equals("1")) {
+                                clientInt.showToolTricks(new ToolCards(2).getName(), new ToolCards(2).getUsagetricks());
                                 int[] coordinates;
                                 coordinates=clientInt.tool23Messages();
                                 if (coordinates[0]!=99)
                                     sendMessage("@TOOLUSED1-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3]);
                             }
                             if (arrOfStr[1].equals("2")) {
+                                clientInt.showToolTricks(new ToolCards(4).getName(), new ToolCards(4).getUsagetricks());
                                 int[] coordinates;
                                 coordinates=clientInt.tool4Messages();
                                 if (coordinates[0]!=99)
                                     sendMessage("@TOOLUSED2-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3] + "-" + coordinates[4] + "-" + coordinates[5] + "-" + coordinates[6] + "-" + coordinates[7]);
                             }
                             if (arrOfStr[1].equals("3")) {
+                                clientInt.showToolTricks(new ToolCards(3).getName(), new ToolCards(3).getUsagetricks());
                                 int[] coordinates12 = clientInt.tool12Messages();
                                 if (coordinates12[0]!=99)
                                     sendMessage("@TOOLUSED3-" + coordinates12[8] + "-" + coordinates12[0] + "-" + coordinates12[1] + "-" + coordinates12[2] + "-" + coordinates12[3] + "-" + coordinates12[4] + "-" + coordinates12[5] + "-" + coordinates12[6] + "-" + coordinates12[7] + "-" + coordinates12[9] + "-" + coordinates12[10]);
                             }
                             if(arrOfStr[1].equals("4")){
+                                clientInt.showToolTricks(new ToolCards(1).getName(), new ToolCards(1).getUsagetricks());
                                 int vdice=clientInt.chooseDice();
                                 if (vdice!=99) {
                                     int dicechose = clientInt.tool1Messages();
@@ -373,6 +378,7 @@ public class ClientSocket {
                                 }
                             }
                             if(arrOfStr[1].equals("6")){
+                                clientInt.showToolTricks(new ToolCards(6).getName(), new ToolCards(6).getUsagetricks());
                                 int ndice = clientInt.chooseDice();
                                 if (ndice!=99)
                                     sendMessage("@TOOLUSED6-"+ndice);
@@ -384,6 +390,7 @@ public class ClientSocket {
                                     sendMessage("@TOOLUSED61-"+coordinates[0]+"-"+coordinates[1]);
                             }
                             if(arrOfStr[1].equals("5")){
+                                clientInt.showToolTricks(new ToolCards(5).getName(), new ToolCards(5).getUsagetricks());
                                 int vdice = clientInt.chooseDice();
                                 if (vdice!=99) {
                                     int[] dicepos = clientInt.chooseFromPath();
@@ -395,6 +402,7 @@ public class ClientSocket {
                                 sendMessage("@TOOLUSED7-1");
                             }
                             if(arrOfStr[1].equals("8")){
+                                clientInt.showToolTricks(new ToolCards(8).getName(), new ToolCards(8).getUsagetricks());
                                 int vdice=clientInt.chooseDice();
                                 if (vdice!=99) {
                                     int[] dicepos = clientInt.chooseCoordinates();
