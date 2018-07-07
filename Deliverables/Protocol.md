@@ -1,14 +1,5 @@
 # PROTOCOL FOR SOCKET
 
-### LOGIN PART:
-##### Client:
-###### @NICK-user
-##### Server:
-###### @USEROK-true/false
-
-
-
-
 ### GAME:
 ##### Server:
 ###### @SCHEME-scheme1-scheme2-scheme3-scheme4
