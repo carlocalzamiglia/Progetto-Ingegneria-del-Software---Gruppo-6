@@ -75,7 +75,6 @@ public class Game implements Serializable {
                 try {
                     u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/1000+" secondi!");
                 } catch (IOException | NullPointerException e) {
-                    System.out.println("aaaaaaaa");
                     u.setOnline(false);
                     numUserOnline--;
                 }
@@ -144,11 +143,15 @@ public class Game implements Serializable {
                     player.setOnline(false);
                     numUserOnline--;
                 }
-
-
                 this.player.add(player);
             }else{
-                //what we expect from the game?
+                calculate_result(0);
+                return;
+            }
+            if(numUserOnline<=1) {
+                System.out.println("Entro nell'if");
+                calculate_result(0);
+                return;
             }
         }
 
@@ -244,12 +247,23 @@ public class Game implements Serializable {
             }
 
         }else{
-            player.get(singleplayer).setPoints(calculator.calculate(singleplayer));
-            try {
-                String[] s=new String[1];
-                s[0]="Sei l'unico giocatore all'interno della partita._Hai vinto con " + player.get(singleplayer).getPoints() + " punti!";
-                users.get(singleplayer).getConnectionType().showScore(s);
-            } catch(NullPointerException | ConnectException e) { }
+            System.out.println("Sono nell'else");
+            int score = 0;
+            for(int i = 0; i<users.size(); i++) {
+                score = 0;
+                if (users.get(i).isOnline()) {
+                    try {
+                        player.get(i).setPoints(calculator.calculate(singleplayer));
+                        score = player.get(i).getPoints();
+                    } catch (NullPointerException | IndexOutOfBoundsException e) {score = 0;}
+                    try {
+                        String[] s = new String[1];
+                        s[0] = "Sei l'unico giocatore all'interno della partita._Hai vinto con " + score + " punti!";
+                        users.get(i).getConnectionType().showScore(s);
+                    } catch (NullPointerException | ConnectException e) {
+                    }
+                }
+            }
         }
 
         matches.deleteGame(this);
