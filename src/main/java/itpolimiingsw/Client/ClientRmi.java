@@ -640,7 +640,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     }
 
     private boolean tool12(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-        if(player.getScheme().isEmpty() && !greenCarpet.checkEmptyRoundpath())
+        if(player.getScheme().isEmpty() || !greenCarpet.checkEmptyRoundpath())
             return false;
         int[] coordinates12 = clientInt.tool12Messages();
         if(coordinates12[0]==99)

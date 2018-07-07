@@ -768,7 +768,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
 
         private boolean toolTwelve(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-            if(player.getScheme().isEmpty() && !greenCarpet.checkEmptyRoundpath())
+            if(player.getScheme().isEmpty() || !greenCarpet.checkEmptyRoundpath())
                 return false;
             sendMessageOut("@TOOL-3");
             while (!(message.equals("@TOOLUSED3"))&& !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) {sleep(300);}
