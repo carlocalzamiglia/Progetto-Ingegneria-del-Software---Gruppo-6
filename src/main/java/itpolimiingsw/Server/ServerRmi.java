@@ -36,6 +36,7 @@ public class ServerRmi implements Runnable{
     public void connect() throws IOException {
         try {
             PORT=leggiDaFile();
+            //System.setProperty("java.rmi.server.hostname", "192.168.1.3");
             java.rmi.registry.LocateRegistry.createRegistry(PORT);
             Registry registry = LocateRegistry.getRegistry(PORT);
             ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB,matches);

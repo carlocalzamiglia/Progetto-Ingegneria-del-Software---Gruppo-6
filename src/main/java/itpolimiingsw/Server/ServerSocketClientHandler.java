@@ -151,12 +151,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         DB.getUser(nickname).setOnline(false);
         DB.getUser(nickname).setClientHandler(null);
         if(matches.getGame(nickname)!=null) {
-            matches.getGame(nickname).playerDisconnect();
             if (matches.getGame(nickname).getPlaying()) {
                 matches.getUser(nickname).setOnline(false);
                 if (matches.getPlayer(nickname) != null)
                     matches.getPlayer(nickname).setOnline(false);
             }
+            matches.getGame(nickname).playerDisconnect();
         }
         newUserMessage(nickname, " è uscito dalla partita.");
         System.out.println(nickname + " ha probabilmente perso la connessione.");
@@ -222,6 +222,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         Game game =new Game(time, null);
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i, time);
         handleTurn.run();
+        sendMessageOut("@YOURTURN-false");
         game.setGreenCarpet(handleTurn.getGreenCarpet());
         game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
         if(message.equals("@DEAD"))
@@ -265,7 +266,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
 
-    class HandleTurn extends Thread implements Serializable {
+    class HandleTurn implements Serializable {
         GreenCarpet greenCarpet;
         Player player;
         int i;
@@ -290,7 +291,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return i;
         }
 
-        @Override
         public void run(){
             boolean usedDice=false;
             Game game= new Game(0, null);
@@ -299,7 +299,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             Ruler ruler = new Ruler();
             String greencarpetjson = gson.toJson(greenCarpet);
             String playerjson = gson.toJson(player);
-
+            message="";
             try {
                 sendMessageOut("@YOURTURN-true-"+time);
                 sendMessageOut("@PRINTALL-"+greencarpetjson+"-"+playerjson);
@@ -335,11 +335,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                     message="";
                     game.setGreenCarpet(greenCarpet);
                     game.setPlayer(player, i);
-                    try {
-                        sendMessageOut("@YOURTURN-false");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     return;
                 } else if (arrOfMsg[1].equals("2")) { //dice
                     if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
@@ -356,11 +351,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                                 if (usedTool) {
                                     game.setGreenCarpet(greenCarpet);
                                     game.setPlayer(player, i);
-                                    try {
-                                        sendMessageOut("@YOURTURN-false");
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                    message="";
                                     return;
                                 }
                             }
@@ -378,8 +369,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                             e.printStackTrace();
                         }
                     }
-                    if(!message.equals("@TIMEROUT"))
-                        message="";
                 } else if (arrOfMsg[1].equals("3")) {   //tool
                     if(!usedTool) {
                         try {
@@ -400,20 +389,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                             game.setPlayer(player, i);
                             arrOfMsg[1]="";
                             message="";
-                            try {
-                                sendMessageOut("@YOURTURN-false");
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
                             return;
                         }
                         if(flagTool==2 && !usedDice) {   //just used a toolcard
                             usedTool = true;
-                            message="";
                         }
                         if(flagTool==3){
                             usedTool = false;
-                            message="";
                         }
                     }else {
                         try {
@@ -422,8 +404,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                             e.printStackTrace();
                         }
                     }
-                    if(!message.equals("@TIMEROUT"))
-                        message="";
+                    if(message.equals("@TIMEROUT")) {
+                        message = "";
+                        return;
+                    }
                 }
                 if (message.equals("@TIMEROUT")) {
                     message = "";
@@ -481,7 +465,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
             }while(!flag);
             if(choice>0 && choice<13) {
-                //rembember to check if the tool chosen is inside the greencarpet.
                 switch (choice) {
                     case 1:     //no placement
                         toolok = toolOne(player, greenCarpet, toolCardsExecutor);
@@ -526,19 +509,23 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 }
             }else{
                 sendMessageOut("@ERROR-Hai inserito un valore sbagliato!");
-                message="";
             }
+            if(!toolok)
+                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
             String greencarpetupd = gson.toJson(greenCarpet);
             String playerupd = gson.toJson(player);
+            if(message.equals("@TIMEROUT"))
+                return 3;
             if(!tooldice || !(useddice && toolok))
                 sendMessageOut("@AFTERTOOLUPDATE-"+greencarpetupd+"-"+playerupd);
             if(tooldice)      //return 1 if the tool card include dice placement
                 return 1;
-            else
-            if(toolok)      //used a tool without placement
-                return 2;
-            else            //no tool used
-                return 3;
+            else {
+                if (toolok)      //used a tool without placement
+                    return 2;
+                else            //no tool used
+                    return 3;
+            }
         }
 
         //------------------------------------------TOOL METHODS------------------------------------------------------------
@@ -560,14 +547,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
                 return false;
             boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 1, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
-            if(!toolok) {
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-            }
-            message="";
             return toolok;
         }
 
         private boolean toolTwo(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            if(player.getScheme().isEmpty())
+                return false;
             sendMessageOut("@TOOL-1");
             while (!(message.equals("@TOOLUSED1"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
@@ -576,13 +561,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             for (int k=1; k<5;k++)
                 coord[k-1]=stringToInt(arrOfMsg[k]);
             boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 2, coord);
-            if(!toolok)
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-            message = "";
             return toolok;
         }
 
         private boolean toolThree(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            if(player.getScheme().isEmpty())
+                return false;
             sendMessageOut("@TOOL-1");
             while (!(message.equals("@TOOLUSED1"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
             if(message.equals("@DEAD") ||message.equals("@TIMEROUT"))
@@ -592,13 +576,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             for (int k=1; k<5;k++)
                 coord[k-1]=stringToInt(arrOfMsg[k]);
             boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 3, coord);
-            if(!toolok)
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-            message = "";
             return toolok;
         }
 
         private boolean toolFour(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            Ruler ruler = new Ruler();
+            if(ruler.schemeCount(player.getScheme())<2)
+                return false;
             sendMessageOut("@TOOL-2");
             while (!(message.equals("@TOOLUSED2"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {sleep(300);}
             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
@@ -612,32 +596,25 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                     coord2dice[k % 4] = stringToInt(arrOfMsg[k+1]);
             }
             boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 4, coord1dice, coord2dice);
-            if(!toolok)
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-            message = "";
             return toolok;
         }
 
         private boolean toolFive(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-            if(greenCarpet.checkEmptyRoundpath()) {
-                sendMessageOut("@TOOL-5");
-                while (!(message.equals("@TOOLUSED5")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {
-                    sleep(200);
-                }
-                if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
-                    return false;
-                int[] dicePos = new int[2];
-                dicePos[0] = stringToInt(arrOfMsg[2]);
-                dicePos[1] = stringToInt(arrOfMsg[3]);
-                boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 5, stringToInt(arrOfMsg[1]), dicePos);
-                if (!toolok)
-                    sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-                message = "";
-                return toolok;
-            }else{
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool. Il tracciato dei round è vuoto."); //TODO aggiungere ad RMI!!!!
+            if(!greenCarpet.checkEmptyRoundpath())
                 return false;
+            sendMessageOut("@TOOL-5");
+            while (!(message.equals("@TOOLUSED5")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")) {
+                sleep(200);
             }
+            if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
+                return false;
+            int[] dicePos = new int[2];
+            dicePos[0] = stringToInt(arrOfMsg[2]);
+            dicePos[1] = stringToInt(arrOfMsg[3]);
+            boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 5, stringToInt(arrOfMsg[1]), dicePos);
+            if (!toolok)
+                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
+            return toolok;
         }
 
         private boolean[] toolSix(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, Boolean useddice) throws IOException, InterruptedException {
@@ -659,15 +636,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         while (!checkcorrdice) {
                             String dicejson = gson.toJson(dice);
                             sendMessageOut("@TOOL-61-" + dicejson);
-                            while (!(message.equals("@TOOLUSED61") && !message.equals("@TIMEROUT")) && !message.equals("@DEAD")) {
+                            while (!message.equals("@TOOLUSED61") && !message.equals("@TIMEROUT") && !message.equals("@DEAD")) {
                                 sleep(200);
                             }
+                            System.out.println(message);
                             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
                                 return ret;
                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
                             if(!checkcorrdice)
                                 sendMessageOut("@ERROR-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
-                            message = "";
                         }
                         greenCarpet.getDiceFromStock(dicepos);
                         player.getScheme().setBoxes(dice, stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]));
@@ -679,10 +656,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 }else{
                     sendMessageOut("@ERROR-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
                 }
-                message="";
             }else
                 sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dad in questo turno.");
-            message="";
             return ret;
         }
 
@@ -694,11 +669,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
                     return false;
                 toolok=toolCardsExecutor.changeDiceCard(player, greenCarpet, 7);
-                if(!toolok)
-                    sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
             }else
                 sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.");
-            message="";
             return toolok;
         }
 
@@ -710,11 +682,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
                     return false;
                 toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), 8, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
-                if(!toolok)
-                    sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
             }else
                 sendMessageOut("@ERROR-Questa toolcard non è attualmente utilizzabile.  Ricordati di piazzare un dado prima di utilizzarla!");
-            message="";
             return toolok;
         }
 
@@ -726,12 +695,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 if (message.equals("@DEAD") || message.equals("@TIMEROUT"))
                     return false;
                 toolok=toolCardsExecutor.usePlacementCard(player, greenCarpet, stringToInt(arrOfMsg[1]), 9, stringToInt(arrOfMsg[2]), stringToInt(arrOfMsg[3]));
-                if(!toolok)
-                    sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-                message="";
             } else
                 sendMessageOut("@ERROR-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-            message="";
             return toolok;
         }
 
@@ -741,9 +706,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             if(message.equals("@DEAD") || arrOfMsg[1].equals("@TIMEROUT"))
                 return false;
             boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 10, stringToInt(arrOfMsg[1]), 0);
-            if(!toolok)
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-            message="";
             return toolok;
         }
 
@@ -787,7 +749,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                             ret[0]=true;
                             return ret;
                         }
-                        message="";
                         if(ruler.checkAvailableDice(dice, player.getScheme())) {
                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());
                             if(checkcorrdice) {
@@ -808,11 +769,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 }
             }else
                 sendMessageOut("@ERROR-Non puoi utilizzare questa carta tool. Hai già piazzato un dado in questo turno.");
-            message="";
             return ret;
         }
 
         private boolean toolTwelve(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            if(player.getScheme().isEmpty() && !greenCarpet.checkEmptyRoundpath())
+                return false;
             sendMessageOut("@TOOL-3");
             while (!(message.equals("@TOOLUSED3"))&& !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) {sleep(300);}
             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
@@ -828,9 +790,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                     allcoordinates[k] = stringToInt(arrOfMsg[k + 1]);
             }
             boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 12, numOfDices, allcoordinates);
-            if(!toolok)
-                sendMessageOut("@ERROR-Non è stato possibile utilizzare la tool.");
-            message = "";
             return toolok;
         }
         //********************************************TOOL METHODS**********************************************************

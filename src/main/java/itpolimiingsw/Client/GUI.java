@@ -311,9 +311,12 @@ public class GUI implements ClientInterface {
         int[] oldcoordinates;
         for(int i=0; i<num/2; i++){
             oldcoordinates=chooseCoordinates();
+            if(oldcoordinates[0]==99)
+                return oldcoordinates;
             for(int j=0; j<2; j++)
                 allcoordinates[(i*2)+j]=oldcoordinates[j];
         }
+
         return allcoordinates;
     }
 

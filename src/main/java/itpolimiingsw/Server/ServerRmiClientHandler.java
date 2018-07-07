@@ -94,9 +94,9 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
 
 
     //--------------------------------------check if client is connected yet--------------------------------------------
-    public boolean clientAlive(String nickname) throws IOException {
+    public boolean clientAlive(String nickname) throws IOException, InterruptedException {
         boolean flag=false;
-        if(DB.getUser(nickname).isOnline()==true){
+        if(DB.getUser(nickname).isOnline()){
             try{
                 flag=DB.getUser(nickname).getConnectionType().aliveMessage();
             }catch (ConnectException e){

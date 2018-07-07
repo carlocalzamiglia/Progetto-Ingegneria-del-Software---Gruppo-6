@@ -98,6 +98,7 @@ public class GUIController extends Application {
     //TOOL VAR
 
 
+
     //tool2-3
     public static int[] dicetoolpos = new int[2];
     public static boolean toolCoord = false;
@@ -198,15 +199,14 @@ public class GUIController extends Application {
         AtomicInteger tool1res= new AtomicInteger();
         tool1res.set(0);
         Platform.runLater(() ->{
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alert= new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Pinza Sgrossatrice");
             alert.setContentText("Scegli un'opzione.");
 
             ButtonType buttonTypeOne = new ButtonType("Incrementa");
             ButtonType buttonTypeTwo = new ButtonType("Decrementa");
-
             alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-            boolean tool1=true;
+
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == buttonTypeOne) {
                 tool1res.set(1);
@@ -219,8 +219,9 @@ public class GUIController extends Application {
                 sleep(200);
             } catch (InterruptedException e) { }
         }
-        if(c)
+        if(c) {
             return 99;
+        }
         System.out.println("SCELTA: "+tool1res.get());
         return tool1res.get();
     }
@@ -266,7 +267,8 @@ public class GUIController extends Application {
     public static int getndice12() {
         AtomicInteger tool12res= new AtomicInteger();
         tool12res.set(0);
-        Platform.runLater(() ->{Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Platform.runLater(() ->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Taglierina Manuale");
             alert.setHeaderText("Quanti dadi vuoi spostare?");
             alert.setContentText("Scegli opzione:");
@@ -292,8 +294,9 @@ public class GUIController extends Application {
                 sleep(200);
             } catch (InterruptedException e) { }
         }
-        if(c)
+        if(c) {
             return 99;
+        }
         return tool12res.get();
     }
 
@@ -847,8 +850,12 @@ public class GUIController extends Application {
         playerLabel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         timerlab.setFont(Font.font(null, FontWeight.BOLD, 20));
         playerLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
+        Label roundTurnLabel = new Label();
+        roundTurnLabel.setText("ROUND: "+(gc.getRound()+1)+ "  TURNO: "+gc.getTurn());
+        roundTurnLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
 
-        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, markers, playerLabel, timerlab);
+
+        vboxGC.getChildren().addAll(roundTr,grcRoundTr,stock,grcStock, markers, roundTurnLabel, playerLabel, timerlab);
 
 
         vboxScheme.prefHeightProperty().bind(hboxgrande.heightProperty());

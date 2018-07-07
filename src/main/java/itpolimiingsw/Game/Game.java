@@ -20,17 +20,13 @@ public class Game implements Serializable {
     private ArrayList<User> users;
     private ArrayList<Player> player;
     private GreenCarpet greenCarpet;
-    private Inventory inventory;
     private Boolean isPlaying;
-    private int idGame;
     private int numUser;
     private int numUserOnline;
     Matches matches;
 
     public Game(int index, Matches matches){
         isPlaying=false;
-        idGame=index;
-        this.inventory = new Inventory() ;
         this.numUser=0;
         users=new ArrayList<>();
         player=new ArrayList<>();
@@ -79,6 +75,7 @@ public class Game implements Serializable {
                 try {
                     u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/1000+" secondi!");
                 } catch (IOException | NullPointerException e) {
+                    System.out.println("aaaaaaaa");
                     u.setOnline(false);
                     numUserOnline--;
                 }
@@ -129,7 +126,7 @@ public class Game implements Serializable {
         this.greenCarpet = new GreenCarpet(numUser);
         greenCarpet.setRndPublicGoals();
         //greenCarpet.setRndToolCards();
-        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
+        greenCarpet.setToolCards(new ToolCards(6),new ToolCards(11),new ToolCards(12));
         PrivateGoal[] privateGoals = getRndPrivateGoals(numUser);
         Scheme[] schemes = getRndSchemes(numUser);
         Bridge[] bridges = getRndBridges(numUser);
@@ -312,14 +309,16 @@ public class Game implements Serializable {
         System.out.println(this);
     }
 
-    private void setOffPlayer(int i){
+    private void setOffPlayer(int i) throws IOException, InterruptedException {
         users.get(i).setOnline(false);
         player.get(i).setOnline(false);
         playerDisconnect();
     }
 
-    public void playerDisconnect(){
+    public void playerDisconnect() throws IOException, InterruptedException {
         numUserOnline--;
+        if(numUserOnline==0)
+            matches.deleteGame(this);
     }
 
     public void playerConnect() {numUserOnline++;}
@@ -331,15 +330,15 @@ public class Game implements Serializable {
         Random rnd=new Random();
         PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
         int index[]=new int[4];
-        index[0]=rnd.nextInt(4)+1;
-        index[1]=rnd.nextInt(4)+1;
-        index[2]=rnd.nextInt(4)+1;
-        index[3]=rnd.nextInt(4)+1;
+        index[0]=rnd.nextInt(5)+1;
+        index[1]=rnd.nextInt(5)+1;
+        index[2]=rnd.nextInt(5)+1;
+        index[3]=rnd.nextInt(5)+1;
         while(index[0]==index[1] || index[1]==index[2] || index[0]==index[2] || index[0]==index[3] || index[1]==index[3] || index[3]==index[2] ){
-            index[0]=rnd.nextInt(4)+1;
-            index[1]=rnd.nextInt(4)+1;
-            index[2]=rnd.nextInt(4)+1;
-            index[3]=rnd.nextInt(4)+1;
+            index[0]=rnd.nextInt(5)+1;
+            index[1]=rnd.nextInt(5)+1;
+            index[2]=rnd.nextInt(5)+1;
+            index[3]=rnd.nextInt(5)+1;
         }
         for(int i=0;i<numPlayer;i++) {
             privateGoals[i] = new PrivateGoal(index[i]);

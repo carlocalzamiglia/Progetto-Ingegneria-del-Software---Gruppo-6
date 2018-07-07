@@ -19,7 +19,7 @@ import java.util.Random;
 import static java.lang.Thread.sleep;
 
 
-public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, ServertoClient {
+public class ClientRmi implements ClientRmiInt, ServertoClient {
 
     private ClientRmiInt client;
     private ServerRmiClientHandlerInt server;
@@ -31,9 +31,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     ClientInterface clientInt;
     Gson gson = new GsonBuilder().create();
     private boolean pass;
+    private int exportPort;
 
     //-----------------------------------------launch execute method---------------------------------------------
-    public ClientRmi(ClientInterface clientInt)         throws RemoteException{
+    public ClientRmi(ClientInterface clientInt, int exportPort)         throws RemoteException{
         super();
         this.clientInt=clientInt;
         try
@@ -45,7 +46,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             System.out.println("aaException: "+e);
             e.printStackTrace();
         }
-
+        this.exportPort=exportPort;
     }
 
 
@@ -77,8 +78,10 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
                 System.exit(0);
             }
             root=parts[0];
+            //System.setProperty("java.rmi.server.hostname", "192.168.1.4");
             Registry registry = LocateRegistry.getRegistry(root,PORT);
             server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
+            UnicastRemoteObject.exportObject(this, exportPort);
             new HandleServerConnectionForRmi(this).start();
         }
         catch(Exception e)
@@ -205,7 +208,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
             Random random = new Random();
             return random.nextInt(4) + 1;
         }
-        timerThread.setTime();
+        timerThread.setTimeScheme();
         return choose;
     }
 
@@ -237,6 +240,9 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
         public void setTime(){
             pass=true;
             this.interrupt();
+        }
+        public void setTimeScheme(){
+            i=time;
         }
         public int getMaxTime() {return time;}
     }
@@ -501,6 +507,8 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
     private boolean tool5(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+        if(!greenCarpet.checkEmptyRoundpath())
+            return false;
         int vdice = clientInt.chooseDice();
         if (vdice == 99)
             return false;
@@ -632,7 +640,7 @@ public class ClientRmi extends UnicastRemoteObject implements ClientRmiInt, Serv
     }
 
     private boolean tool12(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-        if(player.getScheme().isEmpty())
+        if(player.getScheme().isEmpty() && !greenCarpet.checkEmptyRoundpath())
             return false;
         int[] coordinates12 = clientInt.tool12Messages();
         if(coordinates12[0]==99)

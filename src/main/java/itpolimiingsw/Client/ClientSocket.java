@@ -199,7 +199,9 @@ public class ClientSocket {
                     break;
                      }
 */
-            sleep(30000);
+           try {
+               sleep(3000);
+           }catch (InterruptedException e ){ }
         }
     }
 
@@ -242,11 +244,13 @@ public class ClientSocket {
                 }
                 else
                     clientInt.endTurn();
-                listenFromServer.interrupt();
-                ListenFromServer newListen = new ListenFromServer(clientSocket, logindata);
-                newListen.start();
+                //listenFromServer.interrupt();
+                //ListenFromServer newListen = new ListenFromServer(clientSocket, logindata);
+                //newListen.start();
                 return;
-            }catch (InterruptedException e){return;}
+            }catch (InterruptedException e){
+                System.out.println("timer terminato");
+            }
 
         }
         public int getTime() {
@@ -284,12 +288,11 @@ public class ClientSocket {
                     String [] arrOfStr = msg.split("-");
 
                     if(arrOfStr[0].equals("@SCHEME")) {
+                        System.out.println("timer iniziato");
                         TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[6]),this, true);
                         timerThreadSocket.start();
                         int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4], arrOfStr[5]);
-                        if (scheme==99)
-                            return;
-                        else {
+                        if(scheme!=99){
                             sendMessage("@SCHEME-" + scheme);
                             timerThreadSocket.interrupt();
                         }
@@ -303,6 +306,7 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
                         if(arrOfStr[1].equals("true")) {
                             clientInt.timerOut(false);
+                            System.out.println("timer iniziato");
                             timerThreadSocket = new TimerThreadSocket(Integer.parseInt(arrOfStr[2]), this, false);
                             timerThreadSocket.start();
                             yourturn = true;
@@ -317,17 +321,14 @@ public class ClientSocket {
                         int tool = clientInt.chooseToolMessages();
                         if (tool!=0)
                              sendMessage("@TOOLUSED-"+tool);
-                        else
-                            return;
                     }
 
                     else if(arrOfStr[0].equals("@PLACEDICE")){          //choose and place dice
                         if(yourturn==true) {
                             int[] coordinates;
                             coordinates=clientInt.placeDiceMessages();
-                            if(coordinates[0]==99)
-                                return;
-                            sendMessage("@DICEPLACED-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2]);
+                            if(coordinates[0]!=99)
+                                sendMessage("@DICEPLACED-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2]);
                         }
                     }
 
@@ -339,7 +340,6 @@ public class ClientSocket {
                         String action = clientInt.handleTurnMenu();
                         if (!action.equals("4"))
                            sendMessage("@ACTIONCHOSE-"+action);
-                        else return;
                     }
 
                     else if(arrOfStr[0].equals("@ERROR")){
@@ -369,77 +369,66 @@ public class ClientSocket {
                                 coordinates=clientInt.tool23Messages();
                                 if (coordinates[0]!=99)
                                     sendMessage("@TOOLUSED1-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3]);
-                                else
-                                    return;
                             }
                             if (arrOfStr[1].equals("2")) {
                                 int[] coordinates;
                                 coordinates=clientInt.tool4Messages();
-                                if (coordinates[0]==99)
-                                    return;
-                                sendMessage("@TOOLUSED2-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3] + "-" + coordinates[4] + "-" + coordinates[5] + "-" + coordinates[6] + "-" + coordinates[7]);
+                                if (coordinates[0]!=99)
+                                    sendMessage("@TOOLUSED2-" + coordinates[0] + "-" + coordinates[1] + "-" + coordinates[2] + "-" + coordinates[3] + "-" + coordinates[4] + "-" + coordinates[5] + "-" + coordinates[6] + "-" + coordinates[7]);
                             }
                             if (arrOfStr[1].equals("3")) {
                                 int[] coordinates12 = clientInt.tool12Messages();
-                                if (coordinates12[0]==99)
-                                    return;
-                                sendMessage("@TOOLUSED3-" + coordinates12[8] + "-" + coordinates12[0] + "-" + coordinates12[1] + "-" + coordinates12[2] + "-" + coordinates12[3] + "-" + coordinates12[4] + "-" + coordinates12[5] + "-" + coordinates12[6] + "-" + coordinates12[7] + "-" + coordinates12[9] + "-" + coordinates12[10]);
+                                if (coordinates12[0]!=99)
+                                    sendMessage("@TOOLUSED3-" + coordinates12[8] + "-" + coordinates12[0] + "-" + coordinates12[1] + "-" + coordinates12[2] + "-" + coordinates12[3] + "-" + coordinates12[4] + "-" + coordinates12[5] + "-" + coordinates12[6] + "-" + coordinates12[7] + "-" + coordinates12[9] + "-" + coordinates12[10]);
                             }
                             if(arrOfStr[1].equals("4")){
                                 int vdice=clientInt.chooseDice();
-                                if (vdice==99)
-                                    return;
-                                int dicechose=clientInt.tool1Messages();
-                                if (dicechose==99)
-                                    return;
-                                sendMessage("@TOOLUSED4-"+vdice+"-"+dicechose);
+                                if (vdice!=99) {
+                                    int dicechose = clientInt.tool1Messages();
+                                    if (dicechose != 99)
+                                        sendMessage("@TOOLUSED4-" + vdice + "-" + dicechose);
+                                }
                             }
                             if(arrOfStr[1].equals("6")){
                                 int ndice = clientInt.chooseDice();
-                                if (ndice==99)
-                                    return;
-                                sendMessage("@TOOLUSED6-"+ndice);
+                                if (ndice!=99)
+                                    sendMessage("@TOOLUSED6-"+ndice);
+
                             }
                             if(arrOfStr[1].equals("61")){
                                 int[] coordinates = clientInt.tool6Messages(arrOfStr[2]);
-                                if (coordinates[0]==99)
-                                    return;
-                                sendMessage("@TOOLUSED61-"+coordinates[0]+"-"+coordinates[1]);
+                                if (coordinates[0]!=99)
+                                    sendMessage("@TOOLUSED61-"+coordinates[0]+"-"+coordinates[1]);
                             }
                             if(arrOfStr[1].equals("5")){
                                 int vdice = clientInt.chooseDice();
-                                if (vdice==99)
-                                    return;
-                                int[] dicepos = clientInt.chooseFromPath();
-                                if (dicepos[0]==99)
-                                    return;
-                                sendMessage("@TOOLUSED5-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
+                                if (vdice!=99) {
+                                    int[] dicepos = clientInt.chooseFromPath();
+                                    if (dicepos[0] != 99)
+                                        sendMessage("@TOOLUSED5-" + vdice + "-" + dicepos[0] + "-" + dicepos[1]);
+                                }
                             }
                             if(arrOfStr[1].equals("7")){
                                 sendMessage("@TOOLUSED7-1");
                             }
                             if(arrOfStr[1].equals("8")){
                                 int vdice=clientInt.chooseDice();
-                                if (vdice==99)
-                                    return;
-                                int[] dicepos=clientInt.chooseCoordinates();
-                                if (dicepos[0]!=99)
-                                     sendMessage("@TOOLUSED8-"+vdice+"-"+dicepos[0]+"-"+dicepos[1]);
-                                else
-                                    return;
+                                if (vdice!=99) {
+                                    int[] dicepos = clientInt.chooseCoordinates();
+                                    if (dicepos[0] != 99)
+                                        sendMessage("@TOOLUSED8-" + vdice + "-" + dicepos[0] + "-" + dicepos[1]);
+                                }
                             }
                             if(arrOfStr[1].equals("91")){
                                 int value = clientInt.tool11Messages(arrOfStr[2]);
-                                if (value==99)
-                                    return;
-                                sendMessage("@TOOLUSED91-"+value);
+                                if (value!=99)
+                                    sendMessage("@TOOLUSED91-"+value);
                             }
 
                             if(arrOfStr[1].equals("92")){
                                 int[] value = clientInt.chooseCoordinates();
-                                if (value[0]==99)
-                                    return;
-                                sendMessage("@TOOLUSED92-"+value[0]+"-"+value[1]);
+                                if (value[0]!=99)
+                                    sendMessage("@TOOLUSED92-"+value[0]+"-"+value[1]);
                             }
 
                     } else if(arrOfStr[0].equals("@ENDGAMEACTION")){
@@ -457,18 +446,15 @@ public class ClientSocket {
                         System.out.println(msg);
                     }
                 }
-                catch (InterruptedException e) {
-                    this.interrupt();
-                    return;
-                }
+                catch (InterruptedException e) { }
                 catch(IOException e) {
-                    clientInt.showError("Errore di connessione-Ops, c'è stato un problema di connessione con il socket. Riconnessione imminente.");
-                    try {
-                        sendMessage("@RECONNECT");
-                    }
-                    catch (IOException e1) {
-                    }
-                    clientSocket.execute(logindata[0], logindata[1]);
+                    clientInt.showError("Errore di connessione-Ops, c'è stato un problema di connessione con il socket.");
+                    //try {
+                    //    sleep(5000);
+                    //} catch (InterruptedException e1) {
+                    //    e1.printStackTrace();
+                   // }
+                   // clientSocket.execute(logindata[0], logindata[1]);
                 }
                 catch(ClassNotFoundException e2) {
                     e2.printStackTrace();
