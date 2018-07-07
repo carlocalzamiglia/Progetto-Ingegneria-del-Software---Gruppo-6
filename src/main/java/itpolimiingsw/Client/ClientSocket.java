@@ -178,27 +178,6 @@ public class ClientSocket {
         //this is for the client part
         new ListenFromServer(this, logindata).start();
         while(10>1){
-           /* outVideo.println("Cosa vuoi fare?");
-            outVideo.println("0)manda messaggio");
-            outVideo.println("1)chiudi");
-            String choice= inKeyboard.readLine();
-
-            switch (choice) {
-                case "0":
-                    outVideo.println("Scrivi messaggio:");
-                    String message = inKeyboard.readLine();
-                    sendMessage("@SEND"+message);
-                    break;
-
-                case "1":
-                    sendMessage("@LOGOUT");
-                    System.out.println("Disconnessione eseguita con successo. Arrivederci.");
-                    System.exit(0);
-                    break;
-                default:
-                    break;
-                     }
-*/
            try {
                sleep(3000);
            }catch (InterruptedException e ){ }
@@ -452,13 +431,8 @@ public class ClientSocket {
                 }
                 catch (InterruptedException e) { }
                 catch(IOException e) {
-                    clientInt.showError("Errore di connessione-Ops, c'è stato un problema di connessione con il socket.");
-                    //try {
-                    //    sleep(5000);
-                    //} catch (InterruptedException e1) {
-                    //    e1.printStackTrace();
-                   // }
-                   // clientSocket.execute(logindata[0], logindata[1]);
+                    clientInt.showError("Errore di connessione-Ops, c'è stato un problema di connessione con il socket. Devo chiudere l'applicazione");
+                    System.exit(0);
                 }
                 catch(ClassNotFoundException e2) {
                     e2.printStackTrace();

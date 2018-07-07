@@ -143,11 +143,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     //-----------------------------------------check if client is online yet--------------------------------------------
     public void clientAlive(String nickname) throws IOException, InterruptedException {
-        //if (DB.getUser(nickname).isOnline()) {
-         //       try {
-         //           sendMessageOut("@ALIVE");
-         //           return true;
-         //       }catch(IOException e){
         DB.getUser(nickname).setOnline(false);
         DB.getUser(nickname).setClientHandler(null);
         if(matches.getGame(nickname)!=null) {
