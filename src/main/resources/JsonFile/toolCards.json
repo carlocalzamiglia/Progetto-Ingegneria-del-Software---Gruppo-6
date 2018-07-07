@@ -43,7 +43,7 @@
     "description2": null,
     "serialNumber": 4,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo,ripeti l'azione per due volte."
   },
   {
     "name": "Taglierina circolare",
@@ -52,7 +52,7 @@
     "description2": null,
     "serialNumber": 5,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dalla riserve, successivamente scegline uno dal tracciato dei round."
   },
   {
     "name": "Pennello per Pasta Salda",
@@ -61,7 +61,7 @@
     "description2": "Se non puoi piazzarlo,riponilo nella Riserva",
     "serialNumber": 6,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dalla riserva."
   },
   {
     "name": "Martelletto",
@@ -70,7 +70,7 @@
     "description2": "Questa carta può essere usata solo durante il tuo secondo turno, prima di scegliere il secondo dado",
     "serialNumber": 7,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Ogni dado della riserva verrà rilanciato"
   },
   {
     "name": "Tenaglia a Rotelle",
@@ -79,7 +79,7 @@
     "description2": "Salta il tuo secondo turno in questo round",
     "serialNumber": 8,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dalla riserva, successivamente scegli una casella in cui piazzarlo."
   },
   {
     "name": "Riga in Sughero",
@@ -88,7 +88,7 @@
     "description2": "Devi rispettare tutte le restrizioni di piazzamento",
     "serialNumber": 9,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dalla riserva, successivamente scegli una casella in cui piazzarlo."
   },
   {
     "name": "Tampone Diamantato",
@@ -97,7 +97,7 @@
     "description2": "6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.",
     "serialNumber": 10,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dalla riserva."
   },
   {
     "name": "Diluente per Pasta Salda",
@@ -106,7 +106,7 @@
     "description2": "Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento",
     "serialNumber": 11,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dalla riserva."
   },
   {
     "name": "Taglierina Manuale",
@@ -115,6 +115,6 @@
     "description2": "Devi rispettare tutte le restizioni di piazzamento",
     "serialNumber": 12,
     "cost": 1,
-    "usage": "Scegli un dado dal tuo schema. Scegli successivamente una nuova casella in cui piazzarlo."
+    "usage": "Scegli un dado dal tracciato dei round, successivamente verrà aperto un popup in cui dovrai scegliere il numero di dadi da spostare, infine clicca su un dado nel tuo schema e scegli una nuova casella in cui piazzarlo."
   }
 ]
