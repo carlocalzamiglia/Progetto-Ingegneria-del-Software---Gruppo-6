@@ -1,9 +1,9 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="Progetto-Ingegneria-del-Software---Gruppo-6:jar">
-    <output-path>$PROJECT_DIR$/../../../../Jar</output-path>
-    <root id="archive" name="Progetto-Ingegneria-del-Software---Gruppo-6.jar">
+  <artifact type="jar" name="server_6:jar">
+    <output-path>$PROJECT_DIR$/Deliverables/Jar/Server</output-path>
+    <root id="archive" name="server_6.jar">
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/../../../../Jar/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/Deliverables/Jar/Server/META-INF/MANIFEST.MF" />
       </element>
       <element id="module-output" name="Progetto-Ingegneria-del-Software---Gruppo-6" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" path-in-jar="/" />
