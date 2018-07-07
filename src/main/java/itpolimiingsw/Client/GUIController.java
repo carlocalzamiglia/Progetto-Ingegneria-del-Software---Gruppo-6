@@ -783,11 +783,12 @@ public class GUIController extends Application {
         }
 
 
+
         try {
             vboxTool1.getChildren().remove(1);
             vboxTool2.getChildren().remove(1);
             vboxTool3.getChildren().remove(1);
-        }catch(ArrayIndexOutOfBoundsException e){}
+        }catch(IndexOutOfBoundsException e){}
         vboxTool1.getChildren().add(1, cost1);
         vboxTool2.getChildren().add(1, cost2);
         vboxTool3.getChildren().add(1, cost3);
