@@ -1,7 +1,10 @@
 package itpolimiingsw;
 
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.GameItems.Box;
+import itpolimiingsw.GameItems.Colour;
+import itpolimiingsw.GameItems.Dice;
+import itpolimiingsw.GameCards.Scheme;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

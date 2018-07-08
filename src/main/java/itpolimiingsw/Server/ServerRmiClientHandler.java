@@ -1,8 +1,11 @@
 package itpolimiingsw.Server;
 
 
-import itpolimiingsw.Client.ClientRmiInt;
-import itpolimiingsw.Game.Matches;
+import itpolimiingsw.ClientController.ClientRmiInt;
+import itpolimiingsw.GameController.Matches;
+import itpolimiingsw.RMIDisconnectionHandler.HandleClientDisconnection;
+import itpolimiingsw.UsersDatabase.DBUsers;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.rmi.*;
@@ -36,7 +39,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new HandleDisconnection(nickname, this).start();
+        new HandleClientDisconnection(nickname, this).start();
     }
 
     //@Override

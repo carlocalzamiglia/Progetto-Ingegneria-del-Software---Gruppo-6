@@ -1,6 +1,7 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.GameCards.Scheme;
+import itpolimiingsw.GameItems.*;
 
 public class TestScheme {
     @org.junit.jupiter.api.Test

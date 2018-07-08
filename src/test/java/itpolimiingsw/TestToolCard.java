@@ -1,6 +1,6 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.ToolCards;
+import itpolimiingsw.GameCards.ToolCards;
 
 public class TestToolCard {
     @org.junit.jupiter.api.Test

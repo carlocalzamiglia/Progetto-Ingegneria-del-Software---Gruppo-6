@@ -1,17 +1,21 @@
 package itpolimiingsw;
 
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.GameCards.PrivateGoal;
+import itpolimiingsw.GameCards.PublicGoal;
+import itpolimiingsw.GameCards.Scheme;
+import itpolimiingsw.GameCards.ToolCards;
+import itpolimiingsw.GameTools.*;
+import itpolimiingsw.GameItems.*;
 
 public class TestPlayer {
     @org.junit.jupiter.api.Test
     public void tPlayer() {
-        Inventory inventory=new Inventory();
         Player player1=new Player("Cesna");
-        player1.setScheme(inventory.getScheme(1));
+        player1.setScheme(new Scheme(1));
         player1.setMarkers();
-        player1.setBridge(inventory.getBridge(2));
-        player1.setPrivateGoal(inventory.getPrivateGoal(4));
+        player1.setBridge(new Bridge(2));
+        player1.setPrivateGoal(new PrivateGoal(4));
         player1.setOnline(true);
         player1.dump();
         //player1.useMarkers(g);
@@ -19,22 +23,21 @@ public class TestPlayer {
     }
     @org.junit.jupiter.api.Test
     public void tPlayerAndGreenCarpet() {
-        Inventory inventory=new Inventory();
         GreenCarpet greenCarpet=new GreenCarpet(2);
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
+        greenCarpet.setPublicGoals(new PublicGoal(1),new PublicGoal(2),new PublicGoal(3));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
         greenCarpet.setStock((2*2+1));
         Player player1=new Player("Cesna");
-        player1.setScheme(inventory.getScheme(1));
+        player1.setScheme(new Scheme(1));
         player1.setMarkers();
-        player1.setBridge(inventory.getBridge(2));
-        player1.setPrivateGoal(inventory.getPrivateGoal(4));
+        player1.setBridge(new Bridge(2));
+        player1.setPrivateGoal(new PrivateGoal(4));
         player1.setOnline(true);
         Player player2=new Player("ElCcciarelloz");
-        player2.setScheme(inventory.getScheme(2));
+        player2.setScheme(new Scheme(2));
         player2.setMarkers();
-        player2.setBridge(inventory.getBridge(1));
-        player2.setPrivateGoal(inventory.getPrivateGoal(2));
+        player2.setBridge(new Bridge(1));
+        player2.setPrivateGoal(new PrivateGoal(2));
         player2.setOnline(true);
         greenCarpet.dump();
         player1.dump();

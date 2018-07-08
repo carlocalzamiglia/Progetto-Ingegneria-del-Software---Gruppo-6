@@ -1,5 +1,9 @@
 package itpolimiingsw.Client;
 
+import itpolimiingsw.ClientController.ClientRmi;
+import itpolimiingsw.UserExperience.CLI;
+import itpolimiingsw.UserExperience.GUI;
+
 import java.io.IOException;
 
 public class ClientSetup {

@@ -1,12 +1,15 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.GameCards.PrivateGoal;
+import itpolimiingsw.GameCards.PublicGoal;
+import itpolimiingsw.GameCards.Scheme;
+import itpolimiingsw.GameTools.*;
+import itpolimiingsw.GameItems.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 import java.util.ArrayList;
-import java.util.Random;
 
 class TestCalculator2 {
 
@@ -14,14 +17,13 @@ class TestCalculator2 {
     public void test() {
         int n=1;
         int r=10-n;
-        Inventory inventory=new Inventory();
         GreenCarpet greenCarpet=new GreenCarpet(1);
         ArrayList<Player> players=new ArrayList<Player>();
         players.add(new Player("cesna"));
-        players.get(0).setScheme(inventory.getScheme(1));
-        players.get(0).setPrivateGoal(inventory.getPrivateGoal(5));
+        players.get(0).setScheme(new Scheme(1));
+        players.get(0).setPrivateGoal(new PrivateGoal(5));
         players.get(0).setMarkers();
-        players.get(0).setBridge(inventory.getBridge(1));
+        players.get(0).setBridge(new Bridge(1));
         players.get(0).setOnline(true);
 
         Dice dice = new Dice(Colour.ANSI_RED);
@@ -56,13 +58,13 @@ class TestCalculator2 {
 
 
         Calculator calculator = new Calculator(players, greenCarpet);
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(5),inventory.getPublicGoal(6),inventory.getPublicGoal(7));
+        greenCarpet.setPublicGoals(new PublicGoal(5),new PublicGoal(6),new PublicGoal(7));
 
         assertEquals(14, calculator.calculate(0));
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(8),inventory.getPublicGoal(9),inventory.getPublicGoal(10));
+        greenCarpet.setPublicGoals(new PublicGoal(8),new PublicGoal(9),new PublicGoal(10));
         calculator.setGreenCarpet(greenCarpet);
         assertEquals(17, calculator.calculate(0));
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(4),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
+        greenCarpet.setPublicGoals(new PublicGoal(4),new PublicGoal(2),new PublicGoal(3));
         calculator.setGreenCarpet(greenCarpet);
         assertEquals(16, calculator.calculate(0));
 

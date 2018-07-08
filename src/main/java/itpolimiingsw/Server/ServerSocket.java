@@ -1,6 +1,9 @@
 package itpolimiingsw.Server;
 
-import itpolimiingsw.Game.Matches;
+import itpolimiingsw.ClientController.ServerSocketClientHandler;
+import itpolimiingsw.GameController.Matches;
+import itpolimiingsw.UsersDatabase.DBUsers;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

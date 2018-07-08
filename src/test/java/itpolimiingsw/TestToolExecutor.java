@@ -1,16 +1,18 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.*;
-import org.junit.jupiter.api.Test;
+import itpolimiingsw.GameCards.PublicGoal;
+import itpolimiingsw.GameCards.Scheme;
+import itpolimiingsw.GameCards.ToolCards;
+import itpolimiingsw.GameTools.*;
+import itpolimiingsw.GameItems.*;
 
 
 public class TestToolExecutor {
     @org.junit.jupiter.api.Test
     public void tToolCardExe1and10() {
-        Inventory inventory=new Inventory();
         GreenCarpet greenCarpet=new GreenCarpet(2);
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
+        greenCarpet.setPublicGoals(new PublicGoal(1),new PublicGoal(2),new PublicGoal(3));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
         greenCarpet.setStock((2*2+1));
         Player player1=new Player("cecio");
         player1.setScheme(new Scheme(2));
@@ -42,10 +44,9 @@ public class TestToolExecutor {
     }
     @org.junit.jupiter.api.Test
     public void tToolCardExe2and3(){
-        Inventory inventory=new Inventory();
         GreenCarpet greenCarpet=new GreenCarpet(2);
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
+        greenCarpet.setPublicGoals(new PublicGoal(1),new PublicGoal(2),new PublicGoal(3));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
         greenCarpet.setStock((2*2+1));
         Player player1=new Player("cecio");
         player1.setScheme(new Scheme(2));
@@ -72,10 +73,9 @@ public class TestToolExecutor {
     }
     @org.junit.jupiter.api.Test
     public void tToolCardExe7() {
-        Inventory inventory = new Inventory();
         GreenCarpet greenCarpet = new GreenCarpet(2);
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(1), inventory.getPublicGoal(2), inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCard(1), inventory.getToolCard(2), inventory.getToolCard(3));
+        greenCarpet.setPublicGoals(new PublicGoal(1), new PublicGoal(2), new PublicGoal(3));
+        greenCarpet.setToolCards(new ToolCards(1), new ToolCards(2), new ToolCards(3));
         greenCarpet.setStock((2 * 2 + 1));
         Player player1 = new Player("cecio");
         player1.setScheme(new Scheme(2));

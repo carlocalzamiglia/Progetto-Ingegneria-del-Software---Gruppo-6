@@ -3,7 +3,7 @@ package itpolimiingsw.Server;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import itpolimiingsw.Client.ClientRmiInt;
+import itpolimiingsw.ClientController.ClientRmiInt;
 
 public interface ServerRmiClientHandlerInt extends Remote {
 

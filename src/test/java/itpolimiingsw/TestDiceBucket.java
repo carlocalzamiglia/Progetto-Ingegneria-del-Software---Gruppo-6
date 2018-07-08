@@ -1,7 +1,9 @@
 package itpolimiingsw;
 
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.GameItems.Colour;
+import itpolimiingsw.GameItems.Dice;
+import itpolimiingsw.GameItems.DiceBucket;
 import org.junit.jupiter.api.Test;
 
 public class TestDiceBucket {

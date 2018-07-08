@@ -1,7 +1,7 @@
 package itpolimiingsw.Client;
 
-import itpolimiingsw.Game.ToolCards;
-import itpolimiingsw.ServertoClientHandler.ClientInterface;
+import itpolimiingsw.GameCards.ToolCards;
+import itpolimiingsw.UserExperience.ClientInterface;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;

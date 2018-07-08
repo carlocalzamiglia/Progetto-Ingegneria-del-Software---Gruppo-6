@@ -1,8 +1,8 @@
 package itpolimiingsw;
-import itpolimiingsw.Game.Game;
-import itpolimiingsw.Game.Matches;
-import itpolimiingsw.Game.Player;
-import itpolimiingsw.Server.User;
+import itpolimiingsw.GameController.Game;
+import itpolimiingsw.GameController.Matches;
+import itpolimiingsw.GameTools.Player;
+import itpolimiingsw.UsersDatabase.User;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

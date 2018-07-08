@@ -1,7 +1,7 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.PrivateGoal;
-import itpolimiingsw.Game.PublicGoal;
+import itpolimiingsw.GameCards.PrivateGoal;
+import itpolimiingsw.GameCards.PublicGoal;
 
 public class TestGoal {
     @org.junit.jupiter.api.Test

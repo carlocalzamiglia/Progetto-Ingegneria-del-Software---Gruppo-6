@@ -1,6 +1,8 @@
 package itpolimiingsw.Server;
 
-import itpolimiingsw.Game.Matches;
+import itpolimiingsw.GameController.Matches;
+import itpolimiingsw.UsersDatabase.DBUsers;
+
 import java.util.concurrent.TimeUnit;
 
 public class Server {

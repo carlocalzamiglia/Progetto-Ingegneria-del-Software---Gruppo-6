@@ -1,6 +1,10 @@
 package itpolimiingsw;
 
-import itpolimiingsw.Game.*;
+import itpolimiingsw.GameCards.PublicGoal;
+import itpolimiingsw.GameCards.Scheme;
+import itpolimiingsw.GameCards.ToolCards;
+import itpolimiingsw.GameTools.*;
+import itpolimiingsw.GameItems.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -9,11 +13,10 @@ import java.util.ArrayList;
 public class TestGreenCarpet {
     @org.junit.jupiter.api.Test
     public void tGreenCarpet(){
-        Inventory inventory=new Inventory();
         Scheme scheme=new Scheme(2);
         GreenCarpet greenCarpet=new GreenCarpet(4);
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
+        greenCarpet.setPublicGoals(new PublicGoal(1),new PublicGoal(2),new PublicGoal(3));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2),new ToolCards(3));
         greenCarpet.setStock((4*2+1));
         greenCarpet.dump();
 
@@ -49,12 +52,11 @@ public class TestGreenCarpet {
 
     @org.junit.jupiter.api.Test
     public void testGreenCarpet2(){
-        Inventory inventory=new Inventory();
         Scheme scheme=new Scheme(2);
         GreenCarpet greenCarpet=new GreenCarpet(4);
         DiceBucket diceBucket;
-        greenCarpet.setPublicGoals(inventory.getPublicGoal(1),inventory.getPublicGoal(2),inventory.getPublicGoal(3));
-        greenCarpet.setToolCards(inventory.getToolCard(1),inventory.getToolCard(2),inventory.getToolCard(3));
+        greenCarpet.setPublicGoals(new PublicGoal(1),new PublicGoal(2),new PublicGoal(3));
+        greenCarpet.setToolCards(new ToolCards(1),new ToolCards(2), new ToolCards(3));
         greenCarpet.setStock((4*2+1));
         greenCarpet.dump();
         greenCarpet.setRoundPath(1);
@@ -102,16 +104,14 @@ public class TestGreenCarpet {
     @Test
     public void toolIsInFalse(){
         GreenCarpet greenCarpet = new GreenCarpet(4);
-        Inventory inventory = new Inventory();
-        greenCarpet.setToolCards(inventory.getToolCard(1), inventory.getToolCard(2), inventory.getToolCard(3));
+        greenCarpet.setToolCards(new ToolCards(1), new ToolCards(2), new ToolCards(3));
         assertEquals(false, greenCarpet.toolIsIn(4));
     }
 
     @Test
     public void toolIsInTrue(){
         GreenCarpet greenCarpet = new GreenCarpet(4);
-        Inventory inventory = new Inventory();
-        greenCarpet.setToolCards(inventory.getToolCard(1), inventory.getToolCard(2), inventory.getToolCard(3));
+        greenCarpet.setToolCards(new ToolCards(1), new ToolCards(2), new ToolCards(3));
         assertEquals(true, greenCarpet.toolIsIn(1));
     }
 

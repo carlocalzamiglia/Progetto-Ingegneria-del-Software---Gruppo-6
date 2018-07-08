@@ -1,7 +1,9 @@
 package itpolimiingsw.Server;
 
 
-import itpolimiingsw.Game.Matches;
+import itpolimiingsw.GameController.Matches;
+import itpolimiingsw.UsersDatabase.DBUsers;
+
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
