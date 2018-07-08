@@ -23,20 +23,53 @@ public class Game implements Serializable {
     private Boolean isPlaying;
     private int numUser;
     private int numUserOnline;
-    Matches matches;
+    private Matches matches;
 
-    public Game(int index, Matches matches){
+    public Game(Matches matches){
         isPlaying=false;
         this.numUser=0;
         users=new ArrayList<>();
         player=new ArrayList<>();
         this.matches=matches;
     }
-    public void addUser(User user){
-        if (numUser != 4) {
+
+    public Boolean getPlaying() {
+        return isPlaying;
+    }
+    public GreenCarpet getGreenCarpet() {
+        return greenCarpet;
+    }
+    public Player getPlayer(int index){
+        return player.get(index);
+    }
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+    public ArrayList<Player> getPlayer() {
+        return player;
+    }
+    public void setGreenCarpet(GreenCarpet greenCarpet) {
+        this.greenCarpet = greenCarpet;
+    }
+
+    public void setPlayer(Player player) {
+        this.player.add(player);
+    }
+    public void playerConnect() { numUserOnline++; }
+
+
+    /**
+     * add the user in the game
+     *
+     * @param user to add
+     */
+    public boolean addUser(User user){
+        Boolean flag= false;
+        if (numUser < 4) {
             numUser++;
             numUserOnline++;
             this.users.add(user);
+            flag= true;
         }
         if(numUserOnline==4){
             if(!isPlaying)
@@ -45,8 +78,12 @@ public class Game implements Serializable {
         if(numUserOnline==2)
             new GameStartonTime().start();
 
+        return flag;
     }
 
+    /**
+     * menage the game for client reconnection
+     */
     public void reconnectUser(){
         if(numUserOnline==4){
             if(!isPlaying)
@@ -56,63 +93,14 @@ public class Game implements Serializable {
             new GameStartonTime().start();
     }
 
-    class GameStart extends Thread{
-        public void run(){
-            try {
-                startGame();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-    class GameStartonTime extends Thread{
-        int time;
-        public void run(){
-            try{
-                time = (Integer.parseInt(readTime())/3)*1000;
-            }catch(IOException | NumberFormatException e){time = 60;}
-            for(User u:users) {
-                try {
-                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/1000+" secondi!");
-                } catch (IOException | NullPointerException e) {
-                    u.setOnline(false);
-                    numUserOnline--;
-                }
-            }
-            try {
-                sleep(time);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            if(numUserOnline>1) {
-                try {
-                    if (!isPlaying)
-                        startGame();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }else
-                System.out.println("Non posso avviare la partita!");
-        }
-    }
-
-
-    public Boolean getPlaying() {
-        return isPlaying;
-    }
-
-    public GreenCarpet getGreenCarpet() {
-        return greenCarpet;
-    }
-    public Player getPlayer(int index){
-        return player.get(index);
-    }
-
-    public void startGame() throws IOException, InterruptedException {
+    /**
+     * methods that manage the entire game setting
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void startGame() throws IOException, InterruptedException {
+        isPlaying = true;
         int time = 90;
         try {
             time = Integer.parseInt(readTime());
@@ -123,11 +111,11 @@ public class Game implements Serializable {
             System.out.println("Hai inserito un valore non accettabile per il timer. Verrà impostato quello di default (90 secondi).");
             time = 90;
         }
-        isPlaying = true;
+
         this.greenCarpet = new GreenCarpet(numUser);
         greenCarpet.setRndPublicGoals();
-        //greenCarpet.setRndToolCards();
-        greenCarpet.setToolCards(new ToolCards(6),new ToolCards(11),new ToolCards(12));
+        greenCarpet.setRndToolCards();
+        //greenCarpet.setToolCards(new ToolCards(6),new ToolCards(11),new ToolCards(12));
         PrivateGoal[] privateGoals = getRndPrivateGoals(numUser);
         Scheme[] schemes = getRndSchemes(numUser);
         Bridge[] bridges = getRndBridges(numUser);
@@ -143,7 +131,6 @@ public class Game implements Serializable {
                 } catch (IOException | NullPointerException e) {
                     users.get(i).setOnline(false);
                     player.setOnline(false);
-                    numUserOnline--;
                 }
                 this.player.add(player);
             }else{
@@ -219,7 +206,74 @@ public class Game implements Serializable {
 
     }
 
-    public void calculate_result(int singleplayer) throws IOException, InterruptedException {       //AGGIUNGERE SHOWSCORE
+    /**
+     * method that create a new string in json from four scheme
+     *
+     * @param scheme  first scheme
+     * @param scheme1 second scheme
+     * @param scheme2 third scheme
+     * @param scheme3 fourth scheme
+     * @return a string in json with the scheme
+     */
+    private String[] getJsonSchemes(Scheme scheme, Scheme scheme1, Scheme scheme2, Scheme scheme3) {
+        Gson gson = new GsonBuilder().create();
+        String[] schemesjson = new String[4];
+        schemesjson[0] = gson.toJson(scheme);
+        schemesjson[1] = gson.toJson(scheme1);
+        schemesjson[2] = gson.toJson(scheme2);
+        schemesjson[3] = gson.toJson(scheme3);
+        return schemesjson;
+    }
+
+    /**
+     * metods that assign at one player in the game the scheme chosen
+     *
+     * @param schemes array of schemes
+     * @param bridges array of bridges
+     * @param i index of the player in the array of players
+     * @param time time of the timer
+     * @param player Player appointed
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void setScheme(Scheme[] schemes,Bridge[] bridges, int i, int time, Player player) throws IOException, InterruptedException {
+        String[] schemesjson = getJsonSchemes(schemes[(i * 4)], schemes[(i * 4) + 1], schemes[(i * 4) + 2], schemes[(i * 4) + 3]);
+        Gson gson = new GsonBuilder().create();
+        String privategoaljson = gson.toJson(player.getPrivateGoal());
+        int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3], privategoaljson, time);
+        if (schemechose != 0) {
+            player.setBridge(bridges[i]);
+            player.setScheme(schemes[(i * 4) + schemechose - 1]);
+            player.setMarkers();
+        }
+    }
+
+
+    /**
+     * method that handle every turn in the game
+     *
+     * @param i index of the player
+     * @param time of the timer
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void turn(int i, int time) throws IOException, InterruptedException{
+        System.out.println("tocca a: " + users.get(i).getNickname());
+        Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i, time);
+        if(game!=null) {
+            this.greenCarpet = game.greenCarpet;
+            this.player.set(i, game.getPlayer(0));
+        }
+    }
+
+    /**
+     * Calculate the end score of the game and send to every player the score
+     *
+     * @param singleplayer flag of how many players
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void calculate_result(int singleplayer) throws IOException, InterruptedException {       //AGGIUNGERE SHOWSCORE
         Calculator calculator = new Calculator(player, greenCarpet);
         //------------start calculating------------
         sleep(2000);
@@ -272,80 +326,39 @@ public class Game implements Serializable {
 
     }
 
-
-    private String[] getJsonSchemes(Scheme scheme, Scheme scheme1, Scheme scheme2, Scheme scheme3) {
-        Gson gson = new GsonBuilder().create();
-        String[] schemesjson = new String[4];
-        schemesjson[0] = gson.toJson(scheme);
-        schemesjson[1] = gson.toJson(scheme1);
-        schemesjson[2] = gson.toJson(scheme2);
-        schemesjson[3] = gson.toJson(scheme3);
-        return schemesjson;
-    }
-
-    private void setScheme(Scheme[] schemes,Bridge[] bridges, int i, int time, Player player) throws IOException, InterruptedException {
-        String[] schemesjson = getJsonSchemes(schemes[(i * 4)], schemes[(i * 4) + 1], schemes[(i * 4) + 2], schemes[(i * 4) + 3]);
-        Gson gson = new GsonBuilder().create();
-        String privategoaljson = gson.toJson(player.getPrivateGoal());
-        int schemechose = users.get(i).getConnectionType().chooseScheme(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3], privategoaljson, time);
-        if (schemechose != 0) {
-            player.setBridge(bridges[i]);
-            player.setScheme(schemes[(i * 4) + schemechose - 1]);
-            player.setMarkers();
-        }
-    }
-
-    private void turn(int i, int time) throws IOException, InterruptedException{
-        System.out.println("tocca a: " + users.get(i).getNickname());
-        Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i, time);
-        if(game!=null) {
-            this.greenCarpet = game.greenCarpet;
-            this.player.set(i, game.getPlayer(0));
-        }
-    }
-
-
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public ArrayList<Player> getPlayer() {
-        return player;
-    }
-
-    @Override
-    public String toString() {
-        String s=greenCarpet+"\n";
-        for(Player p:player)
-            s=s+p.toString()+"\n";
-        return s;
-    }
-
-    public void dump(){
-        System.out.println(this);
-    }
-
-    private void setOffPlayer(int i) throws IOException, InterruptedException {
+    /**
+     *method that hanle the disconnection of a player
+     *
+     * @param i index of the player
+     */
+    private void setOffPlayer(int i){
         users.get(i).setOnline(false);
         player.get(i).setOnline(false);
         playerDisconnect();
     }
 
-    public void playerDisconnect() throws IOException, InterruptedException {
+    /**
+     *method that hanle the disconnection of a player, if the player is the last one delete the game
+     */
+    public void playerDisconnect(){
         numUserOnline--;
         if(numUserOnline==0)
             matches.deleteGame(this);
     }
 
-    public void playerConnect() {numUserOnline++;}
 
 
 
-    //-------------------------------Random methods for the initialization of the match---------------------------------
+    /**
+     * method that return a random array of private goals
+     *
+     * @param numPlayer number of player in the game
+     * @return a random array of Private Goal
+     */
     private PrivateGoal[] getRndPrivateGoals(int numPlayer){
         Random rnd=new Random();
         PrivateGoal [] privateGoals=new PrivateGoal[numPlayer];
-        int index[]=new int[4];
+        int[] index=new int[4];
         index[0]=rnd.nextInt(5)+1;
         index[1]=rnd.nextInt(5)+1;
         index[2]=rnd.nextInt(5)+1;
@@ -361,10 +374,17 @@ public class Game implements Serializable {
         }
         return privateGoals;
     }
+
+    /**
+     * method that return a random array of schemes
+     *
+     * @param numPlayer number of player in the game
+     * @return a random array of scheme
+     */
     private Scheme[] getRndSchemes(int numPlayer){
         Random rnd=new Random();
         Scheme [] schemes=new Scheme[numPlayer*4];
-        int index[]=new int[16];
+        int[] index=new int[16];
         index[0]=rnd.nextInt(12)*2+1;
         index[2]=rnd.nextInt(12)*2+1;
         while(index[0]==index[2])
@@ -402,10 +422,17 @@ public class Game implements Serializable {
         }
         return schemes;
     }
+
+    /**
+     * method that return a random array of bridge
+     *
+     * @param numPlayer number of player in the game
+     * @return a random array of bridge
+     */
     private Bridge[] getRndBridges(int numPlayer) {
         Random rnd = new Random();
         Bridge[] bridges = new Bridge[numPlayer];
-        int index[] = new int[4];
+        int[] index = new int[4];
         index[0] = rnd.nextInt(4) + 1;
         index[1] = rnd.nextInt(4) + 1;
         index[2] = rnd.nextInt(4) + 1;
@@ -422,7 +449,12 @@ public class Game implements Serializable {
         return bridges;
     }
 
-
+    /**
+     * method that return string of the score of every player
+     *
+     * @param playerscore array of players
+     * @return string of score
+     */
     private String[] tableToString(Player[] playerscore){
         String[] s=new String[playerscore.length];
         for (int i=0;i<playerscore.length;i++){
@@ -430,14 +462,14 @@ public class Game implements Serializable {
         }
         return s;
     }
-    public void setGreenCarpet(GreenCarpet greenCarpet) {
-        this.greenCarpet = greenCarpet;
-    }
 
-    public void setPlayer(Player player,int i) {
-        this.player.add(player);
-    }
 
+    /**
+     * read the configuration of the timer in the file sever_config.txt
+     *
+     * @return the time of the timer
+     * @throws IOException
+     */
     private String readTime() throws IOException {
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");
         BufferedReader b = new BufferedReader(f);
@@ -451,5 +483,61 @@ public class Game implements Serializable {
             f.close();
         }
         return time;
+    }
+
+
+    @Override
+    public String toString() {
+        String s=greenCarpet+"\n";
+        for(Player p:player)
+            s=s+p.toString()+"\n";
+        return s;
+    }
+    public void dump(){
+        System.out.println(this);
+    }
+
+
+    class GameStart extends Thread{
+        public void run(){
+            try {
+                startGame();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+    class GameStartonTime extends Thread{
+        int time;
+        public void run(){
+            try{
+                time = (Integer.parseInt(readTime())/3)*1000;
+            }catch(IOException | NumberFormatException e){time = 60;}
+            for(User u:users) {
+                try {
+                    u.getConnectionType().sendMessageOut("\nLa partita inizierà fra "+time/1000+" secondi!");
+                } catch (IOException | NullPointerException e) {
+                    u.setOnline(false);
+                }
+            }
+            try {
+                sleep(time);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if(numUserOnline>1) {
+                try {
+                    if (!isPlaying)
+                        startGame();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }else
+                System.out.println("Non posso avviare la partita!");
+        }
     }
 }

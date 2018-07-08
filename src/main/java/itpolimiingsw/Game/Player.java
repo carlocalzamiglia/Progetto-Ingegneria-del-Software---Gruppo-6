@@ -61,12 +61,23 @@ public class Player implements Serializable {
     public void setSecondTurn(boolean secondTurn) {
         this.secondTurn = secondTurn;
     }
-
+    public void setPoints(int points) {
+        this.points = points;
+    }
+    public int getPoints() {
+        return points;
+    }
     public String getNickname() {
         return nickname;
     }
 
-    //----------------------------------Method that consume markers when the player uses a toolcard---------------------
+
+    /**
+     * Use a marker if i use a toolcard and set the cost of the tool to 2 from 1 with the firs use
+     *
+     * @param greenCarpet is the greencarpet that contains the tool cards
+     * @param serialnumber is the serial number of the tool i want to use
+     */
     public void useMarkers(GreenCarpet greenCarpet,int serialnumber) {
         int cost =0;
         for(int j=0; j<greenCarpet.getToolCards().length;j++) {
@@ -79,6 +90,13 @@ public class Player implements Serializable {
             }
         }
     }
+
+    /**
+     * check if i can use a toolcard
+     *
+     * @param cost the cost of the tool card
+     * @return true if i can use the tool, false if i can't
+     */
     public boolean checkMarkers(int cost){
         boolean bool;
         if (markers.size()>= cost) {
@@ -88,12 +106,9 @@ public class Player implements Serializable {
             bool=false;
         return bool;
     }
-    public void setPoints(int points) {
-        this.points = points;
-    }
-    public int getPoints() {
-        return points;
-    }
+
+
+
 
     //-----------------------------------------------Print methods------------------------------------------------------
     @Override

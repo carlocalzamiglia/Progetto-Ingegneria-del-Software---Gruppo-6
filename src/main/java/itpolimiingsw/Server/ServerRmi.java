@@ -32,7 +32,7 @@ public class ServerRmi implements Runnable{
     private void connect() {
         int PORT;
         try {
-            PORT=leggiDaFile();
+            PORT=readFromFile();
             java.rmi.registry.LocateRegistry.createRegistry(PORT);
             Registry registry = LocateRegistry.getRegistry(PORT);
             ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB,matches);
@@ -49,7 +49,7 @@ public class ServerRmi implements Runnable{
      * @throws IOException in case readLine fails.
      * @throws NumberFormatException in case the port written in the file is not
      */
-    private int leggiDaFile() throws IOException, NumberFormatException {
+    private int readFromFile() throws IOException, NumberFormatException {
         System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");
 

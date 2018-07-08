@@ -223,12 +223,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     @Override
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
-        Game game =new Game(time, null);
+        Game game =new Game( null);
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i, time);
         handleTurn.run();
         sendMessageOut("@YOURTURN-false");
         game.setGreenCarpet(handleTurn.getGreenCarpet());
-        game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
+        game.setPlayer(handleTurn.getPlayer());
         if(message.equals("@DEAD"))
             return null;
         return game;
@@ -298,7 +298,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
          */
         public void run(){
             boolean usedDice=false;
-            Game game= new Game(0, null);
+            Game game= new Game( null);
             int flagTool=0;
             boolean usedTool=false;
             Ruler ruler = new Ruler();
@@ -339,7 +339,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                     arrOfMsg[1]="";
                     message="";
                     game.setGreenCarpet(greenCarpet);
-                    game.setPlayer(player, i);
+                    game.setPlayer(player);
                     return;
                 } else if (arrOfMsg[1].equals("2")) { //dice
                     if(ruler.checkAvailable(greenCarpet, player.getScheme())) {
@@ -355,7 +355,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                                 usedDice = true;
                                 if (usedTool) {
                                     game.setGreenCarpet(greenCarpet);
-                                    game.setPlayer(player, i);
+                                    game.setPlayer(player);
                                     message="";
                                     return;
                                 }
@@ -391,7 +391,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         }
                         if (flagTool==1 || (flagTool==2 && usedDice)) {     //used a toolcard which include dice placement
                             game.setGreenCarpet(greenCarpet);
-                            game.setPlayer(player, i);
+                            game.setPlayer(player);
                             arrOfMsg[1]="";
                             message="";
                             return;

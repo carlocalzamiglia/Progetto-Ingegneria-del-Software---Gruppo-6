@@ -16,7 +16,14 @@ public class Matches implements Serializable {
         matches=new ArrayList<>();
         lock=true;
     }
-    public synchronized void addUser(User user) throws IOException, InterruptedException {
+
+    /**
+     * Add a specifid user into a match
+     *
+     * @param user the user to add at the match
+     */
+    public synchronized void addUser(User user){
+        Boolean flag=false;
         while(!lock){
             try {
                 wait();
@@ -26,20 +33,28 @@ public class Matches implements Serializable {
         if(!matches.isEmpty()){
             for (Game g:matches) {
                 if (!g.getPlaying() && g.getPlaying() != null) {
-                    g.addUser(user);
+                    flag=g.addUser(user);
                     lock=true;
                     notifyAll();
-                    return;
+                    if(flag)
+                        return;
                 }
             }
         }
 
-        Game tmp=new Game(matches.size(), this);
+        Game tmp=new Game(this);
         tmp.addUser(user);
         matches.add(tmp);
         lock=true;
         notifyAll();
     }
+
+    /**
+     * search and return a Game where a player whit this nickname is playing
+     *
+     * @param nickname
+     * @return the game where the player is playing
+     */
     public Game getGame(String nickname){
 
         if(!matches.isEmpty()){
@@ -58,6 +73,12 @@ public class Matches implements Serializable {
         return matches.size();
     }
 
+    /**
+     * method that search in match and return a User
+     *
+     * @param nickname
+     * @return the user with this nickname
+     */
     public User getUser(String nickname){
         for (Game g:matches) {
             for(User u:g.getUsers()){
@@ -69,6 +90,13 @@ public class Matches implements Serializable {
         return null;
     }
 
+
+    /**
+     * method that search in match and return a Player
+     *
+     * @param nickname
+     * @return the Player with this nickname
+     */
     public Player getPlayer(String nickname){
         for (Game g:matches) {
             for(Player p:g.getPlayer()){
@@ -81,7 +109,11 @@ public class Matches implements Serializable {
     }
 
 
-    public void deleteGame(Game game) throws IOException, InterruptedException {
+    /**
+     *
+     * @param game is the game tha
+     */
+    public void deleteGame(Game game) {
         boolean result=false;
         for(User u: game.getUsers()){
             DeleteGameTh dg = new DeleteGameTh(u);

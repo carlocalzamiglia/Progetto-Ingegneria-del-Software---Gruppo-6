@@ -25,24 +25,21 @@ public class Box implements Serializable {
     public void setRestrictionColour(Colour restrictionColour){
         this.restrictionColour=restrictionColour;
     }
+    public void setAddedDice(Dice addedDice) {
+        this.addedDice = addedDice;
+    }
+
     public String getRestrictionValue() {
         return restrictionValue;
     }
     public Colour getRestrictionColour() {
         return restrictionColour;
     }
-
-    //-----------------------------------------------Get a dice from the scheme-----------------------------------------
     public Dice getAddedDice() {
         if(addedDice!=null)
             return addedDice;
         else
             return null;
-    }
-
-    //-----------------------------------------------Set a dice in the scheme-------------------------------------------
-    public void setAddedDice(Dice addedDice) {
-        this.addedDice = addedDice;
     }
 
     //-----------------------------------------------Print methods------------------------------------------------------

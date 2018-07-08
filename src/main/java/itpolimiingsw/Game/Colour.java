@@ -10,10 +10,10 @@ public enum Colour implements Serializable {
     ANSI_YELLOW("\u001B[33m"),
     ANSI_BLUE("\u001B[36m"),
     ANSI_PURPLE("\u001B[35m");
-
     static final String RESET= "\u001B[0m";
-
     private String escape;
+
+
     Colour(String escape) {
         this.escape = escape;
     }
@@ -21,6 +21,11 @@ public enum Colour implements Serializable {
         return escape;
     }
 
+    /**
+     * this method get the paint color of the dice
+     *
+     * @return the Paint color of the dice
+     */
     public Color getfxColor(){
         if(this.equals(ANSI_RED))
             return Color.RED;

@@ -39,7 +39,7 @@ public class ServerSocket implements Runnable {
     private void connect() throws IOException {
         java.net.ServerSocket sc;
         int PORT;
-        PORT=leggiDaFile();
+        PORT=readFromFile();
         ExecutorService executor = Executors.newCachedThreadPool();
         sc = new java.net.ServerSocket(PORT);
         System.out.println("Server socket ready on port: " + PORT);
@@ -54,7 +54,7 @@ public class ServerSocket implements Runnable {
      * @return the port chosen in the config file.
      * @throws IOException for the readline
      */
-    private int leggiDaFile() throws IOException {
+    private int readFromFile() throws IOException {
         System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");
 
