@@ -1,7 +1,6 @@
 package itpolimiingsw.Server;
 
 import itpolimiingsw.Game.Matches;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,16 +9,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerSocket implements Runnable {
-    private int PORT;
-    private java.net.ServerSocket sc;
     private Matches matches;
-    public DBUsers DB;
+    private DBUsers DB;
+
     public ServerSocket(DBUsers DB,Matches matches){
         this.DB=DB;
         this.matches=matches;
     }
 
-    //----------------------------------------launch the connection method----------------------------------------------
+    /**
+     * Launches the connection method.
+     */
     @Override
     public void run() {
         ServerSocket ServerSocket = new ServerSocket(DB,matches);
@@ -32,8 +32,13 @@ public class ServerSocket implements Runnable {
 
     }
 
-    //------------------------------------------wait for clients connection---------------------------------------------
-    public void connect() throws IOException {
+    /**
+     * Starts the socket connection, and waits for users to connect.
+     * @throws IOException
+     */
+    private void connect() throws IOException {
+        java.net.ServerSocket sc;
+        int PORT;
         PORT=leggiDaFile();
         ExecutorService executor = Executors.newCachedThreadPool();
         sc = new java.net.ServerSocket(PORT);
@@ -44,7 +49,11 @@ public class ServerSocket implements Runnable {
         }
     }
 
-    //---------------------------------------read connection properties from file---------------------------------------
+    /**
+     * Read connection properties from the file.
+     * @return the port chosen in the config file.
+     * @throws IOException for the readline
+     */
     private int leggiDaFile() throws IOException {
         System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");

@@ -6,36 +6,29 @@ import itpolimiingsw.ServertoClientHandler.ServertoClient;
 public class User {
     private String nickname;
     private String password;
-    private Integer wins;
     private boolean online;
-    //public ClientRmiInt rmiClient;
-    //private ServerSocketClientHandler clientHandler;
     private ServertoClient connectionType;
 
     public User(String nickname, String password){
         this.nickname=nickname;
         this.password=password;
         this.online=true;
-        this.wins=0;
     }
 
+    /**
+     * Set the name of the user
+     * @param name
+     */
     public void setName(String name) {
         this.nickname = name;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    /**
+     * Set the user online or offline
+     * @param online
+     */
     public void setOnline(boolean online) {
         this.online = online;
-    }
-
-    public void setWins(Integer wins) {
-        this.wins = wins;
-    }
-
-    public void hasWin(){
-        this.wins=this.wins+1;
     }
 
     public String getNickname() {
@@ -46,18 +39,14 @@ public class User {
         return password;
     }
 
-    //public ClientRmiInt getClient() {
-    //    return rmiClient;
-    //}
-
-    //public ServerSocketClientHandler getClientHandler() {
-    //    return clientHandler;
-    //}
-
-
+    /**
+     *
+     * @return the connection type for communication (RMI or Socket)
+     */
     public ServertoClient getConnectionType() {
         return connectionType;
     }
+
 
     public void setClientHandler(ServerSocketClientHandler clientHandler) {
         this.connectionType = clientHandler;
@@ -67,17 +56,17 @@ public class User {
         this.connectionType = rmiClient;
     }
 
+    /**
+     *
+     * @return if a user is online or not.
+     */
     public boolean isOnline() {
         return online;
     }
 
-    public Integer getWins() {
-        return wins;
-    }
-
     @Override
     public String toString() {
-        String s=nickname+"\n"+wins+"\n"+"online: "+online+"\n"+"tipo di connessione: ";
+        String s=nickname+"\n"+"\n"+"online: "+online+"\n"+"tipo di connessione: ";
         if(this.getConnectionType()!=null)
             s=s+"Connessione: "+getConnectionType()+"\n";
         else

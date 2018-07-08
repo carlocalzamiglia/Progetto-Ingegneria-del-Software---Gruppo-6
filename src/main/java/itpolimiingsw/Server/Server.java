@@ -2,14 +2,12 @@ package itpolimiingsw.Server;
 
 
 import itpolimiingsw.Game.Matches;
-
-import java.rmi.RemoteException;
 import java.util.concurrent.TimeUnit;
 
 public class Server {
 
     //-----------------------------------------launch the two server threads--------------------------------------------
-    public static void main(String[] args) throws InterruptedException, RemoteException {
+    public static void main(String[] args) throws InterruptedException {
         final DBUsers DB=new DBUsers();;
         final Matches matches=new Matches();
         Thread t1;

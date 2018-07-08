@@ -4,18 +4,19 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class HandleDisconnection extends Thread{
-    boolean alive=true;
-    ServerRmiClientHandlerInt serverRmi;
-    final String nickname;
-    int i=0;
+    private boolean alive=true;
+    private ServerRmiClientHandlerInt serverRmi;
+    private final String nickname;
 
     //---------------------------------------------constructor for RMI--------------------------------------------------
-    public HandleDisconnection(String nickname, ServerRmiClientHandlerInt serverRmi) throws RemoteException {
+    public HandleDisconnection(String nickname, ServerRmiClientHandlerInt serverRmi){
         this.nickname=nickname;
         this.serverRmi=serverRmi;
     }
 
-    //----------------------------------------check if client is alive yet----------------------------------------------
+    /**
+     * This method calls method "clientAlive" in "serverRMI" every second, to handle a possible disconnection.
+     */
     public void run() {
         while(alive){
             try {

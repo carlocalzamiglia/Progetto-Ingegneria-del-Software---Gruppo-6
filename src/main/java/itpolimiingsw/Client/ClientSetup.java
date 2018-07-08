@@ -4,7 +4,11 @@ import java.io.IOException;
 
 public class ClientSetup {
 
-    //-----------------------------------------launch RMI or Socket client----------------------------------------------
+    /**
+     * This method starts every client. From args we get the gui/cli and rmi/socket choice.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         CLI cli;
         GUI gui;

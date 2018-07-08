@@ -2,7 +2,6 @@ package itpolimiingsw.Server;
 
 
 import itpolimiingsw.Game.Matches;
-
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,7 +10,6 @@ import java.rmi.registry.Registry;
 public class ServerRmi implements Runnable{
     private DBUsers DB;
     private Matches matches;
-    private int PORT;
 
 
     //-------------------------------------------------constructor------------------------------------------------------
@@ -20,38 +18,38 @@ public class ServerRmi implements Runnable{
         this.matches=matches;
     }
 
-    //-----------------------------------------launch the connection method---------------------------------------------
+    /**
+     * creates a new serverRmi object and then launches the connection method, which handle Connection and login parts.
+     */
     public void run() {
         ServerRmi serverRmi = new ServerRmi(DB,matches);
-        try {
-            serverRmi.connect();
-        }
-        catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-
+        serverRmi.connect();
     }
 
-    //---------------------------------------starts the RMI and the client handler--------------------------------------
-    public void connect() throws IOException {
+    /**
+     * execute the complete RMI connection part.
+     */
+    private void connect() {
+        int PORT;
         try {
             PORT=leggiDaFile();
-            //System.setProperty("java.rmi.server.hostname", "192.168.1.3");
             java.rmi.registry.LocateRegistry.createRegistry(PORT);
             Registry registry = LocateRegistry.getRegistry(PORT);
             ServerRmiClientHandlerInt conn = new ServerRmiClientHandler(DB,matches);
             registry.rebind("RMICONNECTION", conn);
             System.out.println("Server rmi ready on port:"+PORT);
-
-
         }catch (Exception e) {
-            System.out.println("Chat Server failed: " );
-            e.printStackTrace();
+            System.out.println("Impossible to run the RMI server." );
         }
     }
 
-    //-------------------------------------------------read from file---------------------------------------------------
-    private int leggiDaFile() throws IOException {
+    /**
+     *
+     * @return a int, which is the port, ridden in the "server_config" file.
+     * @throws IOException in case readLine fails.
+     * @throws NumberFormatException in case the port written in the file is not
+     */
+    private int leggiDaFile() throws IOException, NumberFormatException {
         System.out.println(System.getProperty("user.dir"));
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/server_config.txt");
 

@@ -13,7 +13,14 @@ public class DBUsers {
         synch=false;
     }
 
-    //-------------------------------------------check user and password------------------------------------------------
+
+    /**
+     * The method check for new user's username and password
+     * @param nickname
+     * @param password
+     * @return 0 in case of a new User, 1 in case of a old (offline) User, 0 in case of wrong password, 3 in case the User is already online.
+     * @throws InterruptedException
+     */
     public synchronized int login(String nickname, String password) throws InterruptedException {
         while(synch){
             wait();
@@ -56,26 +63,30 @@ public class DBUsers {
         return 0;
     }
 
-    //----------------------------------------check if a user is present------------------------------------------------
-    public boolean isPresent(User user){
-        int index=users.indexOf(user);
-        if(index==-1)
-            return false;
-        else
-            return true;
-    }
 
-    //-----------------------------------return the number of clients connected-----------------------------------------
+    /**
+     *
+     * @return number of users connected.
+     */
     public int size(){
         return users.size();
     }
 
-    //--------------------------------------return a user finding it by index-------------------------------------------
+
+    /**
+     *
+     * @param i index of the user
+     * @return a user, finding him by index, or null.
+     */
     public User getUser(int i){
         return users.get(i);
     }
 
-    //--------------------------------------return a user finding it by name-------------------------------------------
+    /**
+     *
+     * @param nickname
+     * @return a user, finding him by name, or null.
+     */
     public User getUser(String nickname) {
         for (User u : users)
             if (u.getNickname().equals(nickname)) {
@@ -84,7 +95,10 @@ public class DBUsers {
         return null;
     }
 
-    //---------------------------------------------print all users------------------------------------------------------
+    /**
+     *
+     * @return a print of all users.
+     */
     public String toString(){
         String s= new String ();
         for (User u:users) {
@@ -93,7 +107,9 @@ public class DBUsers {
         return s;
     }
 
-    //------------------------------------------------dump of "this"----------------------------------------------------
+    /**
+     * Just a dump of the object "DBUsers"
+     */
     public void dump(){
         System.out.println(this);
     }

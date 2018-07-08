@@ -3,30 +3,30 @@ package itpolimiingsw.Server;
 
 import itpolimiingsw.Client.ClientRmiInt;
 import itpolimiingsw.Game.Matches;
-
 import java.io.IOException;
 import java.net.SocketException;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ServerRmiClientHandler extends UnicastRemoteObject implements ServerRmiClientHandlerInt {
-    public DBUsers DB ;
+    private DBUsers DB ;
     private Matches matches;
-    protected ServerRmiClientHandler(DBUsers DB,Matches matches) throws RemoteException{
+    public ServerRmiClientHandler(DBUsers DB,Matches matches) throws RemoteException{
         this.DB=DB;
         this.matches=matches;
     }
 
 
     //---------------------------------------check if login is all right------------------------------------------------
-    @Override
-    public int login(String nickname, String password) throws RemoteException, InterruptedException {
+    //@Override
+    public int login(String nickname, String password) throws InterruptedException, RemoteException {
         return DB.login(nickname,password) ;
     }
 
 
     //--------------------------------add on user's array the RMI connection link---------------------------------------
-    public void addRmi(ClientRmiInt client, String nickname) throws RemoteException {
+    //@Override
+    public void addRmi(ClientRmiInt client, String nickname) throws RemoteException{
         DB.getUser(nickname).setRmiClient(client);
         try {
             newUserMessage(nickname, " ha appena effettuato il login ed è pronto a giocare.");
@@ -39,10 +39,12 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         new HandleDisconnection(nickname, this).start();
     }
 
-    public void addToMatches(String username) throws IOException, InterruptedException {
+    //@Override
+    public void addToMatches(String username) throws IOException, InterruptedException, RemoteException {
         matches.addUser(DB.getUser(username));
     }
 
+    @Override
     public boolean reconnectUser(String username, ClientRmiInt client) throws RemoteException{
         try {
             if (matches.getGame(username) != null) {
@@ -56,8 +58,7 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
             } else {
                 return false;
             }
-        }catch(NullPointerException e){
-        }
+        }catch(NullPointerException e){ }
         return false;
     }
 
@@ -70,32 +71,11 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
     }
 
 
-    //-----------------------------------send message to a certain user-------------------------------------------------
-    @Override
-    public void sendMessage(String nickname, String message) throws RemoteException {
-        try {
-            DB.getUser(nickname).getConnectionType().sendMessageOut(message);
-        }catch (IOException e){}
-    }
-
-
-    //---------------------------------close connections when a client decides to logout--------------------------------
-    public boolean manageDisconnection(String nickname) throws RemoteException{
-        try {
-            DB.getUser(nickname).setOnline(false);
-            DB.getUser(nickname).setRmiClient(null);
-            System.out.println(nickname+" si è appena disconnesso");
-            return true;
-        }catch(Exception e){
-            return false;
-        }
-
-    }
-
 
     //--------------------------------------check if client is connected yet--------------------------------------------
-    public boolean clientAlive(String nickname) throws IOException, InterruptedException {
-        boolean flag=false;
+    //@Override
+    public boolean clientAlive(String nickname) throws IOException, InterruptedException, RemoteException {
+        boolean flag;
         if(DB.getUser(nickname).isOnline()){
             try{
                 flag=DB.getUser(nickname).getConnectionType().aliveMessage();
@@ -120,13 +100,15 @@ public class ServerRmiClientHandler extends UnicastRemoteObject implements Serve
         return flag;
     }
 
-    public boolean serverConnected(){
+    @Override
+    public boolean serverConnected() throws RemoteException{
         return true;
     }
 
 
     //--------------------------------------new client connected message------------------------------------------------
-    public void newUserMessage(String nickname, String message) throws IOException {
+    @Override
+    public void newUserMessage(String nickname, String message) throws IOException, RemoteException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
                 if (DB.getUser(i).getConnectionType() != null) {

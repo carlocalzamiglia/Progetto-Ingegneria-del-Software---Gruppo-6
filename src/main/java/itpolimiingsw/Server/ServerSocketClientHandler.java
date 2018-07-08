@@ -4,23 +4,15 @@ package itpolimiingsw.Server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-
 import itpolimiingsw.Game.*;
-
 import itpolimiingsw.ServertoClientHandler.ServertoClient;
-
-import javax.tools.Tool;
 import java.io.Serializable;
-
 import java.io.*;
 import java.net.Socket;
-
 import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.Scanner;
-
 import static java.lang.Thread.sleep;
 
 
@@ -28,9 +20,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     private Socket socket;
     private DBUsers DB;
     private Matches matches;
-    String message = "";
-    String [] arrOfMsg;
-    Gson gson = new GsonBuilder().create();
+    private String message = "";
+    private String [] arrOfMsg;
+    private Gson gson = new GsonBuilder().create();
 
 
     //-------------------------------------------------constructor------------------------------------------------------
@@ -40,7 +32,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         this.matches=matches;
     }
 
-    //-----------------------------------------------connection method--------------------------------------------------
+
+    /**
+     * Manage new user login.
+     */
     @Override
     public void run() {
         try {
@@ -94,7 +89,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
     }
 
-    //-----------------------------------------wait for messages from client--------------------------------------------
+    /**
+     * Used to listen from the inputstream for every message sent by the client.
+     */
     class ListenFromClient extends Thread implements Serializable {
         String nickname;
         //constructor
@@ -119,11 +116,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         DB.getUser(nickname).setClientHandler(null);
                         System.out.println(nickname+ " si è appena disconnesso.");
                     }else if(message.equals("@RECONNECT")){
-                        clientAlive(this.nickname);
+                        manageDisconnection(this.nickname);
                     }
                 } catch (IOException e) {
                     try {
-                        clientAlive(this.nickname);
+                        manageDisconnection(this.nickname);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     } catch (InterruptedException e1) {
@@ -141,8 +138,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     }
 
-    //-----------------------------------------check if client is online yet--------------------------------------------
-    public void clientAlive(String nickname) throws IOException, InterruptedException {
+    /**
+     * Manage socket disconnection part.
+     * @param nickname
+     * @throws IOException for socket errors.
+     * @throws InterruptedException
+     */
+    public void manageDisconnection(String nickname) throws IOException, InterruptedException {
         DB.getUser(nickname).setOnline(false);
         DB.getUser(nickname).setClientHandler(null);
         if(matches.getGame(nickname)!=null) {
@@ -156,15 +158,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         newUserMessage(nickname, " è uscito dalla partita.");
         System.out.println(nickname + " ha probabilmente perso la connessione.");
         message="@DEAD";
-        return;
-          //      }
-        //} else {
-        //    return false;
-       // }
-
     }
 
-    //-----------------------------------------new client connected message---------------------------------------------
+    /**
+     * Send the "new user connected" or "user disconnect" message to all users.
+     * @param nickname
+     * @param message
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void newUserMessage(String nickname, String message) throws IOException, InterruptedException {
         for(int i=0; i<DB.size();i++){
             if(!(DB.getUser(i).getNickname().equals(nickname))) {
@@ -179,6 +181,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
     //--------------------------------------------send message to the user----------------------------------------------
+    @Override
     public void sendMessageOut(String message) throws IOException {
         try {
             ObjectOutputStream outs;
@@ -187,8 +190,12 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }catch(IOException e){}
     }
 
+    @Override
+    public void sendConnDiscMessage(String message) throws IOException {
+        sendMessageOut("@CONNDISC-"+message);
+    }
 
-    //just for rmi, we'll see.
+
     @Override
     public boolean aliveMessage() {
         return false;
@@ -197,6 +204,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
 
     //********************************************* all game methods ***************************************+
 
+    @Override
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException {
         message="";
         sendMessageOut("@SCHEME-"+scheme1+"-"+scheme2+"-"+scheme3+"-"+scheme4+"-"+privategoal+"-"+time);
@@ -213,6 +221,7 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
     }
 
 
+    @Override
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
         Game game =new Game(time, null);
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i, time);
@@ -255,12 +264,10 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
     }
 
-    @Override
-    public void sendConnDiscMessage(String message) throws IOException {
-        sendMessageOut("@CONNDISC-"+message);
-    }
 
-
+    /**
+     * Manage the game's methods.
+     */
     class HandleTurn implements Serializable {
         GreenCarpet greenCarpet;
         Player player;
@@ -286,6 +293,9 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return i;
         }
 
+        /**
+         * Used to check which one of the 3 operations was chosen by the user (pass, dice, tool)-
+         */
         public void run(){
             boolean usedDice=false;
             Game game= new Game(0, null);
@@ -413,6 +423,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
 
 
+        /**
+         * Specific method for dices placing.
+         * @param greenCarpet
+         * @param player
+         * @throws IOException used for socket connection error.
+         * @throws InterruptedException
+         */
         private void placedice(GreenCarpet greenCarpet, Player player) throws IOException, InterruptedException {   //i is player's number for "getplayer"
             Boolean checkdice = false;
             Ruler ruler = new Ruler();
@@ -439,6 +456,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             sendMessageOut("@AFTERTOOLUPDATE-"+greencarpetupd+"-"+playerupd);
         }
 
+        /**
+         * Specific method for tools usage.
+         * @param greenCarpet
+         * @param player
+         * @param useddice
+         * @return 1 if the tool card includes dice placement, 2 if the card does not include dice placement, 3 if no tool has been used.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private int placeTool(GreenCarpet greenCarpet, Player player, boolean useddice) throws IOException, InterruptedException {
             ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
             boolean[] res = new boolean[2];
@@ -524,6 +550,13 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
 
         //------------------------------------------TOOL METHODS------------------------------------------------------------
+
+        /**
+         * Asks the client to choose a tool.
+         * @return
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private int useToolMethod() throws IOException, InterruptedException {
             sendMessageOut("@USETOOL");
             while (!(message.equals("@TOOLUSED")) && !message.equals("@DEAD")&& !message.equals("@TIMEROUT")) { sleep(300); }
@@ -531,11 +564,19 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                 return 0;
             }
             int choice = stringToInt(arrOfMsg[1]);
-
             message="";
             return choice;
         }
 
+        /**
+         * Method for tool 1 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolOne(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             sendMessageOut("@TOOL-4");
             while (!(message.equals("@TOOLUSED4")) && !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
@@ -545,6 +586,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 2 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolTwo(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             if(player.getScheme().isEmpty())
                 return false;
@@ -559,6 +609,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 3 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolThree(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             if(player.getScheme().isEmpty())
                 return false;
@@ -574,6 +633,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 4 usage
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolFour(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             Ruler ruler = new Ruler();
             if(ruler.schemeCount(player.getScheme())<2)
@@ -594,6 +662,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 5 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolFive(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             if(!greenCarpet.checkEmptyRoundpath())
                 return false;
@@ -612,6 +689,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 6 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @param useddice
+         * @return if the tool has been used or not and if a dice has been placed or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean[] toolSix(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, Boolean useddice) throws IOException, InterruptedException {
             Ruler ruler = new Ruler();
             boolean checkcorrdice=false;
@@ -656,6 +743,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return ret;
         }
 
+        /**
+         * Method for tool 7 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @param useddice
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolSeven(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException {
             boolean toolok = false;
             if(greenCarpet.getTurn()==2 && !useddice) {
@@ -669,6 +766,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 8 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @param useddice
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolEight(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException {
             boolean toolok = false;
             if(greenCarpet.getTurn()==1 && useddice) {
@@ -682,6 +789,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 9 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @param useddice
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolNine(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException {
             boolean toolok=false;
             if (!useddice) {
@@ -695,6 +812,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 10 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolTen(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             sendMessageOut("@TOOL-6");
             while (!(message.equals("@TOOLUSED6"))&& !message.equals("@DEAD") && !message.equals("@TIMEROUT")){sleep(200);}
@@ -704,6 +830,16 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return toolok;
         }
 
+        /**
+         * Method for tool 11 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @param useddice
+         * @return if the tool has been used or not and if a dice has been placed or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean[] toolEleven(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException {
             Ruler ruler = new Ruler();
             boolean checkcorrdice=false;
@@ -767,6 +903,15 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
             return ret;
         }
 
+        /**
+         * Method for tool 12 usage.
+         * @param player
+         * @param greenCarpet
+         * @param toolCardsExecutor
+         * @return if the tool has been used or not.
+         * @throws IOException
+         * @throws InterruptedException
+         */
         private boolean toolTwelve(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
             if(player.getScheme().isEmpty() || !greenCarpet.checkEmptyRoundpath())
                 return false;
@@ -789,7 +934,11 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
         }
         //********************************************TOOL METHODS**********************************************************
 
-
+        /**
+         *
+         * @param message
+         * @return int
+         */
         private int stringToInt(String message){
             if(message.equals("0"))
                 return 0;

@@ -11,6 +11,9 @@ public class HandleServerConnectionForRmi extends Thread{
     }
 
 
+    /**
+     * Used by the client to check server connection.
+     */
     public void run() {
         while(alive){
             try {
