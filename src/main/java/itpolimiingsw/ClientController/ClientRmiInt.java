@@ -16,14 +16,14 @@ public interface ClientRmiInt extends Remote, ServertoClient{
 
     /**
      * Ping method.
-     * @return a value if the client is still connected.
+     * @returns a value if the client is still connected.
      * @throws RemoteException if the client is disconnected.
      */
     boolean aliveMessage() throws RemoteException;
 
     /**
      * Ping method for the server
-     * @return a value if the server is still up.
+     * @returns a value if the server is still up.
      * @throws RemoteException if the server is down.
      */
     boolean serverAlive() throws RemoteException;
