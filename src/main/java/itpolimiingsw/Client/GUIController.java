@@ -27,41 +27,29 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-
-
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
-import javafx.stage.Stage;
-
-
-
-
-import java.awt.*;
-import java.awt.font.GraphicAttribute;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import static java.lang.Thread.sleep;
 
 public class GUIController extends Application {
-    static Stage window;
-
-    StackPane pane1,pane2,pane3,pane4,pane5;
-    GridPane pane;
-    Scene scene1, scene2,scene3,scene4,scene5;
-
+    private static Stage window;
+    private StackPane pane1;
+    private StackPane pane2;
+    private StackPane pane3;
+    private StackPane pane4;
+    private StackPane pane5;
+    private GridPane pane;
+    private Scene scene1;
+    private Scene scene2;
+    private Scene scene3;
+    private Scene scene4;
+    private Scene scene5;
     private static boolean dicePlaceable =false;
     private static boolean toolUsable = false;
     private static boolean endgamechoose;
@@ -78,71 +66,47 @@ public class GUIController extends Application {
     private GridPane myscheme=new GridPane();
     private static int[] placedice = new int[3];
     private static int toolchose;
-    private static int current;
-    private static String playerScheme;
-
     private static String greencarpetJsonSt;
     private static String playerJsonSt;
-
     private static boolean dicechoose = false;
     private static boolean toolchoose = false;
-
-
-    private static String currentmessage;
-    private static boolean newmessage=false;
-
     private static boolean c = false;
-
-
-    private static boolean j = false;
     //TOOL VAR
-
-
-
     //tool2-3
-    public static int[] dicetoolpos = new int[2];
-    public static boolean toolCoord = false;
-    public static boolean toolCoordDone = false;
-
+    private static int[] dicetoolpos = new int[2];
+    private static boolean toolCoord = false;
+    private static boolean toolCoordDone = false;
     //tool5
-    public static boolean dicePath = false;
-    public static int[] pathVal = new int[2];
-
-
-
-    static Button play;
-    static Button playd;
-
-
+    private static boolean dicePath = false;
+    private static int[] pathVal = new int[2];
+    private static Button play;
+    private static Button playd;
     //SCENE 4 DECLARATION
-    boolean isin = true;
-    ImageView imageView2;
-    AnchorPane im2=new AnchorPane();
-    GridPane scheme = new GridPane();
-    GridPane grcRoundTr=new GridPane();
-    GridPane grcStock=new GridPane();
-    HBox hBoxPubGoal=new HBox(40);
-    VBox vboxScheme=new VBox(10);
-    HBox hboxTool=new HBox(40);
-    VBox vboxTool1=new VBox(5);
-    VBox vboxTool2=new VBox(5);
-    VBox vboxTool3=new VBox(5);
-
-
-    HBox markers=new HBox(5);
-    HBox hboxOpponentScheme=new HBox(10);
-    VBox vBoxCardItems=new VBox(10);
-    HBox hboxgrande=new HBox(20);
-    VBox vboxGC=new VBox(20);
-    VBox vboxButton=new VBox(20);
-    static Label timerlab;
-
+    private boolean isin = true;
+    private ImageView imageView2;
+    private AnchorPane im2=new AnchorPane();
+    private GridPane scheme = new GridPane();
+    private GridPane grcRoundTr=new GridPane();
+    private GridPane grcStock=new GridPane();
+    private HBox hBoxPubGoal=new HBox(40);
+    private VBox vboxScheme=new VBox(10);
+    private HBox hboxTool=new HBox(40);
+    private VBox vboxTool1=new VBox(5);
+    private VBox vboxTool2=new VBox(5);
+    private VBox vboxTool3=new VBox(5);
+    private HBox markers=new HBox(5);
+    private HBox hboxOpponentScheme=new HBox(10);
+    private VBox vBoxCardItems=new VBox(10);
+    private HBox hboxgrande=new HBox(20);
+    private VBox vboxGC=new VBox(20);
+    private VBox vboxButton=new VBox(20);
+    private static Label timerlab;
     //SCENE 4 END DECLARATION
-
-
-
-
-
+    BackgroundFill myBF = new BackgroundFill(Color.rgb(0, 0, 0, 0), new CornerRadii(1),
+            new Insets(0.0, 0.0, 0.0, 0.0));
+    BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/screen.jpg")),
+            BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+            BackgroundSize.DEFAULT);
 
 
     public GUIController() throws FileNotFoundException {
@@ -154,23 +118,21 @@ public class GUIController extends Application {
 
     public static int getScheme() {
         return schemechose;
-    }       //RITORNA LO SCHEMA SCELTO
+    }
 
-    public static boolean getNewGame(){return newGame;}         //RITORNA SE SI HA SCELTO PER LA FINE DELLA PARTITA
+    public static boolean getNewGame(){return newGame;}
 
-    public static boolean getNewGameChosen() {return endgamechoose;}    //RITORNA LA SCELTA DI FINE PARTITA
+    public static boolean getNewGameChosen() {return endgamechoose;}
 
 
     public static boolean getDiceChoose(){
         return dicechoose;
-    }       //RITORNA SE HAI SCELTO IL DADO DELLA RISERVA
+    }
 
     public static int getDiceChosen(){                                  //RITORNA IL DADO SCELTO DALLA RISERVA
         dicechoose=false;
         return placedice[0];
     }
-
-
 
     public static int getTool() {                                   //RITORNA LA TOOL SCELTA
         setLogin(false);
@@ -180,7 +142,7 @@ public class GUIController extends Application {
 
     public static boolean getToolChoose() {
         return toolchoose;
-    }           //RITORNA SE HAI SCELTO LA TOOL DA USARE
+    }
 
     public static boolean getLogin() {
         return login;
@@ -188,12 +150,11 @@ public class GUIController extends Application {
 
     public static String[] getLoginData() {                         //RITORNA I DATI DI LOGIN
         return loginData;
-    }               //RITORNA I DATI DI LOGIN
+    }
 
     public static int[] getplaceDice() {
         return placedice;
-    }               //RITORNA DADO SCELTO + NUOVA POSIZIONE
-
+    }
 
     public static int getTool1Val() {   //TOOL1 VALORE INCREMENTATO O DECREMENTATO
         AtomicInteger tool1res= new AtomicInteger();
@@ -222,7 +183,6 @@ public class GUIController extends Application {
         if(c) {
             return 99;
         }
-        System.out.println("SCELTA: "+tool1res.get());
         return tool1res.get();
     }
 
@@ -238,8 +198,6 @@ public class GUIController extends Application {
             choices.add(4);
             choices.add(5);
             choices.add(6);
-
-
             ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(1, choices);
             dialog.setTitle("Diluente per Pasta Salda");
             dialog.setHeaderText("Il dado pescato è di colore: "+colour+".");
@@ -272,13 +230,9 @@ public class GUIController extends Application {
             alert.setTitle("Taglierina Manuale");
             alert.setHeaderText("Quanti dadi vuoi spostare?");
             alert.setContentText("Scegli opzione:");
-
             ButtonType buttonTypeOne = new ButtonType("Uno");
             ButtonType buttonTypeTwo = new ButtonType("Due");
-
-
             alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == buttonTypeOne){
                 tool12res.set(1);
@@ -287,8 +241,6 @@ public class GUIController extends Application {
             } else {
                 getndice12();
             }});
-
-
         while(tool12res.get()==0 && !c){
             try {
                 sleep(200);
@@ -299,7 +251,6 @@ public class GUIController extends Application {
         }
         return tool12res.get();
     }
-
     public static void showTool6(String dicejson){
         dicejsonSt=dicejson;
         scenechoose=6;
@@ -313,7 +264,6 @@ public class GUIController extends Application {
         toolCoordDone =false;
         return dicetoolpos;
     }
-
 
     public static boolean getDicePath() {
         return dicePath;
@@ -330,10 +280,13 @@ public class GUIController extends Application {
     public static void setDicePath() {
         dicePath=false;
     }
+
     public static void setNewGameChosen(boolean choose){endgamechoose=choose;}
+
     public static void setLogin(boolean bool) {
         login=bool;
     }
+
     public static void setDiceChose(boolean chosedice) {
          dicePlaceable = chosedice;
     }
@@ -342,8 +295,6 @@ public class GUIController extends Application {
         toolCoord =true;
         toolCoordDone = false;
     }
-
-
 
     public static void showTimer(int i) {
         Platform.runLater(() ->{
@@ -354,21 +305,16 @@ public class GUIController extends Application {
         });
     }
 
-
     public void launchgui(){
         launch();
     }
 
 
-    BackgroundFill myBF = new BackgroundFill(Color.rgb(0, 0, 0, 0), new CornerRadii(1),
-            new Insets(0.0, 0.0, 0.0, 0.0));
-
-    BackgroundImage myBI= new BackgroundImage(new Image(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/image/screen.jpg")),
-            BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-            BackgroundSize.DEFAULT);
-    //final double initialSceneWidth = 2000;
-    //final double initialSceneHeight = 1000;
-
+    /**
+     * It shows the login window+the matchmaking one.
+     * @param primaryStage
+     * @throws Exception for gui errors.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         window=new Stage();
@@ -417,11 +363,7 @@ public class GUIController extends Application {
 
         SceneThread sceneThread = new SceneThread(this);
         sceneThread.start();
-        //MessageThread messageThread=new MessageThread(this);
-        //messageThread.start();
         window.setScene(scene1);
-        current=1;
-
         window.setResizable(false);
         window.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -430,7 +372,6 @@ public class GUIController extends Application {
                 System.exit(0);
             }
         });
-
         window.show();
 
 
@@ -444,29 +385,27 @@ public class GUIController extends Application {
         window.setWidth(primaryScreenBounds.getWidth());
         window.setHeight(primaryScreenBounds.getHeight());
 
-
-
-
         login.setOnAction(event -> {
             loginAction(username_t.getText(), password_t.getText());
         });
-
         scene1.setOnKeyPressed(e->{
             if(e.getCode() == KeyCode.ENTER){
                 loginAction(username_t.getText(), password_t.getText());
             }
         });
 
-
-
     }
 
+    /**
+     * Set the login values
+     * @param username
+     * @param password
+     */
     private void loginAction(String username, String password){
-        //prova connessione
         if(!username.isEmpty() && !password.isEmpty()){
             boolean flag = false;
             for(int j = 0; j<username.length(); j++){
-                if(username.charAt(j)=='-'){
+                if(username.charAt(j)=='-' || username.charAt(j)=='_'){
                     flag=true;
                 }
             }
@@ -482,6 +421,14 @@ public class GUIController extends Application {
             }
         }
     }
+
+    /**
+     *  Takes an image and puts it into an imageview.
+     * @param image
+     * @param h height of the imageview.
+     * @param w width of the imageview.
+     * @return an imageView with that image.
+     */
     public ImageView imageToImageV(Image image,int h,int w){
         ImageView imageView=new ImageView(image);
         imageView.setFitWidth(w);
@@ -489,6 +436,15 @@ public class GUIController extends Application {
         return imageView;
     }
 
+    /**
+     *
+     * @param js1 scheme 1 in json extension.
+     * @param js2 scheme 2 in json extension.
+     * @param js3 scheme 3 in json extension.
+     * @param js4 scheme 4 in json extension.
+     * @return a Gridpane with the 4 schemes.
+     * @throws IOException
+     */
     public GridPane setSchemeChose(String js1,String js2,String js3,String js4) throws IOException {
         GridPane pane = new GridPane();
         Gson gson = new Gson();
@@ -544,6 +500,15 @@ public class GUIController extends Application {
         return pane;
 
     }
+
+    /**
+     * Takes in inmput a scheme and puts it into a gridpane.
+     * @param scheme
+     * @param width of the gridpane
+     * @param height of the gridpane
+     * @return a gridpane with the scheme.
+     * @throws IOException
+     */
     public GridPane setScheme(Scheme scheme,double width,double height) throws IOException {
 
         GridPane gridPane = new GridPane();
@@ -558,6 +523,12 @@ public class GUIController extends Application {
         gridPane.setAlignment(Pos.CENTER);
         return gridPane;
     }
+
+    /**
+     *
+     * @param num number of markers of a player.
+     * @return an Hbox withe num markers in it.
+     */
     public HBox setMarkers(int num){
         HBox hBox = new HBox(5);
         for(int i=0; i<num; i++){
@@ -566,6 +537,12 @@ public class GUIController extends Application {
         return hBox;
     }
 
+    /**
+     *
+     * @param gc game table.
+     * @return a gridpane with the dice of the stock
+     * @throws FileNotFoundException
+     */
     public GridPane setStock(GreenCarpet gc) throws FileNotFoundException {
         GridPane stock=new GridPane();
         stock.setVgap(8.0);
@@ -578,7 +555,15 @@ public class GUIController extends Application {
         }
         return  stock;
 
-    }public GridPane setRound(GreenCarpet gc) throws FileNotFoundException {
+    }
+
+    /**
+     *
+     * @param gc game table.
+     * @return a gridpane with the dices of the roundpath.
+     * @throws FileNotFoundException
+     */
+    private GridPane setRound(GreenCarpet gc) throws FileNotFoundException {
         GridPane roundTr=new GridPane();
         roundTr.setHgap(4.0);
         roundTr.setVgap(4.0);
@@ -598,33 +583,47 @@ public class GUIController extends Application {
 
     }
 
-
-    public Image valueToImage(String string) throws IOException {
-        Image image=new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/restriction/dado"+string+".png"));
-        return image;
-    }
-    public Image colorToImage(Colour colour) throws IOException {
-        Image image = new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/restriction/dado"+colour.toString()+".png"));
-        return image;
-    }
-    public Image diceToImage(Dice dice) throws FileNotFoundException {
-        Image image = new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/dice/"+dice.faceToNo()+dice.getColour()+".png"));
-        return image;
-    }
-    public Image numbToImage_PrG(int numb) throws FileNotFoundException {
+    /**
+     *
+     * @param numb serial number of the private goal
+     * @return the image of that private goal.
+     * @throws FileNotFoundException
+     */
+    private Image numbToImage_PrG(int numb) throws FileNotFoundException {
         Image image = new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/privateGoal/"+toStr(numb)+".jpg"));
         return image;
     }
-    public Image numbToImage_PuG(int numb) throws FileNotFoundException {
+
+    /**
+     *
+     * @param numb serial number of the public goal
+     * @return the image of that public goal.
+     * @throws FileNotFoundException
+     */
+    private Image numbToImage_PuG(int numb) throws FileNotFoundException {
         Image image = new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/publicGoal/"+toStr(numb)+".jpg"));
         return image;
     }
-    public Image numbToTool(int numb) throws FileNotFoundException {
+
+    /**
+     *
+     * @param numb serial number of the toolcard
+     * @return the image of that toolcard.
+     * @throws FileNotFoundException
+     */
+    private Image numbToTool(int numb) throws FileNotFoundException {
         Image image = new Image(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/image/ToolCard/"+toStr(numb)+".jpg"));
         return image;
     }
 
-
+    /**
+     * takes the jsons schemes and private goal and sets them for the SceneThread.
+     * @param scheme1
+     * @param scheme2
+     * @param scheme3
+     * @param scheme4
+     * @param privateGoalJson
+     */
     public static void showSchemes(String scheme1, String scheme2, String scheme3, String scheme4,String privateGoalJson) {
         schemesjson[0]=scheme1;
         schemesjson[1]=scheme2;
@@ -633,6 +632,12 @@ public class GUIController extends Application {
         privateGoalJsonSt=privateGoalJson;
         scenechoose=1;
     }
+
+    /**
+     * updates the scene of the game table.
+     * @param greencarpetJson
+     * @param playerJson
+     */
     public static void updateGreenCarpet(String greencarpetJson, String playerJson){
         greencarpetJsonSt=greencarpetJson;
         playerJsonSt=playerJson;
@@ -640,8 +645,12 @@ public class GUIController extends Application {
 
     }
 
-
-    public void setScene2(String messages, String title ){
+    /**
+     * Creates and shows the scene of the matchmaking.
+     * @param messages
+     * @param title
+     */
+    private void setScene2(String messages, String title ){
 
         //object second layout
         Label match=new Label(title);
@@ -659,7 +668,13 @@ public class GUIController extends Application {
         }catch (IllegalArgumentException e){}
     }
 
-    public void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
+    /**
+     * Creates and shows the scene of the scheme choose.
+     * @param pane
+     * @param privateGoalJson
+     * @throws FileNotFoundException
+     */
+    private void setScene3(GridPane pane,String privateGoalJson) throws FileNotFoundException {
         timerlab = new Label(); //FOR SCENE 4, TIMER
         //object third layout
         HBox hBox= new HBox(100);
@@ -700,34 +715,44 @@ public class GUIController extends Application {
 
     }
 
-    public void schemeChosenDone(RadioButton r1, RadioButton r2, RadioButton r3, RadioButton r4){
+    /**
+     * Takes the input of the radiobuttons and shows a waiting scene.
+     * @param r1
+     * @param r2
+     * @param r3
+     * @param r4
+     */
+    private void schemeChosenDone(RadioButton r1, RadioButton r2, RadioButton r3, RadioButton r4){
         if(r1.isSelected()){
-            System.out.println("1");
             schemechose=1;
             myscheme.getChildren().add(pane.getChildren().get(2));
         }
         else if(r2.isSelected()){
-            System.out.println("2");
             schemechose=2;
             myscheme.getChildren().add(pane.getChildren().get(3));
         }
         else if(r3.isSelected()){
-            System.out.println("3");
             schemechose=3;
             myscheme.getChildren().add(pane.getChildren().get(8));
         }
         else if(r4.isSelected()){
-            System.out.println("4");
             schemechose=4;
             myscheme.getChildren().add(pane.getChildren().get(9));
         }
         setScene2("", "ATTENDI IL TUO TURNO...");
         window.setScene(scene2);
-        current=2;
         setLogin(true);
     }
 
-    public void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
+    /**
+     * Creates, shows and handle the game scene.
+     * @param greenCarpetJson
+     * @param playerJson
+     * @param flag
+     * @param visible flag for the buttons.
+     * @throws IOException
+     */
+    private void setScene4(String greenCarpetJson,String playerJson,int flag, boolean visible) throws IOException {
 
         Gson gson = new Gson();
         GreenCarpet gc = gson.fromJson(greenCarpetJson, GreenCarpet.class);
@@ -747,12 +772,6 @@ public class GUIController extends Application {
             }
         }
 
-        //clear
-        //vboxTool1.getChildren().clear();
-        //vboxTool2.getChildren().clear();
-        //vboxTool3.getChildren().clear();
-        //hboxTool.getChildren().clear();
-        //hBoxPubGoal.getChildren().clear();
         vboxScheme.getChildren().clear();
         hboxOpponentScheme.getChildren().clear();
         vboxGC.getChildren().clear();
@@ -985,7 +1004,11 @@ public class GUIController extends Application {
 
     }
 
-    public void setScene5(String [] score ){
+    /**
+     * Creates and shows the scene for the ranking.
+     * @param score
+     */
+    private void setScene5(String [] score ){
         Label scoreL[]=new Label[score.length];
         VBox vBoxscene5=new VBox(40);
         Label labelTop=new Label("CLASSIFICA");
@@ -1012,7 +1035,6 @@ public class GUIController extends Application {
             newGame=true;
 
             setScene2("", "MATCHMAKING...");
-            current=2;
             Platform.runLater(() ->{
                 window.setScene(scene2);
 
@@ -1027,11 +1049,13 @@ public class GUIController extends Application {
 
     public static void loginOK() {
         scenechoose = 3;
-        current=2;
     }
 
+    /**
+     * show an info poopup
+     * @param message
+     */
     public static void showPopup(String[] message) {
-        System.out.println(message[1]);
         Platform.runLater(() ->{
             dicechoose=false;
             setLogin(false);
@@ -1044,8 +1068,11 @@ public class GUIController extends Application {
 
     }
 
+    /**
+     * shows an error popup for diceplacement errors.
+     * @param message
+     */
     public static void showPopupDicePlaceWrong(String[] message) {
-        System.out.println(message[1]);
         Platform.runLater(() ->{
             dicechoose=false;
             setLogin(false);
@@ -1060,6 +1087,10 @@ public class GUIController extends Application {
 
     }
 
+    /**
+     * shows an info popup for connection and disconnection.
+     * @param message
+     */
     public static void showConnDiscPopup(String message){
         Platform.runLater(() ->{
             setLogin(false);
@@ -1070,6 +1101,11 @@ public class GUIController extends Application {
         });
     }
 
+    /**
+     * shows an info popup with the tool usage.
+     * @param tool
+     * @param message
+     */
     public static void showToolPopup(String tool, String message){
         Platform.runLater(() ->{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -1080,36 +1116,56 @@ public class GUIController extends Application {
         });
     }
 
+    /**
+     *
+     * @return the choice value.
+     */
     public static String handleTurnMenu() {
         return menuaction;
     }
 
+    /**
+     * sets the right scene code.
+     * @param scene
+     */
     public static void chooseAction(int scene) {
         scenechoose=scene;
     }
 
+    /**
+     * sets the game scene with no buttons.
+     */
     public static void endTurn() {
         scenechoose=2;
     }
 
-
-
+    /**
+     * updates the game table scene.
+     * @param greencarpet
+     * @param playerJson
+     */
     public static void updateView(String greencarpet, String playerJson) {
         playerJsonSt=playerJson;
         greencarpetJsonSt=greencarpet;
         scenechoose=4;
     }
 
+    /**
+     * launches the score scene.
+     * @param score
+     */
     public static void showScore(String[] score) {
         scorefinal=score;
         scenechoose=5;
     }
 
-    public static void showMessages(String messages) {
-    }
-
+    /**
+     *
+     * @param numb serial number of something
+     * @return a string with the corresponding word
+     */
     private String toStr(int numb){
-        String string=new String();
+        String string;
         if(numb==1){
             string="one";
         }else if(numb==2){
@@ -1148,6 +1204,11 @@ public class GUIController extends Application {
 
     }
 
+    /**
+     *
+     * @param numb level of difficulty of a scheme.
+     * @return a string with n asterix as much as the level of difficulty.
+     */
     private String difficultyToStr(int numb){
         String string=new String();
         for(int i=0;i<numb;i++){
@@ -1156,14 +1217,17 @@ public class GUIController extends Application {
         return string;
     }
 
+    /**
+     * sets the code for timer start and timer end.
+     * @param end
+     */
     public static void timerOut(boolean end) {
         c = end;
     }
 
-
-    //---------------------------------------------TOOL METHODS---------------------------------------------------------
-
-
+    /**
+     * Thread that handles the scenes.
+     */
     public class SceneThread extends Thread{
         private GUIController GUIController;
         public  SceneThread(GUIController GUIController){
@@ -1178,12 +1242,10 @@ public class GUIController extends Application {
                     } catch (InterruptedException e) { }
                 }
                 if(scenechoose==1) {  //TIME TO SHOW SCHEMES
-                    System.out.println("a");
 
                     try {
                         pane = setSchemeChose(schemesjson[0], schemesjson[1], schemesjson[2], schemesjson[3]);
                     } catch (IOException e) {
-                        System.out.println("catch beccata");
                     }
                     try {
                         GUIController.setScene3(pane,privateGoalJsonSt);
@@ -1194,13 +1256,11 @@ public class GUIController extends Application {
                     try {
                         Platform.runLater(()->{
                             window.setScene(scene3);
-                            current=3;
                         });
                     } catch (NullPointerException e) {
                     }
                 }
                 else if(scenechoose==2){        //set scene 4 without buttons
-                    System.out.println("tavolo aggiornato");
                     Platform.runLater(()->{
                         try {
                             GUIController.setScene4(greencarpetJsonSt,playerJsonSt,1, false);
@@ -1208,12 +1268,10 @@ public class GUIController extends Application {
                             e.printStackTrace();
                         }
                         window.setScene(scene4);
-                        current=4;
                     });
                 }
                 else if (scenechoose == 3){
                     GUIController.setScene2("", "MATCHMAKING...");
-                    current=2;
                     Platform.runLater(() ->{
                         window.setScene(scene2);
                     });
@@ -1233,7 +1291,6 @@ public class GUIController extends Application {
                     Platform.runLater(() ->{
                         GUIController.setScene5(scorefinal);
                         window.setScene(scene5);
-                        current=5;
                     });
                 }
                 else if(scenechoose==6){
@@ -1249,7 +1306,6 @@ public class GUIController extends Application {
                     });
                 }
                 else if(scenechoose==7){
-                    System.out.println("aaaa");
                     GUIController.setScene2("", "ATTENDI IL TUO TURNO...");
                     Platform.runLater(()->{
                         window.setScene(scene2);
@@ -1262,6 +1318,16 @@ public class GUIController extends Application {
     }
 
     //METHODS FOR DICE's DRAWING
+
+    /**
+     *
+     * @param box a box of a scheme.
+     * @param dice dice to be drawn.
+     * @param h height of the canvas.
+     * @param w width of the canvas.
+     * @param flag
+     * @return the drawn canvas
+     */
     private Canvas getDiceDraws(Box box, Dice dice,Double h,Double w, boolean flag) {
         Canvas canvas = new Canvas(w, h);
         GraphicsContext gc =  canvas.getGraphicsContext2D();
@@ -1293,6 +1359,12 @@ public class GUIController extends Application {
         return canvas;
     }
 
+    /**
+     * draws a marks
+     * @param w width
+     * @param h height
+     * @return the canvas
+     */
     private Canvas getMarkerDraws(double w, double h){
         Canvas canvas = new Canvas(w, h);
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -1303,6 +1375,13 @@ public class GUIController extends Application {
         return canvas;
     }
 
+    /**
+     * draws the dice with canvas.
+     * @param gc
+     * @param i value of the face of the dice.
+     * @param h
+     * @param w
+     */
     private void diceDraw(GraphicsContext gc, int i, double h, double w){
         switch (i){
             case 1:

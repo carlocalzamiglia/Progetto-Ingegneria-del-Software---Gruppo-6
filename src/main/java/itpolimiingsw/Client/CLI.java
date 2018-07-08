@@ -15,17 +15,19 @@ import com.google.gson.GsonBuilder;
 import static java.lang.Thread.sleep;
 
 public class CLI implements ClientInterface {
-    Gson gson = new GsonBuilder().create();
-    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-    boolean c = false;
-    boolean flag=false;
+    private Gson gson = new GsonBuilder().create();
+    private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    private boolean c = false;
+    private boolean flag=false;
+
+
     @Override
     public String[] loginMessages() throws IOException {
         String[] logindata = new String[2];
         System.out.println("Inserire nickname:");
         logindata[0]=in.readLine();
         for(int j = 0; j<logindata[0].length(); j++){
-            if(logindata[0].charAt(j)=='-'){
+            if(logindata[0].charAt(j)=='-' || logindata[0].charAt(j)=='_'){
                 flag=true;
             }
         }
@@ -305,7 +307,7 @@ public class CLI implements ClientInterface {
         }
         return dice;
     }
-
+    //---------------------------------------------------Tool messages methods------------------------------------------
     @Override
     public int tool1Messages() throws IOException, InterruptedException {
         String dicechose;
@@ -445,13 +447,14 @@ public class CLI implements ClientInterface {
         return face;
     }
 
-
+    @Override
     public void timerOut(boolean end){
         c=end;
     }
 
+    @Override
     public boolean newMatch() throws IOException {
-        String value = new String();
+        String value;
         System.out.println("Inserisci '1' se vuoi giocare una nuova partita, '0' se vuoi uscire.");
         value = in.readLine();
         while(!value.equals("1")&& !value.equals("0")){
@@ -465,11 +468,14 @@ public class CLI implements ClientInterface {
             return false;
         }
     }
-
+    @Override
     public void exit(){
         System.exit(0);
     }
 
+    /**
+     * Only Gui Usage.
+     */
     @Override
     public void loginOkMessage() { }
 
@@ -481,6 +487,10 @@ public class CLI implements ClientInterface {
         }
     }
 
+    /**
+     * Only Gui usage.
+     * @param i
+     */
     @Override
     public void sendTimer(int i) {
 

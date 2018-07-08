@@ -14,11 +14,10 @@ import static java.lang.Thread.sleep;
 public class ClientSocket {
     private int PORT;
     private String root;
-    private String name;
     private Socket socket;
     private BufferedReader inSocket;
     private PrintWriter outSocket;
-    ClientInterface clientInt;
+    private ClientInterface clientInt;
 
 
 
@@ -41,7 +40,11 @@ public class ClientSocket {
         }
     }
 
-    //--------------------------------------launch connect, then login and then play------------------------------------
+    /**
+     * Launches the connect and login methods + initalizes the listener
+     * @param nick
+     * @param pass
+     */
     private void execute(String nick, String pass)
     {
         String[] logindata;
@@ -50,7 +53,6 @@ public class ClientSocket {
             connect();
             logindata = login(nick, pass);
             play(logindata);
-            //chiudi();
         }
         catch(Exception e)
         {
@@ -68,14 +70,15 @@ public class ClientSocket {
         }
     }
 
-    //----------------------------------------create the connection with server-----------------------------------------
+    /**
+     * Creates the socket channel.
+     */
     private void connect()
     {
-        BufferedReader inKeyboard;
-        PrintWriter outVideo;
+
         try
         {
-            root=leggiDaFile();
+            root=readFromFile();
             String[] parts=root.split(":");
             try {
                 PORT = Integer.parseInt(parts[1]);
@@ -90,11 +93,8 @@ public class ClientSocket {
                 clientInt.showError("Server offline-Il server sembra essere offline. Chiudo il programma.");
                 System.exit(0);
             }
-            //canali di comunicazione
             inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outSocket = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-            inKeyboard = new BufferedReader(new InputStreamReader(System.in));
-            outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
 
         }
         catch(Exception e)
@@ -111,20 +111,23 @@ public class ClientSocket {
         }
     }
 
-    //---------------------------------------------------login part-----------------------------------------------------
+    /**
+     * Launches login method client side.
+     * @param nick
+     * @param pass
+     * @return an array of String with username and password.
+     */
     private String[] login(String nick, String pass)
     {
         String[] login = new String [2];
-        String nickname = new String();
-        String password = new String();
+        String nickname= new String();
+        String password= new String() ;
         try
         {
             String logged ="2";
 
             while(logged.equals("2") || logged.equals("3"))
             {
-                //legge nickname dal client
-
                 if(nick.equals("null")) {
                     login = clientInt.loginMessages();
                     nickname = login[0];
@@ -134,22 +137,16 @@ public class ClientSocket {
                     password = pass;
                 }
 
-                //pulisce l'uscita sul socket
                 outSocket.flush();
-                //manda al socket il nickname
                 outSocket.println(nickname);
-                //pulisce l'uscita sul socket
                 outSocket.flush();
-                //manda al socket il nickname
                 outSocket.println(password);
                 outSocket.flush();
-                //legge il valore se true o false all'ingresso del socket
                 logged=inSocket.readLine();
 
                 if(logged.equals("1")||logged.equals("0")) {
                     outSocket.println(nickname);
                     outSocket.flush();
-                    this.name=nickname;
                 }
                 else if(logged.equals("2"))
                     clientInt.showError("Errore inserimento-Password di " + nickname + " errata");
@@ -173,10 +170,13 @@ public class ClientSocket {
         return login;
     }
 
-    //----------------------------------------------------game part-----------------------------------------------------
+    /**
+     * creates the listener and keeps it up.
+     * @param logindata array of strings with the login datas.
+     * @throws IOException for socket connection errors.
+     * @throws InterruptedException
+     */
     private void play(String[] logindata) throws IOException, InterruptedException {
-        //for now we did't implement the complete protocol for the socket comunication but it will be implement in this while loop
-        //this is for the client part
         new ListenFromServer(this, logindata).start();
         while(10>1){
            try {
@@ -185,14 +185,16 @@ public class ClientSocket {
         }
     }
 
-    //---------------------------------------------class for server messages--------------------------------------------
+    /**
+     * timer handler.
+     */
     class TimerThreadSocket extends Thread  {
         int time;
         ListenFromServer listenFromServer;
         String[] logindata;
         ClientSocket clientSocket;
         int i;
-        boolean flag; //gui scheme
+        boolean flag;
         //constructor
 
         public TimerThreadSocket(int time,ListenFromServer listenFromServer, boolean flag) {
@@ -216,7 +218,6 @@ public class ClientSocket {
                     sleep(300);
                     sendMessage("@TIMEROUT");
                 } catch (IOException e) {
-                    System.out.println("catchato eccezione 1");
                 }
                 if(flag) {
                     flag=false;
@@ -224,24 +225,16 @@ public class ClientSocket {
                 }
                 else
                     clientInt.endTurn();
-                //listenFromServer.interrupt();
-                //ListenFromServer newListen = new ListenFromServer(clientSocket, logindata);
-                //newListen.start();
                 return;
             }catch (InterruptedException e){
-                System.out.println("timer terminato");
             }
 
         }
-        public int getTime() {
-            return i;
-        }
-        public void setTime(){
-            i=90;
-        }
     }
 
-
+    /**
+     * Used to listen from the inputstream for every message sent by the server
+     */
     class ListenFromServer extends Thread {
         ClientSocket clientSocket;
         String[] logindata;
@@ -268,7 +261,6 @@ public class ClientSocket {
                     String [] arrOfStr = msg.split("-");
 
                     if(arrOfStr[0].equals("@SCHEME")) {
-                        System.out.println("timer iniziato");
                         TimerThreadSocket timerThreadSocket=new TimerThreadSocket(Integer.parseInt(arrOfStr[6]),this, true);
                         timerThreadSocket.start();
                         int scheme=clientInt.schemeMessages(arrOfStr[1], arrOfStr[2],arrOfStr[3], arrOfStr[4], arrOfStr[5]);
@@ -286,7 +278,6 @@ public class ClientSocket {
                     else if(arrOfStr[0].equals("@YOURTURN")) { //enables turn
                         if(arrOfStr[1].equals("true")) {
                             clientInt.timerOut(false);
-                            System.out.println("timer iniziato");
                             timerThreadSocket = new TimerThreadSocket(Integer.parseInt(arrOfStr[2]), this, false);
                             timerThreadSocket.start();
                             yourturn = true;
@@ -330,7 +321,6 @@ public class ClientSocket {
                     }
 
                     else if(arrOfStr[0].equals("@SHOWSCORE")){
-                        System.out.println("La partita è terminata. Stampo la classifica.");
                         String s=new String();
                         for (int i=1;i<arrOfStr.length;i++) {
                             if (i != arrOfStr.length - 1)
@@ -432,10 +422,6 @@ public class ClientSocket {
                             sendMessage("@ENDGAMEACTION-false");
                         }
                     }
-
-                    else {
-                        System.out.println(msg);
-                    }
                 }
                 catch (InterruptedException e) { }
                 catch(IOException e) {
@@ -449,19 +435,26 @@ public class ClientSocket {
         }
     }
 
-    //---------------------------------------------send message to server-----------------------------------------------
-    public void sendMessage(String message) throws IOException {
+    /**
+     * forwards a message to the server.
+     * @param message
+     * @throws IOException for socket connection error.
+     */
+    private void sendMessage(String message) throws IOException {
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(message);
         }catch(IOException e){
-            System.out.println("Ho catchato");
         }
     }
 
 
-    //-----------------------------------------get connection properties from file--------------------------------------
-    private String leggiDaFile() throws IOException {
+    /**
+     * get connection properties from the file.
+     * @return a string with the properties
+     * @throws IOException
+     */
+    private String readFromFile() throws IOException {
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
 
         BufferedReader b = new BufferedReader(f);
@@ -476,7 +469,6 @@ public class ClientSocket {
     }
 
 
-    //******************************************* now all the game methods *********************************************
 
 }
 

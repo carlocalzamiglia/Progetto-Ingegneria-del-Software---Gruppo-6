@@ -21,20 +21,14 @@ import static java.lang.Thread.sleep;
 
 public class ClientRmi implements ClientRmiInt, ServertoClient {
 
-    private ClientRmiInt client;
     private ServerRmiClientHandlerInt server;
-    BufferedReader inKeyboard = new BufferedReader(new InputStreamReader(System.in));
-    PrintWriter outVideo = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true);
     private String nickname;
-    private String root;
-    private int PORT;
-    ClientInterface clientInt;
-    Gson gson = new GsonBuilder().create();
-    private boolean pass;
+    private ClientInterface clientInt;
+    private Gson gson = new GsonBuilder().create();
     private int exportPort;
 
     //-----------------------------------------launch execute method---------------------------------------------
-    public ClientRmi(ClientInterface clientInt, int exportPort)         throws RemoteException{
+    public ClientRmi(ClientInterface clientInt, int exportPort) {
         super();
         this.clientInt=clientInt;
         try
@@ -43,33 +37,36 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
         }
         catch(Exception e)
         {
-            System.out.println("aaException: "+e);
+            System.out.println("Exception: "+e);
             e.printStackTrace();
         }
         this.exportPort=exportPort;
     }
 
-
-    //-----------------------------------launch connect, then login and then play---------------------------------------
-    private void execute()       throws RemoteException{
+    /**
+     * Launches connect method + login method.
+     */
+    private void execute(){
         try
         {
             connect();
             login();
-            //play();
-            //chiudi();
         }
         catch(Exception e) {
-            System.out.println("bbException: " + e);
+            System.out.println("Exception: " + e);
             e.printStackTrace();
         }
     }
 
-    //------------------------------------------does the all RMI connection---------------------------------------------
-    private void connect()     throws RemoteException{
+    /**
+     * It creates the rmi connection with the server
+     */
+    private void connect() {
+        String root;
+        int PORT=0;
         try
         {
-            root=leggiDaFile();
+            root=readFromFile();
             String[] parts=root.split(":");
             try {
                 PORT = Integer.parseInt(parts[1]);
@@ -78,7 +75,6 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
                 System.exit(0);
             }
             root=parts[0];
-            //System.setProperty("java.rmi.server.hostname", "192.168.1.4");
             Registry registry = LocateRegistry.getRegistry(root,PORT);
             server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
             UnicastRemoteObject.exportObject(this, exportPort);
@@ -86,14 +82,16 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
         }
         catch(Exception e)
         {
-            System.out.println("ccException: "+e);
+            System.out.println("Exception: "+e);
             e.printStackTrace();
         }
     }
 
-    //------------------------------------login part. If it is all right adds to DBUser---------------------------------
-    private void login()        throws RemoteException{
-        String logindata[] = new String[2];
+    /**
+     * Launches the login methods. If login is ok it add the user to the database on the server.
+     */
+    private void login() {
+        String[] logindata;
         try
         {
             int logged=3;
@@ -125,58 +123,22 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
         }
         catch(Exception e)
         {
-            clientInt.showError("Eccezione-ddException: "+e);
+            clientInt.showError("Eccezione-Exception: "+e);
         }
     }
 
-    //------------------------------------------------the game method---------------------------------------------------
-    private void play()        throws RemoteException{
-        boolean disc;
 
-        //for now we use a while loop always true for send message to the server
-        while(10>1){
-            /*
-            System.out.println("Cosa vuoi fare?");
-            System.out.println("0)manda messaggio");
-            System.out.println("1)esci");
-            Scanner in = new Scanner(System.in);
-            String choice = in.nextLine();
-            switch (choice) {
-                case "0":
-                    System.out.println("Scrivi messaggio:");
-                    String message =in.nextLine();
-                    server.sendMessage(nickname,message);
-                    break;
-                case "1":
-                    try {
-                        disc=server.manageDisconnection(nickname);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                        disc=false;
-                    }
-                    if(disc==true){
-                        System.out.println("Disconnessione eseguita con successo. Arrivederci.");
-                        System.exit(0);
-                    }else
-                        System.out.println("Errore nella discossessione. Riprova.");
-                    break;
-                default:
-                    break;
-
-            }
-*/
-
-        }
-    }
-
-    //-----------------------------------------check if client is alive yet---------------------------------------------
+    @Override
     public boolean aliveMessage(){
         return true;
     }
 
-
-    //--------------------------------------get connection properties from file-----------------------------------------
-    private String leggiDaFile() throws IOException {
+    /**
+     * It reads from a file the connection informations.
+     * @return the String with the informations.
+     * @throws IOException for the readline method.
+     */
+    private String readFromFile() throws IOException {
         FileReader f=new FileReader(System.getProperty("user.dir")+"/src/main/resources/client_config.txt");
 
         BufferedReader b = new BufferedReader(f);
@@ -191,13 +153,15 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
         return root;
     }
 
-    //---------------------------------------print a message on the CLI-------------------------------------------------
+    @Override
     public void sendMessageOut(String message) throws RemoteException{
         clientInt.showMessage(message);
     }
 
 
-    //******************************************game methods***********************************************+
+    //******************************************game methods***********************************************
+
+
     @Override
     public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException {
         TimerThread timerThread= new TimerThread(time);
@@ -213,6 +177,10 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     }
 
     //-------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Handle timer class.
+     */
     class TimerThread extends Thread implements Serializable {
         int time;
         int i;
@@ -238,7 +206,6 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
             return i;
         }
         public void setTime(){
-            pass=true;
             this.interrupt();
         }
         public void setTimeScheme(){
@@ -300,7 +267,6 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
                     e.printStackTrace();
                 }
                 if(value.equals("4")) {
-                    System.out.println("Timer terminato");
                     timerThread.setTime();
                     return;
                 }
@@ -346,360 +312,332 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
                     return;
             }
         }
-    }
 
-    private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
-        boolean[] res = new boolean[2];
-        res[0]=false;
-        res[1]=false;
-        String message;
-        boolean flag;
-        int choice;
-        int realchoice=2;
-        do {
-            choice=clientInt.chooseToolMessages();
-            if(choice==0){
-                return 1;
-            }
-            flag=greenCarpet.toolIsIn(choice);
-            if(!flag)
-                clientInt.showError("Errore-La carta utensile scelta non è presente sul tavolo da gioco");
-        }while (!flag);
-        boolean toolok=false;
-        ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
-        String goon;
-        boolean exit=false;
-        boolean tooldice=false;
-        System.out.println("tool scelta: "+choice);
-        if(choice>0 && choice<13) {
-            //rembember to check if the tool chosen is inside the greencarpet.
-            if(choice==3) {
-                choice = 2;
-                realchoice = 3;
-            }
-            else if(choice==2)
-                realchoice=2;
-            switch (choice) {
-                case 1:     //no placement
-                    clientInt.showToolTricks(new ToolCards(1).getName(), new ToolCards(1).getUsagetricks());
-                    toolok = tool1(player, greenCarpet, toolCardsExecutor);
-                    break;
-                case 2:     //used for tool 2 & 3
-                    clientInt.showToolTricks(new ToolCards(realchoice).getName(), new ToolCards(realchoice).getUsagetricks());
-                    toolok = tool23(player, greenCarpet, toolCardsExecutor, realchoice);
-                    break;
-                case 4:
-                    clientInt.showToolTricks(new ToolCards(4).getName(), new ToolCards(4).getUsagetricks());
-                    toolok = tool4(player, greenCarpet, toolCardsExecutor);
-                    break;
-                case 5:
-                    clientInt.showToolTricks(new ToolCards(5).getName(), new ToolCards(5).getUsagetricks());
-                    toolok = tool5(player, greenCarpet, toolCardsExecutor);
-                    break;
-                case 6:
-                    clientInt.showToolTricks(new ToolCards(6).getName(), new ToolCards(6).getUsagetricks());
-                    res = tool6(player, greenCarpet, toolCardsExecutor, useddice);
-                    toolok=res[0];
-                    tooldice=res[1];
-                    break;
-                case 7:
-                    clientInt.showToolTricks(new ToolCards(7).getName(), new ToolCards(7).getUsagetricks());
-                    toolok = tool7(player, greenCarpet, toolCardsExecutor, useddice);
-                    break;
-                case 8:
-                    clientInt.showToolTricks(new ToolCards(8).getName(), new ToolCards(8).getUsagetricks());
-                    if(greenCarpet.getTurn()==1 && useddice){
-                        toolok = tool89method(player, greenCarpet, choice);
-                    }else {
-                        clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile. Ricordati di piazzare un dado prima di utilizzarla!");
-                    }
-                    if(toolok)
-                        tooldice=true;
-                    break;
-                case 9:
-                    clientInt.showToolTricks(new ToolCards(9).getName(), new ToolCards(9).getUsagetricks());
-                    //se 0 exit true e toolok true
-                    //se 1 return 1
-                    //se 2 ho usato la tool --> toolok=true e tooldice=true;
-                    //se 3 --> toolok=false;
-                    if(!useddice)
-                        toolok = tool89method(player, greenCarpet, choice);
-                    else
-                        clientInt.showError("Errore-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
-                    if(toolok)
-                        tooldice=true;
-                    break;
-                case 10:
-                    clientInt.showToolTricks(new ToolCards(10).getName(), new ToolCards(10).getUsagetricks());
-                    toolok = tool10(player, greenCarpet, toolCardsExecutor);
-                    break;
-                case 11:
-                    clientInt.showToolTricks(new ToolCards(11).getName(), new ToolCards(11).getUsagetricks());
-                    res = tool11(player, greenCarpet, toolCardsExecutor, useddice);
-                    toolok=res[0];
-                    tooldice=res[1];
-                    break;
-                case 12:
-                    clientInt.showToolTricks(new ToolCards(12).getName(), new ToolCards(12).getUsagetricks());
-                    toolok = tool12(player, greenCarpet, toolCardsExecutor);
-                    break;
-            }
-        }else{
-            clientInt.showError("Errore-Hai inserito un valore sbagliato!");
-        }
-        if(!toolok)
-            clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
-        String greenupd = gson.toJson(greenCarpet);
-        String playerupd = gson.toJson(player);
-        if(!tooldice || !(useddice && toolok))
-            clientInt.updateView(greenupd, playerupd);
-        if(tooldice)      //return 1 if the tool card include dice placement
-            return 1;
-        else
-        if(toolok)      //used a tool without placement
-            return 2;
-        else            //no tool used
-            return 3;
-
-    }
-
-
-    //-----------------------------------------TOOL METHODS-------------------------------------------------------------
-    private boolean tool1(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
-        int vdice=clientInt.chooseDice();
-        if(vdice==99)
-            return false;
-        int selection=clientInt.tool1Messages();
-        if(selection==99)
-            return false;
-        boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 1,vdice, selection);
-        return toolok;
-    }
-
-    private boolean tool23(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, int realchoice) throws IOException, InterruptedException {
-        int[] coordinates;
-        if(player.getScheme().isEmpty())
-            return false;
-        coordinates=clientInt.tool23Messages();
-        if(coordinates[0]==99)
-            return false;
-        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, realchoice, coordinates);
-        return toolok;
-    }
-
-    private boolean tool4(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
-        Ruler ruler = new Ruler();
-        if(ruler.schemeCount(player.getScheme())<2)
-            return false;
-        int[] coordinates = clientInt.tool4Messages();
-        if (coordinates[0] == 99)
-            return false;
-        int[] coord1dice = new int[4];
-        int[] coord2dice = new int[4];
-        for (int k = 0; k < coordinates.length; k++) {
-            if (k < 4)
-                coord1dice[k] = coordinates[k];
-            else
-                coord2dice[k % 4] = coordinates[k];
-        }
-        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet, 4, coord1dice, coord2dice);
-        return toolok;
-    }
-
-    private boolean tool5(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-        if(!greenCarpet.checkEmptyRoundpath())
-            return false;
-        int vdice = clientInt.chooseDice();
-        if (vdice == 99)
-            return false;
-        int[] dicepos = clientInt.chooseFromPath();
-        if (dicepos[0] == 99)
-            return false;
-        boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 5, vdice, dicepos);
-        return toolok;
-    }
-
-    private boolean[] tool6(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException{
-        Ruler ruler = new Ruler();
-        boolean checkcorrdice=false;
-        Dice dice=null;
-        int [] coordinates = new int[2];
-        boolean[] ret = new boolean[2];
-        ret[0]=false;       //used the tool
-        ret[1]=false;       //placed dice
-        if(!useddice) {
-            int ndice = clientInt.chooseDice();
-            if(ndice==99)
-                return ret;
-            dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice,6,0);
-            if (dice != null) {
-                if (ruler.checkAvailableDice(dice, player.getScheme())) {
-                    String dicejson=gson.toJson(dice);
-                    while (!checkcorrdice) {
-                        coordinates=clientInt.tool6Messages(dicejson);
-                        if(coordinates[0]==99)
-                            return ret;
-                        checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
-                        if(!checkcorrdice)
-                            clientInt.showError("Errore-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
-                    }
-                    greenCarpet.getDiceFromStock(ndice);
-                    player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
-                    ret[0]=true;
-                    ret[1]=true;
+        private int placeTool(GreenCarpet greenCarpet, Player player, int i, boolean useddice) throws IOException, InterruptedException {
+            boolean[] res = new boolean[2];
+            res[0]=false;
+            res[1]=false;
+            boolean flag;
+            int choice;
+            int realchoice=2;
+            do {
+                choice=clientInt.chooseToolMessages();
+                if(choice==0){
+                    return 1;
                 }
-            } else
-                clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
-        }else{
-            clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
-        }
-        return ret;
-    }
-
-
-    private boolean tool7(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException {
-        boolean toolok =  false;
-        if(greenCarpet.getTurn()==2 && !useddice)
-            toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 7);
-        else
-            clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
-        return toolok;
-    }
-
-    private boolean tool89method(Player player, GreenCarpet greenCarpet, int choice) throws IOException, InterruptedException {
-        ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
-        boolean toolok89;
-        int vdice = clientInt.chooseDice();
-        if (vdice == 99)
-            return false;
-        int[] dicepos = clientInt.chooseCoordinates();
-        if (dicepos[0] == 99)
-            return false;
-        toolok89 = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
-        return toolok89;
-    }
-
-
-    private boolean tool10(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-        int ndice = clientInt.chooseDice();
-        if(ndice==99)
-            return false;
-        boolean toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 10, ndice, 0);
-        return toolok;
-    }
-
-    private boolean[] tool11(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException{
-        Ruler ruler = new Ruler();
-        boolean checkcorrdice=false;
-        boolean[] ret = new boolean[2];
-        ret[0]=false;       //used the tool
-        ret[1]=false;       //placed dice
-        if(!useddice){
-            int ndice = clientInt.chooseDice();
-            if(ndice==99)
-                return ret;
-            Dice dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice, 11, 0);
-            if(dice!=null) {
-                dice.setFace("");
-                String dicejson = gson.toJson(dice);
-                int value = clientInt.tool11Messages(dicejson);
-                if(value==99) {
-                    Random rnd = new Random();
-                    int val = rnd.nextInt(6) + 1;
-                    dice.setFace(ruler.intToString(val));
-                    greenCarpet.getDiceFromStock(ndice);
-                    greenCarpet.setDiceInStock(dice);
-                    ret[0]=true;
-                    return ret;
+                flag=greenCarpet.toolIsIn(choice);
+                if(!flag)
+                    clientInt.showError("Errore-La carta utensile scelta non è presente sul tavolo da gioco");
+            }while (!flag);
+            boolean toolok=false;
+            ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
+            boolean tooldice=false;
+            if(choice>0 && choice<13) {
+                if(choice==3) {
+                    choice = 2;
+                    realchoice = 3;
                 }
-                dice.setFace(ruler.intToString(value));
-                while (!checkcorrdice) {
-                    int[] coord = clientInt.chooseCoordinates();
-                    if(ruler.checkAvailableDice(dice, player.getScheme())) {
-                        checkcorrdice = ruler.checkCorrectPlacement(coord[0], coord[1], dice, player.getScheme());
-                        if(checkcorrdice) {
-                            greenCarpet.getDiceFromStock(ndice);
-                            player.getScheme().setBoxes(dice, coord[0], coord[1]);
-                            ret[0]=true;
-                            ret[1]=true;
-                        }else
-                            clientInt.showError("Errore-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
-                    }
-                    else{
-                        checkcorrdice = true;
-                        ret[0]=true;
-                    }
+                else if(choice==2)
+                    realchoice=2;
+                switch (choice) {
+                    case 1:     //no placement
+                        clientInt.showToolTricks(new ToolCards(1).getName(), new ToolCards(1).getUsagetricks());
+                        toolok = tool1(player, greenCarpet, toolCardsExecutor);
+                        break;
+                    case 2:     //used for tool 2 & 3
+                        clientInt.showToolTricks(new ToolCards(realchoice).getName(), new ToolCards(realchoice).getUsagetricks());
+                        toolok = tool23(player, greenCarpet, toolCardsExecutor, realchoice);
+                        break;
+                    case 4:
+                        clientInt.showToolTricks(new ToolCards(4).getName(), new ToolCards(4).getUsagetricks());
+                        toolok = tool4(player, greenCarpet, toolCardsExecutor);
+                        break;
+                    case 5:
+                        clientInt.showToolTricks(new ToolCards(5).getName(), new ToolCards(5).getUsagetricks());
+                        toolok = tool5(player, greenCarpet, toolCardsExecutor);
+                        break;
+                    case 6:
+                        clientInt.showToolTricks(new ToolCards(6).getName(), new ToolCards(6).getUsagetricks());
+                        res = tool6(player, greenCarpet, toolCardsExecutor, useddice);
+                        toolok=res[0];
+                        tooldice=res[1];
+                        break;
+                    case 7:
+                        clientInt.showToolTricks(new ToolCards(7).getName(), new ToolCards(7).getUsagetricks());
+                        toolok = tool7(player, greenCarpet, toolCardsExecutor, useddice);
+                        break;
+                    case 8:
+                        clientInt.showToolTricks(new ToolCards(8).getName(), new ToolCards(8).getUsagetricks());
+                        if(greenCarpet.getTurn()==1 && useddice){
+                            toolok = tool89method(player, greenCarpet, choice);
+                        }else {
+                            clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile. Ricordati di piazzare un dado prima di utilizzarla!");
+                        }
+                        if(toolok)
+                            tooldice=true;
+                        break;
+                    case 9:
+                        clientInt.showToolTricks(new ToolCards(9).getName(), new ToolCards(9).getUsagetricks());
+                        if(!useddice)
+                            toolok = tool89method(player, greenCarpet, choice);
+                        else
+                            clientInt.showError("Errore-Hai già piazzato un dado in questo turno, non puoi usare una tool card che preveda di piazzarne uno nuovo.");
+                        if(toolok)
+                            tooldice=true;
+                        break;
+                    case 10:
+                        clientInt.showToolTricks(new ToolCards(10).getName(), new ToolCards(10).getUsagetricks());
+                        toolok = tool10(player, greenCarpet, toolCardsExecutor);
+                        break;
+                    case 11:
+                        clientInt.showToolTricks(new ToolCards(11).getName(), new ToolCards(11).getUsagetricks());
+                        res = tool11(player, greenCarpet, toolCardsExecutor, useddice);
+                        toolok=res[0];
+                        tooldice=res[1];
+                        break;
+                    case 12:
+                        clientInt.showToolTricks(new ToolCards(12).getName(), new ToolCards(12).getUsagetricks());
+                        toolok = tool12(player, greenCarpet, toolCardsExecutor);
+                        break;
                 }
             }else{
-                clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+                clientInt.showError("Errore-Hai inserito un valore sbagliato!");
             }
-        }else
-            clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
-
-        return ret;
-    }
-
-    private boolean tool12(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
-        if(player.getScheme().isEmpty() || !greenCarpet.checkEmptyRoundpath())
-            return false;
-        int[] coordinates12 = clientInt.tool12Messages();
-        if(coordinates12[0]==99)
-            return false;
-        int numOfDices=coordinates12[8];
-        boolean toolok = toolCardsExecutor.useMovementCard(player, greenCarpet,12, numOfDices, coordinates12);
-        return toolok;
-    }
-
-
-    //*****************************************TOOL METHODS***********************************+*************************
-
-
-
-
-
-    private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
-        Boolean checkdice = false;
-        Ruler ruler = new Ruler();
-        int[] dicecoord = new int[3];
-        while (!checkdice) {
-            dicecoord=clientInt.placeDiceMessages();
-            if(dicecoord[0]==99)
-                return;
-            Dice dice = greenCarpet.checkDiceFromStock(dicecoord[0]);
-            if(dice!=null) {
-                checkdice = ruler.checkCorrectPlacement(dicecoord[1], dicecoord[2], dice, player.getScheme());
-                if (!checkdice)
-                    clientInt.showPlacementeError("Errore-Il dado non può essere inserito");
-            }else
-                clientInt.showError("Errore-Hai scelto un dado non valido");
+            if(!toolok)
+                clientInt.showError("Errore-Non è stato possibile utilizzare la tool.");
+            String greenupd = gson.toJson(greenCarpet);
+            String playerupd = gson.toJson(player);
+            if(!tooldice || !(useddice && toolok))
+                clientInt.updateView(greenupd, playerupd);
+            if(tooldice)      //return 1 if the tool card include dice placement
+                return 1;
+            else
+            if(toolok)      //used a tool without placement
+                return 2;
+            else            //no tool used
+                return 3;
 
         }
-        player.getScheme().setBoxes(greenCarpet.getDiceFromStock(dicecoord[0]), dicecoord[1], dicecoord[2]);
-        String playerjson = gson.toJson(player);
-        String greencarpetjson = gson.toJson(greenCarpet);
-        clientInt.updateView(greencarpetjson,playerjson);
+
+        private boolean tool1(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
+            int vdice=clientInt.chooseDice();
+            if(vdice==99)
+                return false;
+            int selection=clientInt.tool1Messages();
+            if(selection==99)
+                return false;
+            return toolCardsExecutor.changeDiceCard(player, greenCarpet, 1,vdice, selection);
+        }
+
+        private boolean tool23(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, int realchoice) throws IOException, InterruptedException {
+            int[] coordinates;
+            if(player.getScheme().isEmpty())
+                return false;
+            coordinates=clientInt.tool23Messages();
+            if(coordinates[0]==99)
+                return false;
+            return toolCardsExecutor.useMovementCard(player, greenCarpet, realchoice, coordinates);
+        }
+
+        private boolean tool4(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException{
+            Ruler ruler = new Ruler();
+            if(ruler.schemeCount(player.getScheme())<2)
+                return false;
+            int[] coordinates = clientInt.tool4Messages();
+            if (coordinates[0] == 99)
+                return false;
+            int[] coord1dice = new int[4];
+            int[] coord2dice = new int[4];
+            for (int k = 0; k < coordinates.length; k++) {
+                if (k < 4)
+                    coord1dice[k] = coordinates[k];
+                else
+                    coord2dice[k % 4] = coordinates[k];
+            }
+            return toolCardsExecutor.useMovementCard(player, greenCarpet, 4, coord1dice, coord2dice);
+        }
+
+        private boolean tool5(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            if(!greenCarpet.checkEmptyRoundpath())
+                return false;
+            int vdice = clientInt.chooseDice();
+            if (vdice == 99)
+                return false;
+            int[] dicepos = clientInt.chooseFromPath();
+            if (dicepos[0] == 99)
+                return false;
+            return toolCardsExecutor.changeDiceCard(player, greenCarpet, 5, vdice, dicepos);
+        }
+
+        private boolean[] tool6(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException{
+            Ruler ruler = new Ruler();
+            boolean checkcorrdice=false;
+            Dice dice;
+            int [] coordinates = new int[2];
+            boolean[] ret = new boolean[2];
+            ret[0]=false;       //used the tool
+            ret[1]=false;       //placed dice
+            if(!useddice) {
+                int ndice = clientInt.chooseDice();
+                if(ndice==99)
+                    return ret;
+                dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice,6,0);
+                if (dice != null) {
+                    if (ruler.checkAvailableDice(dice, player.getScheme())) {
+                        String dicejson=gson.toJson(dice);
+                        while (!checkcorrdice) {
+                            coordinates=clientInt.tool6Messages(dicejson);
+                            if(coordinates[0]==99)
+                                return ret;
+                            checkcorrdice = ruler.checkCorrectPlacement(coordinates[0], coordinates[1], dice, player.getScheme());
+                            if(!checkcorrdice)
+                                clientInt.showError("Errore-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
+                        }
+                        greenCarpet.getDiceFromStock(ndice);
+                        player.getScheme().setBoxes(dice, coordinates[0], coordinates[1]);
+                        ret[0]=true;
+                        ret[1]=true;
+                    }
+                } else
+                    clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+            }else{
+                clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
+            }
+            return ret;
+        }
+
+        private boolean tool7(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice)  {
+            boolean toolok =  false;
+            if(greenCarpet.getTurn()==2 && !useddice)
+                toolok = toolCardsExecutor.changeDiceCard(player, greenCarpet, 7);
+            else
+                clientInt.showError("Errore-Questa toolcard non è attualmente utilizzabile.");
+            return toolok;
+        }
+
+        private boolean tool89method(Player player, GreenCarpet greenCarpet, int choice) throws IOException, InterruptedException {
+            ToolCardsExecutor toolCardsExecutor = new ToolCardsExecutor();
+            boolean toolok89;
+            int vdice = clientInt.chooseDice();
+            if (vdice == 99)
+                return false;
+            int[] dicepos = clientInt.chooseCoordinates();
+            if (dicepos[0] == 99)
+                return false;
+            toolok89 = toolCardsExecutor.usePlacementCard(player, greenCarpet, vdice, choice, dicepos[0], dicepos[1]);
+            return toolok89;
+        }
+
+        private boolean tool10(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            int ndice = clientInt.chooseDice();
+            if(ndice==99)
+                return false;
+            return toolCardsExecutor.changeDiceCard(player, greenCarpet, 10, ndice, 0);
+        }
+
+        private boolean[] tool11(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor, boolean useddice) throws IOException, InterruptedException{
+            Ruler ruler = new Ruler();
+            boolean checkcorrdice=false;
+            boolean[] ret = new boolean[2];
+            ret[0]=false;       //used the tool
+            ret[1]=false;       //placed dice
+            if(!useddice){
+                int ndice = clientInt.chooseDice();
+                if(ndice==99)
+                    return ret;
+                Dice dice = toolCardsExecutor.usePlacementCard(player, greenCarpet, ndice, 11, 0);
+                if(dice!=null) {
+                    dice.setFace("");
+                    String dicejson = gson.toJson(dice);
+                    int value = clientInt.tool11Messages(dicejson);
+                    if(value==99) {
+                        Random rnd = new Random();
+                        int val = rnd.nextInt(6) + 1;
+                        dice.setFace(ruler.intToString(val));
+                        greenCarpet.getDiceFromStock(ndice);
+                        greenCarpet.setDiceInStock(dice);
+                        ret[0]=true;
+                        return ret;
+                    }
+                    dice.setFace(ruler.intToString(value));
+                    while (!checkcorrdice) {
+                        int[] coord = clientInt.chooseCoordinates();
+                        if(ruler.checkAvailableDice(dice, player.getScheme())) {
+                            checkcorrdice = ruler.checkCorrectPlacement(coord[0], coord[1], dice, player.getScheme());
+                            if(checkcorrdice) {
+                                greenCarpet.getDiceFromStock(ndice);
+                                player.getScheme().setBoxes(dice, coord[0], coord[1]);
+                                ret[0]=true;
+                                ret[1]=true;
+                            }else
+                                clientInt.showError("Errore-Non è possibile inserire il dado in questa posizione, scegline una nuova.");
+                        }
+                        else{
+                            checkcorrdice = true;
+                            ret[0]=true;
+                        }
+                    }
+                }else{
+                    clientInt.showError("Errore-C'è stato un errore. Non è possibile utilizzare la carta selezionata. Potresti non avere più markers disponibili, o aver inserito un valore del dado errato.");
+                }
+            }else
+                clientInt.showError("Errore-Non puoi utilizzare questa toolcard. Hai già piazzato un dado in questo turno.");
+
+            return ret;
+        }
+
+        private boolean tool12(Player player, GreenCarpet greenCarpet, ToolCardsExecutor toolCardsExecutor) throws IOException, InterruptedException {
+            if(player.getScheme().isEmpty() || !greenCarpet.checkEmptyRoundpath())
+                return false;
+            int[] coordinates12 = clientInt.tool12Messages();
+            if(coordinates12[0]==99)
+                return false;
+            int numOfDices=coordinates12[8];
+            return toolCardsExecutor.useMovementCard(player, greenCarpet,12, numOfDices, coordinates12);
+        }
+
+        private void placedice(GreenCarpet greenCarpet, Player player, int i) throws IOException, InterruptedException {   //i is player's number for "getplayer"
+            Boolean checkdice = false;
+            Ruler ruler = new Ruler();
+            int[] dicecoord = new int[3];
+            while (!checkdice) {
+                dicecoord=clientInt.placeDiceMessages();
+                if(dicecoord[0]==99)
+                    return;
+                Dice dice = greenCarpet.checkDiceFromStock(dicecoord[0]);
+                if(dice!=null) {
+                    checkdice = ruler.checkCorrectPlacement(dicecoord[1], dicecoord[2], dice, player.getScheme());
+                    if (!checkdice)
+                        clientInt.showPlacementeError("Errore-Il dado non può essere inserito");
+                }else
+                    clientInt.showError("Errore-Hai scelto un dado non valido");
+
+            }
+            player.getScheme().setBoxes(greenCarpet.getDiceFromStock(dicecoord[0]), dicecoord[1], dicecoord[2]);
+            String playerjson = gson.toJson(player);
+            String greencarpetjson = gson.toJson(greenCarpet);
+            clientInt.updateView(greencarpetjson,playerjson);
+        }
     }
+
+    //-----------------------------------------TOOL METHODS-------------------------------------------------------------
+    @Override
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
-        Game game =new Game(0, null);
-        pass = false;
+        Game game =new Game( null);
         TimerThread timerThread=new TimerThread(time);
         timerThread.start();
         HandleTurn handleTurn=new HandleTurn( greenCarpet,  player,  i,timerThread);
         handleTurn.run();
-        System.out.println("Ho finito");
-        //while (timerThread.getTime()<time && !pass){sleep(100);}
         game.setGreenCarpet(handleTurn.getGreenCarpet());
-        game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
+        game.setPlayer(handleTurn.getPlayer());
         handleTurn.setUsedDice();
-        handleTurn = null;
         sleep(300);
         clientInt.endTurn();
-        System.out.println("End turn");
         timerThread.interrupt();
         return game;
     }
 
-
+    @Override
     public boolean serverAlive() throws RemoteException{
         boolean alive;
         try {
@@ -726,7 +664,6 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
 
     @Override
     public void showScore(String[] score) {
-        System.out.println("La partita è terminata. Stampo la classifica.");
         clientInt.showScore(score);
     }
 
