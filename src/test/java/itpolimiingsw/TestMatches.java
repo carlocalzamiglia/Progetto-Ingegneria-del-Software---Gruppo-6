@@ -57,7 +57,7 @@ public class TestMatches {
         matches.addUser(user1);
         Game game = matches.getGame("A");
         Player player = new Player("C");
-        game.setPlayer(player, 1);
+        game.setPlayer(player);
         assertEquals(player, matches.getPlayer("C"));
     }
 }

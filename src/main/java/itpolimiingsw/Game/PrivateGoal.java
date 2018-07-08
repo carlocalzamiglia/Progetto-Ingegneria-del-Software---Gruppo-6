@@ -45,9 +45,6 @@ public class PrivateGoal implements Serializable {
     }
 
     //-----------------------------------------------Getters and Setters------------------------------------------------
-    public void setDescription(String description) {
-        this.description = description;
-    }
     public String getName() {
         return name;
     }
@@ -60,6 +57,8 @@ public class PrivateGoal implements Serializable {
     public Colour getColour() {
         return colour;
     }
+
+
     //-----------------------------------------------Print methods------------------------------------------------------
 
     @Override
@@ -73,9 +72,5 @@ public class PrivateGoal implements Serializable {
     public void dump(){
         System.out.println(this);
     }
-
-
-    //-----------------------------------------------old constructor----------------------------------------------------
-
 
 }

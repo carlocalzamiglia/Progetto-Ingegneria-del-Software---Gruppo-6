@@ -680,7 +680,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
         clientInt.updateView(greencarpetjson,playerjson);
     }
     public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
-        Game game =new Game(0, null);
+        Game game =new Game( null);
         pass = false;
         TimerThread timerThread=new TimerThread(time);
         timerThread.start();
@@ -689,7 +689,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
         System.out.println("Ho finito");
         //while (timerThread.getTime()<time && !pass){sleep(100);}
         game.setGreenCarpet(handleTurn.getGreenCarpet());
-        game.setPlayer(handleTurn.getPlayer(), handleTurn.getI());
+        game.setPlayer(handleTurn.getPlayer());
         handleTurn.setUsedDice();
         handleTurn = null;
         sleep(300);

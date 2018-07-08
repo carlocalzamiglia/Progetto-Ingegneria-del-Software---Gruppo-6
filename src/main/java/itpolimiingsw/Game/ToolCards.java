@@ -59,7 +59,6 @@ public class ToolCards implements Serializable {
     public void setCost(int cost) {
         this.cost = cost;
     }
-
     public String getName() {
         return name;
     }
@@ -79,7 +78,6 @@ public class ToolCards implements Serializable {
         return cost;
     }
     public String getUsagetricks(){return usage;}
-
 
 
     //-----------------------------------------------Print methods------------------------------------------------------

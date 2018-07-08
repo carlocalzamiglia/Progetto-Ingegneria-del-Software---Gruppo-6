@@ -14,8 +14,6 @@ public class Scheme implements Serializable {
     private Box boxes[][];
     private String name;
     private int difficulty;
-    private Boolean used;
-
 
     //-----------------------------------------------Constructor--------------------------------------------------------
     public Scheme(int serialNumber) {
@@ -46,26 +44,31 @@ public class Scheme implements Serializable {
     public String getName() {
         return name;
     }
-
     public int getDifficulty() {
         return this.difficulty;
     }
-
     public Box[][] getBoxes() {
         return boxes;
     }
-
     public Box getBox(int i, int j) {
         return boxes[i][j];
     }
 
-
-    //-----------------------------------------------Method that place a dice in the scheme-----------------------------
+    /**
+     * Method that place a dice in the scheme
+     *
+     * @param dice the dice i want to add in the scheme
+     * @param row the row of the scheme where i want to add the dice
+     * @param column the coloum of the scheme where i want to add the dice
+     */
     public void setBoxes(Dice dice, int row, int column) {
         this.boxes[row][column].setAddedDice(dice);
     }
-
-    //-----------------------------------------------Method that checks if a scheme is empty----------------------------
+    /**
+     * Method that checks if a scheme is empty
+     *
+     * @return true if a scheme is empty, false otherwise
+     */
     public boolean isEmpty() {
         boolean status = true;
         for (int i = 0; i < 4; i++) {

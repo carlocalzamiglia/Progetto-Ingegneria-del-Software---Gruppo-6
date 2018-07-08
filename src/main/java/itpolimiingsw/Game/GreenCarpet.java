@@ -34,21 +34,6 @@ public class GreenCarpet implements Serializable {
         publicGoals[2]=p3;
     }
 
-    public void setRndPublicGoals(){
-        Random rnd=new Random();
-        int index1=rnd.nextInt(10)+1;
-        int index2=rnd.nextInt(10)+1;
-        int index3=rnd.nextInt(10)+1;
-        while(index1==index2 || index2==index3 || index1==index3){
-            index1=rnd.nextInt(10)+1;
-            index2=rnd.nextInt(10)+1;
-            index3=rnd.nextInt(10)+1;
-        }
-        publicGoals[0]=new PublicGoal(index1);
-        publicGoals[1]=new PublicGoal(index2);
-        publicGoals[2]=new PublicGoal(index3);
-    }
-
     public PublicGoal getPublicGoal(int i) {
         return publicGoals[i];
     }
@@ -59,42 +44,12 @@ public class GreenCarpet implements Serializable {
         this.toolCards[2]=t3;
     }
 
-    public void setRndToolCards(){
-        Random rnd=new Random();
-        int index1=rnd.nextInt(12)+1;
-        int index2=rnd.nextInt(12)+1;
-        int index3=rnd.nextInt(12)+1;
-        while(index1==index2 || index2==index3 || index1==index3){
-            index1=rnd.nextInt(12)+1;
-            index2=rnd.nextInt(12)+1;
-            index3=rnd.nextInt(12)+1;
-        }
-        toolCards[0]=new ToolCards(index1);
-        toolCards[1]=new ToolCards(index2);
-        toolCards[2]=new ToolCards(index3);
-    }
-
     public ToolCards[] getToolCards(){
         return toolCards;
     }
 
-    public void setStock(int numbers){
-        for(int i=0; i<numbers;i++){
-            Dice dice=diceBucket.educe();
-            dice.roll();
-            this.stock.add(dice);
-        }
-    }
-
     public ArrayList<Dice> getStock(){
         return stock;
-    }
-
-    public void setRoundPath(int round){
-        for(int i=0; stock.size()>0;i++){
-            this.roundPath[i][round-1]=getDiceFromStock(1);
-        }
-
     }
 
     public void setPlayer(ArrayList<Player> player) {
@@ -105,49 +60,8 @@ public class GreenCarpet implements Serializable {
         return player;
     }
 
-    public void changeDiceFromRoundPath(int i, int round, Dice dice){
-        Dice d=roundPath[i-1][round-1];
-        roundPath[i-1][round-1]=dice;
-        setDiceInStock(d);
-    }
-
     public Dice getDiceFromRoundPath(int i, int round){
         return roundPath[i-1][round-1];
-    }
-
-    public Dice getDiceFromStock(int i){
-        Dice dice= stock.get(i-1);
-        stock.remove(i-1);
-        return dice;
-    }
-
-    public Dice checkDiceFromStock(int i){
-        Dice dice = null;
-        if(i>0 && i<=stock.size())
-            dice = stock.get(i - 1);
-        return dice;
-    }
-
-    public void setDiceInStock(Dice dice){
-        this.stock.add(dice);
-    }
-
-    public ToolCards getToolCard(int i) {
-        return toolCards[i-1];
-    }
-
-    public int getnPlayers() {
-        return nPlayers;
-    }
-
-    public DiceBucket getDiceBucket() {
-        return diceBucket;
-    }
-
-    public void reRollStock(){
-        for(int i=0;i<stock.size();i++){
-            stock.get(i).roll();
-        }
     }
 
     public void setRound(int round) {
@@ -166,7 +80,131 @@ public class GreenCarpet implements Serializable {
         return turn;
     }
 
-    //--------------------------------------Returns true if the roundpath isn't empty-----------------------------------
+    public void setDiceInStock(Dice dice){
+        this.stock.add(dice);
+    }
+
+    public ToolCards getToolCard(int i) {
+        return toolCards[i-1];
+    }
+
+    public int getnPlayers() {
+        return nPlayers;
+    }
+
+    public DiceBucket getDiceBucket() {
+        return diceBucket;
+    }
+
+
+
+    /**
+     *Take the entire stock and it will be put inside the roundpath in the round specified
+     *
+     * @param round is the number of the round where i want to put the stock
+     */
+    public void setRoundPath(int round){
+        for(int i=0; stock.size()>0;i++){
+            this.roundPath[i][round-1]=getDiceFromStock(1);
+        }
+
+    }
+    /**
+     * method that provide to switch a dice from the stock with a dice in the roundpath
+     *
+     * @param i is the coloum of the roundpath
+     * @param round is the row of the roundpath
+     * @param dice is the dice that i want to set in the roundpath in the position (i,j)
+     */
+    public void changeDiceFromRoundPath(int i, int round, Dice dice){
+        Dice d=roundPath[i-1][round-1];
+        roundPath[i-1][round-1]=dice;
+        setDiceInStock(d);
+    }
+    /**
+     * method that provide to take out a dice from the stock
+     * it will be remove from the stock
+     *
+     * @param i is the index of the dice to remove from stock
+     * @return the dice in the index i from the stock
+     */
+    public Dice getDiceFromStock(int i){
+        Dice dice= stock.get(i-1);
+        stock.remove(i-1);
+        return dice;
+    }
+    /**
+     * method that return the dice in the position i of the stock
+     * it will not be remove from the stock
+     *
+     * @param i is the index of the stock to check
+     * @return the dice in the position i of the stock
+     */
+    public Dice checkDiceFromStock(int i){
+        Dice dice = null;
+        if(i>0 && i<=stock.size())
+            dice = stock.get(i - 1);
+        return dice;
+    }
+    /**
+     * method that roll again the entire stock
+     */
+    public void reRollStock(){
+        for(int i=0;i<stock.size();i++){
+            stock.get(i).roll();
+        }
+    }
+    /**
+     * set the tool cards in the greencarper with three random toolcards
+     */
+    public void setRndToolCards(){
+        Random rnd=new Random();
+        int index1=rnd.nextInt(12)+1;
+        int index2=rnd.nextInt(12)+1;
+        int index3=rnd.nextInt(12)+1;
+        while(index1==index2 || index2==index3 || index1==index3){
+            index1=rnd.nextInt(12)+1;
+            index2=rnd.nextInt(12)+1;
+            index3=rnd.nextInt(12)+1;
+        }
+        toolCards[0]=new ToolCards(index1);
+        toolCards[1]=new ToolCards(index2);
+        toolCards[2]=new ToolCards(index3);
+    }
+    /**
+     * set the Public goals in the greencarper with three random public goals
+     */
+    public void setRndPublicGoals(){
+        Random rnd=new Random();
+        int index1=rnd.nextInt(10)+1;
+        int index2=rnd.nextInt(10)+1;
+        int index3=rnd.nextInt(10)+1;
+        while(index1==index2 || index2==index3 || index1==index3){
+            index1=rnd.nextInt(10)+1;
+            index2=rnd.nextInt(10)+1;
+            index3=rnd.nextInt(10)+1;
+        }
+        publicGoals[0]=new PublicGoal(index1);
+        publicGoals[1]=new PublicGoal(index2);
+        publicGoals[2]=new PublicGoal(index3);
+    }
+    /**
+     * Set the stock with the number of dice according to the numbers of players
+     *
+     * @param numbers numbers of players
+     */
+    public void setStock(int numbers){
+        for(int i=0; i<numbers;i++){
+            Dice dice=diceBucket.educe();
+            dice.roll();
+            this.stock.add(dice);
+        }
+    }
+    /**
+     * this method check if ther is any dice in the roundpath
+     *
+     * @return true if the roundpath is not empty false if it is not
+     */
     public boolean checkEmptyRoundpath(){
         boolean bool=false;
         for (int i=0; i<(getnPlayers()*2+1)&& !bool;i++)
@@ -175,8 +213,12 @@ public class GreenCarpet implements Serializable {
                     bool=true;
         return bool;
     }
-
-    //--------------------------------------Returns true if the Tool Card is in The Green Carpet------------------------
+    /**
+     *method that check if a tool card is in the greencarpet
+     *
+     * @param serialnumber is the id of the toolcard
+     * @return true if the tool Card with this serialnumber is in the green carpet
+     */
     public boolean toolIsIn(int serialnumber){
         boolean bool=false;
         for(int j=0; j<getToolCards().length && !bool;j++) {
@@ -187,6 +229,7 @@ public class GreenCarpet implements Serializable {
         }
         return bool;
     }
+
 
     //-----------------------------------------------Print methods------------------------------------------------------
        @Override
@@ -220,6 +263,7 @@ public class GreenCarpet implements Serializable {
 
            return s;
        }
+
     public void dump(){
         System.out.println(this);
     }

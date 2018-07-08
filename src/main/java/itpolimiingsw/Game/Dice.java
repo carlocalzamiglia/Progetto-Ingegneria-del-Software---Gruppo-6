@@ -44,7 +44,10 @@ public class Dice implements Serializable {
         System.out.println(this);
     }
 
-    //-----------------------------------------------Method that sets a casual face to a dice---------------------------
+
+    /**
+     * Method that sets a casual face to a dice
+     */
     public void roll(){
         int count = faces.length;
         Random rand = new Random();
@@ -52,6 +55,11 @@ public class Dice implements Serializable {
         setFace(faces[index]);
     }
 
+    /**
+     * this method return the string of the numer of the dice
+     *
+     * @return the string with the number of the dice's face
+     */
     public String faceToNo(){
         String s = null;
         for (int i=0;i<faces.length;i++)
@@ -60,6 +68,10 @@ public class Dice implements Serializable {
         return s;
     }
 
+    /**
+     * this method return the color written in the italian language
+     * @return the string with the italian colour
+     */
     public String getItalianColour(){
         if(this.colour.equals(Colour.ANSI_BLUE))
             return "BLU";
