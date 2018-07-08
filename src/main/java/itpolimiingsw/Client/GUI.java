@@ -25,6 +25,9 @@ public class GUI implements ClientInterface {
         threadl.start();
     }
 
+    /**
+     * Starts the GUI.
+     */
     public class Launcher extends Thread{
 
         @Override
@@ -46,11 +49,7 @@ public class GUI implements ClientInterface {
     }
 
     @Override
-    public void showMessage(String message) {
-        System.out.println(message);
-        System.out.println("entro in showmessage");
-        GUIController.showMessages(message);
-    }
+    public void showMessage(String message) { }
 
     @Override
     public void showError(String message) {
@@ -63,8 +62,6 @@ public class GUI implements ClientInterface {
         String[] messages = message.split("-");
         GUIController.showPopupDicePlaceWrong(messages);
     }
-
-
 
     @Override
     public void showConnDiscPopup(String message) {
@@ -147,7 +144,6 @@ public class GUI implements ClientInterface {
         }
         GUIController.setLogin(false);
         placedice = GUIController.getplaceDice();
-        System.out.println("dadoscelto: "+placedice[0]);
         return placedice;
     }
 
@@ -306,6 +302,13 @@ public class GUI implements ClientInterface {
             GUIController.showTimer(i);
     }
 
+    /**
+     * Asks for coordinates at the gui.
+     * @param num   number of coordinates requested
+     * @return the array of coordinates
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public int[] handleCoordinates(int num) throws IOException, InterruptedException {
         int[] allcoordinates = new int[num];
         int[] oldcoordinates;
