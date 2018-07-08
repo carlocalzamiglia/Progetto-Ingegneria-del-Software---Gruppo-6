@@ -1,2 +1,2 @@
-localhost:1234
-localhost:1099
+serverip:1234
+serverip:1099:clientip:portip

@@ -15,7 +15,6 @@ public class ClientSetup {
 
         String view = args[0];
         String choice = args[1];
-        int exportPort=0;
 
         if(choice.equals("socket")) {
             if(view.equals("cli")) {
@@ -28,13 +27,12 @@ public class ClientSetup {
 
         }
         else if(choice.equals("rmi")) {
-            exportPort = Integer.parseInt(args[2]);
             if (view.equals("cli")) {
                 cli = new CLI();
-                new ClientRmi(cli, exportPort);
+                new ClientRmi(cli);
             } else {
                 gui = new GUI();
-                new ClientRmi(gui, exportPort);
+                new ClientRmi(gui);
             }
         }
     }

@@ -22,11 +22,10 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     private String nickname;
     private ClientInterface clientInt;
     private Gson gson = new GsonBuilder().create();
-    private int exportPort;
     private int PORT;
 
     //-----------------------------------------launch execute method---------------------------------------------
-    public ClientRmi(ClientInterface clientInt, int exportPort) throws RemoteException {
+    public ClientRmi(ClientInterface clientInt) throws RemoteException {
         super();
         this.clientInt=clientInt;
         try
@@ -38,7 +37,6 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
             System.out.println("Exception: "+e);
             e.printStackTrace();
         }
-        this.exportPort=exportPort;
     }
 
     /**
@@ -72,9 +70,10 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
                 System.exit(0);
             }
             root=parts[0];
+            System.setProperty("java.rmi.server.hostname", parts[2]);
             Registry registry = LocateRegistry.getRegistry(root,PORT);
             server=(ServerRmiClientHandlerInt) registry.lookup("RMICONNECTION");
-            UnicastRemoteObject.exportObject(this, exportPort);
+            UnicastRemoteObject.exportObject(this, Integer.parseInt(parts[3]));
             new HandleServerConnectionForRmi(this).start();
         }
         catch(Exception e)
