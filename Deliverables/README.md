@@ -12,7 +12,7 @@
 ## CONTENUTO:
 
 ##### I file jar si trovano nella cartella "Deliverables" -> "Jar" -> "Client" / "Server".
-##### Si trovano nella cartella ... i file "server_config.txt" e "client_config.txt"
+##### Si trovano nella cartella "src" -> "main" -> "java" i file "server_config.txt" e "client_config.txt" (rispettivamente in ogni cartella dei jar)
 
 ### SERVER_CONFIG:
 ##### All'interno del file sono contenuti:
@@ -22,11 +22,11 @@
 
 ### CLIENT_CONFIG
 ##### All'interno del file sono contenuti:
- - indirizzo ip-porta (per connessione socket)
-- indirizzo ip-porta (per connessione rmi)
+- indirizzo ip server:porta (per connessione socket)
+- indirizzo ip server:porta del server:ip del client:porta export client (per connessione rmi)
 
 
 ## ESECUZIONE DEI FILE JAR:
 ##### I file devono essere eseguiti aggiungendo alcuni parametri:
 - Socket: file.jar gui/cli socket
-- Rmi: file.jar gui/cli rmi portaconnessione (la porta è necessaria per l'esportazione dell'oggetto client).
+- Rmi: file.jar gui/cli rmi

@@ -1,3 +1,3 @@
-1234
-1099
-30
+socketport
+rmiport
+timer
