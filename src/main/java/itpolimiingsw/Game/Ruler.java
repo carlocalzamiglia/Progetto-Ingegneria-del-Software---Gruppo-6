@@ -174,8 +174,12 @@ public class Ruler implements Serializable {
     public boolean checkNeighborsFaces(int row, int col, Dice dice, Scheme scheme) {
         boolean bool = true;
         int flag = 0;
-        if (scheme.isEmpty())
-            return true;
+        if (scheme.isEmpty()) {
+            if (row != 0 && row != 3 && col != 0 && col != 4)
+                return false;
+            else
+                return true;
+        }
         if (col - 1 >= 0 && scheme.getBox(row, col - 1).getAddedDice() != null) {
             if (scheme.getBox(row, col - 1).getAddedDice().getFace().equals(dice.getFace()))
                 bool = false;
@@ -216,8 +220,12 @@ public class Ruler implements Serializable {
     public boolean checkNeighborsColours(int row, int col, Dice dice, Scheme scheme) {
         boolean bool = true;
         int flag = 0;
-        if (scheme.isEmpty())
-            return true;
+        if (scheme.isEmpty()) {
+            if (row != 0 && row != 3 && col != 0 && col != 4)
+                return false;
+            else
+                return true;
+        }
         if (col - 1 >= 0 && scheme.getBox(row, col - 1).getAddedDice() != null) {
             if (scheme.getBox(row, col - 1).getAddedDice().getColour().equals(dice.getColour()))
                 bool = false;
