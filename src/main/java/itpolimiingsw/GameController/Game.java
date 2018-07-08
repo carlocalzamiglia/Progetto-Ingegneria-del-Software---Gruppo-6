@@ -120,7 +120,6 @@ public class Game implements Serializable {
         this.greenCarpet = new GreenCarpet(numUser);
         greenCarpet.setRndPublicGoals();
         greenCarpet.setRndToolCards();
-        //greenCarpet.setToolCards(new ToolCards(6),new ToolCards(11),new ToolCards(12));
         PrivateGoal[] privateGoals = getRndPrivateGoals(numUser);
         Scheme[] schemes = getRndSchemes(numUser);
         Bridge[] bridges = getRndBridges(numUser);

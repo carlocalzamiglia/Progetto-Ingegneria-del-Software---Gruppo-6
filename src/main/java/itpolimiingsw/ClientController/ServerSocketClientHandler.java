@@ -518,6 +518,8 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                         break;
                     case 9:
                         tooldice = toolNine(player, greenCarpet, toolCardsExecutor, useddice);
+                        if(tooldice)
+                            toolok=true;
                         break;
                     case 10:
                         toolok = toolTen(player, greenCarpet, toolCardsExecutor);

@@ -243,6 +243,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/GameTools/ToolCardsExecutor.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/RMIDisconnectionHandler/HandleClientDisconnection.java">
           <value>
             <set />
