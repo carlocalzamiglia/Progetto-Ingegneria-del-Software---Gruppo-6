@@ -23,9 +23,10 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     private ClientInterface clientInt;
     private Gson gson = new GsonBuilder().create();
     private int exportPort;
+    private int PORT;
 
     //-----------------------------------------launch execute method---------------------------------------------
-    public ClientRmi(ClientInterface clientInt, int exportPort) {
+    public ClientRmi(ClientInterface clientInt, int exportPort) throws RemoteException {
         super();
         this.clientInt=clientInt;
         try
@@ -43,7 +44,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     /**
      * Launches connect method + login method.
      */
-    private void execute(){
+    private void execute() throws RemoteException{
         try
         {
             connect();
@@ -58,9 +59,8 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     /**
      * It creates the rmi connection with the server
      */
-    private void connect() {
+    private void connect() throws RemoteException {
         String root;
-        int PORT=0;
         try
         {
             root=readFromFile();
@@ -87,7 +87,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     /**
      * Launches the login methods. If login is ok it add the user to the database on the server.
      */
-    private void login() {
+    private void login() throws RemoteException {
         String[] logindata;
         try
         {
@@ -126,7 +126,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
 
 
     @Override
-    public boolean aliveMessage(){
+    public boolean aliveMessage() throws RemoteException{
         return true;
     }
 
@@ -160,7 +160,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
 
 
     @Override
-    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException {
+    public int chooseScheme(String scheme1, String scheme2, String scheme3, String scheme4, String privategoal, int time) throws IOException, InterruptedException, RemoteException {
         TimerThread timerThread= new TimerThread(time);
         timerThread.start();
         int choose=clientInt.schemeMessages(scheme1, scheme2, scheme3, scheme4, privategoal);
@@ -619,7 +619,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
 
     //-----------------------------------------TOOL METHODS-------------------------------------------------------------
     @Override
-    public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException {
+    public Game endTurn(GreenCarpet greenCarpet, Player player, int i, int time) throws InterruptedException, IOException, RemoteException {
         Game game =new Game( null);
         TimerThread timerThread=new TimerThread(time);
         timerThread.start();
@@ -648,7 +648,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     }
 
     @Override
-    public Boolean newMatch() throws IOException, InterruptedException {
+    public Boolean newMatch() throws IOException, InterruptedException, RemoteException {
         boolean check;
         check = clientInt.newMatch();
         if(check)
@@ -660,7 +660,7 @@ public class ClientRmi implements ClientRmiInt, ServertoClient {
     }
 
     @Override
-    public void showScore(String[] score) {
+    public void showScore(String[] score) throws RemoteException {
         clientInt.showScore(score);
     }
 
