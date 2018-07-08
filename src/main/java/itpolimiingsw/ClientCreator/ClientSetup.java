@@ -1,6 +1,7 @@
-package itpolimiingsw.Client;
+package itpolimiingsw.ClientCreator;
 
 import itpolimiingsw.ClientController.ClientRmi;
+import itpolimiingsw.ClientController.ClientSocket;
 import itpolimiingsw.UserExperience.CLI;
 import itpolimiingsw.UserExperience.GUI;
 

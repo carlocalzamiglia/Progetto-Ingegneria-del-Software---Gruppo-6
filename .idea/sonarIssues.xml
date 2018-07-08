@@ -128,12 +128,22 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/ClientController/ClientSocket.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/ClientController/ServerSocketClientHandler.java">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/ClientController/ServertoClient.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/itpolimiingsw/ClientCreator/ClientSetup.java">
           <value>
             <set />
           </value>

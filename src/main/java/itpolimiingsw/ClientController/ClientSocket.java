@@ -1,4 +1,4 @@
-package itpolimiingsw.Client;
+package itpolimiingsw.ClientController;
 
 import itpolimiingsw.GameCards.ToolCards;
 import itpolimiingsw.UserExperience.ClientInterface;
@@ -418,6 +418,8 @@ public class ClientSocket {
                             sendMessage("@ENDGAMEACTION-false");
                         }
                     }
+                    else
+                        System.out.println(msg);
                 }
                 catch (InterruptedException e) { }
                 catch(IOException e) {
