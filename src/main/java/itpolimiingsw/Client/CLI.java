@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import static java.lang.Thread.sleep;
 
 public class CLI implements ClientInterface {

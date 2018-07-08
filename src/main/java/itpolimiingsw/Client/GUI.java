@@ -3,23 +3,16 @@ package itpolimiingsw.Client;
 import com.google.gson.Gson;
 import itpolimiingsw.Game.Dice;
 import itpolimiingsw.ServertoClientHandler.ClientInterface;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import static java.lang.Thread.sleep;
 
 public class GUI implements ClientInterface {
 
 
     //----------------------------------------VAR---------------------
-    private boolean login = false;
-    private String user = "";
-    private String pass = "";
-    Gson gson = new Gson();
     GUIController launcher = new GUIController();
-    boolean c = false;
-
+    private boolean c = false;
     public GUI() throws FileNotFoundException {
         Launcher threadl = new Launcher();
         threadl.start();

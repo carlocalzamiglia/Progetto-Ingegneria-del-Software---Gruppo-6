@@ -110,7 +110,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                     msg = (String) ins.readObject();
                     arrOfMsg = msg.split("-");
                     message=arrOfMsg[0];
-                    System.out.println("il protocollo è: "+message);
                     if (message.equals("@LOGOUT")) {
                         DB.getUser(nickname).setOnline(false);
                         DB.getUser(nickname).setClientHandler(null);
@@ -721,7 +720,6 @@ public class ServerSocketClientHandler implements Runnable,ServertoClient {
                             while (!message.equals("@TOOLUSED61") && !message.equals("@TIMEROUT") && !message.equals("@DEAD")) {
                                 sleep(200);
                             }
-                            System.out.println(message);
                             if(message.equals("@DEAD") || message.equals("@TIMEROUT"))
                                 return ret;
                             checkcorrdice = ruler.checkCorrectPlacement(stringToInt(arrOfMsg[1]), stringToInt(arrOfMsg[2]), dice, player.getScheme());

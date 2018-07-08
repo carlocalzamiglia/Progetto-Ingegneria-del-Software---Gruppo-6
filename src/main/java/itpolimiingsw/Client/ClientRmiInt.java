@@ -2,7 +2,6 @@ package itpolimiingsw.Client;
 
 
 import itpolimiingsw.ServertoClientHandler.ServertoClient;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

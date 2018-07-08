@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 public class ServerSocket implements Runnable {
     private Matches matches;
     private DBUsers DB;
+    java.net.ServerSocket sc;
 
     public ServerSocket(DBUsers DB,Matches matches){
         this.DB=DB;
@@ -37,7 +38,6 @@ public class ServerSocket implements Runnable {
      * @throws IOException
      */
     private void connect() throws IOException {
-        java.net.ServerSocket sc;
         int PORT;
         PORT=readFromFile();
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -47,6 +47,7 @@ public class ServerSocket implements Runnable {
             Socket socket = sc.accept();
             executor.submit(new ServerSocketClientHandler(socket, DB, matches));
         }
+
     }
 
     /**

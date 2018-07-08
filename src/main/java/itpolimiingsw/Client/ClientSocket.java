@@ -2,13 +2,9 @@ package itpolimiingsw.Client;
 
 import itpolimiingsw.Game.ToolCards;
 import itpolimiingsw.ServertoClientHandler.ClientInterface;
-
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
-
-import java.net.SocketException;
-
 import static java.lang.Thread.sleep;
 
 public class ClientSocket {

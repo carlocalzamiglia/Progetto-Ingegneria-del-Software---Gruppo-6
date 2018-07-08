@@ -1,7 +1,6 @@
 package itpolimiingsw.Game;
 
 import itpolimiingsw.Server.User;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -138,7 +137,6 @@ public class Game implements Serializable {
                 return;
             }
             if(numUserOnline<=1) {
-                System.out.println("Entro nell'if");
                 calculate_result(0);
                 return;
             }
@@ -150,7 +148,6 @@ public class Game implements Serializable {
             for (int i = 0; i < player.size(); i++) {
                 player.get(i).setSecondTurn(true);
             }
-            System.out.println("ROUND " + (j + 1));
             greenCarpet.setStock(numUser * 2 + 1);
 
             for (int i = 0; i < numUser; i++) {
@@ -258,7 +255,6 @@ public class Game implements Serializable {
      * @throws InterruptedException
      */
     private void turn(int i, int time) throws IOException, InterruptedException{
-        System.out.println("tocca a: " + users.get(i).getNickname());
         Game game = users.get(i).getConnectionType().endTurn(this.getGreenCarpet(), this.getPlayer(i), i, time);
         if(game!=null) {
             this.greenCarpet = game.greenCarpet;
@@ -303,7 +299,6 @@ public class Game implements Serializable {
             }
 
         }else{
-            System.out.println("Sono nell'else");
             int score = 0;
             for(int i = 0; i<users.size(); i++) {
                 score = 0;

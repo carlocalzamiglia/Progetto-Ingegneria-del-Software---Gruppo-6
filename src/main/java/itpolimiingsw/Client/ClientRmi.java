@@ -4,18 +4,15 @@ package itpolimiingsw.Client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import itpolimiingsw.Game.*;
-
 import itpolimiingsw.Server.ServerRmiClientHandlerInt;
 import itpolimiingsw.ServertoClientHandler.ClientInterface;
 import itpolimiingsw.ServertoClientHandler.ServertoClient;
-
 import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
-
 import static java.lang.Thread.sleep;
 
 

@@ -1,6 +1,6 @@
 package itpolimiingsw.Game;
-import javafx.scene.paint.Color;
 
+import javafx.scene.paint.Color;
 import java.io.Serializable;
 import java.lang.*;
 
